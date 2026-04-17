@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import { ArrowRight, Menu, X } from 'lucide-react';
 
 interface LandingPageProps {
@@ -9,7 +9,7 @@ interface LandingPageProps {
 const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const fadeUp = {
+  const fadeUp: Variants = {
     hidden: { opacity: 0, y: 10 },
     visible: {
       opacity: 1,
@@ -18,7 +18,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
     },
   };
 
-  const staggerContainer = {
+  const staggerContainer: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
