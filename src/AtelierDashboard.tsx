@@ -49,7 +49,7 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
       {/* THE ATELIER SIDEBAR */}
-      <aside className="w-full md:w-72 border-b md:border-r border-zinc-200 flex flex-col h-auto md:h-screen sticky top-0 bg-white z-20">
+      <aside className="w-full md:w-72 border-b md:border-r border-zinc-100 flex flex-col h-auto md:h-screen sticky top-0 bg-white z-20">
         <div className="p-10 mb-8">
           <h1 className="font-serif text-3xl tracking-tighter font-light uppercase italic">
             Hyecuts <span className="font-sans text-[10px] not-italic tracking-[0.3em] block text-zinc-400 uppercase mt-1">Atelier Administration</span>
@@ -91,12 +91,12 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
 
         <div className="p-8 border-t border-zinc-100 mt-auto">
           <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-4 p-4 rounded-none bg-zinc-50 border border-zinc-200">
+            <div className="flex items-center gap-4 p-4 rounded-none bg-zinc-50/50 border border-zinc-100">
               <div className="relative">
-                <div className="w-1.5 h-1.5 bg-green-500 rounded-full absolute -top-1 -right-1 border border-white" />
-                <ShieldCheck size={16} className="text-zinc-400" />
+                <div className="w-1 h-1 bg-green-500 rounded-full absolute -top-1 -right-1 border border-white" />
+                <ShieldCheck size={14} className="text-zinc-400" />
               </div>
-              <div className="text-[11px] uppercase tracking-widest">
+              <div className="text-[10px] uppercase tracking-widest">
                 <p className="font-bold text-black">Session Active</p>
                 <p className="text-zinc-400">Secure Tunnel</p>
               </div>
@@ -340,7 +340,7 @@ function EconomyControlCenter({ ratio, setRatio, multiplier, setMultiplier }: Ec
             min="1" max="50"
             value={ratio}
             onChange={(e) => setRatio(parseInt(e.target.value))}
-            className="w-full h-0.5 bg-zinc-200 rounded-none appearance-none cursor-pointer accent-black"
+            className="w-full h-px bg-zinc-200 rounded-none appearance-none cursor-pointer accent-black"
           />
           <p className="text-xs text-zinc-400 leading-relaxed italic">
             Controls the baseline point accumulation for every completed visit.
@@ -357,7 +357,7 @@ function EconomyControlCenter({ ratio, setRatio, multiplier, setMultiplier }: Ec
             min="1" max="3" step="0.1"
             value={multiplier}
             onChange={(e) => setMultiplier(parseFloat(e.target.value))}
-            className="w-full h-0.5 bg-zinc-200 rounded-none appearance-none cursor-pointer accent-black"
+            className="w-full h-px bg-zinc-200 rounded-none appearance-none cursor-pointer accent-black"
           />
           <p className="text-xs text-zinc-400 leading-relaxed italic">
             Global multiplier applied to all point earnings.

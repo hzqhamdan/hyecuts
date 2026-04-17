@@ -62,12 +62,15 @@ const AdminLogin = ({ setView }: { setView: (view: string) => void }) => {
           </button>
         </form>
 
-        <div className="pt-12">
+        <div className="flex flex-col gap-4 pt-4">
           <button
             onClick={() => setView('facade')}
             className="text-[10px] uppercase tracking-widest text-zinc-300 hover:text-black transition-colors"
           >
             Return to Facade
+          </button>
+          <button className="text-[9px] uppercase tracking-widest text-zinc-200 hover:text-zinc-400 transition-colors">
+            Request Access Key
           </button>
         </div>
       </motion.div>

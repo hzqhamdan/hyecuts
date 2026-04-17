@@ -10,11 +10,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const fadeUp = {
-    hidden: { opacity: 0, y: 40 },
+    hidden: { opacity: 0, y: 10 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.8, ease: "easeOut" as const }
+      transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
     },
   };
 
@@ -103,12 +103,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
       {/* Cinematic Hero */}
       <section className="relative h-screen flex items-center justify-center px-6 md:px-12 text-center">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <motion.div
-            initial={{ scale: 1.1, opacity: 0 }}
-            animate={{ scale: 1, opacity: 0.05 }}
-            transition={{ duration: 2 }}
-            className="absolute -right-20 -top-20 w-[600px] h-[600px] rounded-full bg-zinc-200 blur-[120px]"
-          />
+          <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" />
         </div>
 
         <div className="relative z-10 w-full max-w-7xl mx-auto">
@@ -145,7 +140,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
                 <span className="relative z-10 text-xs uppercase tracking-[0.2em] font-bold">Secure Appointment</span>
                 <ArrowRight className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-[-10px] group-hover:translate-x-0" size={16} />
               </button>
-              <button className="px-10 py-5 text-xs uppercase tracking-[0.2em] font-bold border border-black hover:bg-black hover:text-white transition-all duration-500">
+              <button
+                onClick={() => document.getElementById('philosophy')?.scrollIntoView({ behavior: 'smooth' })}
+                className="px-10 py-5 text-xs uppercase tracking-[0.2em] font-bold border border-black hover:bg-black hover:text-white transition-all duration-500"
+              >
                 Our Philosophy
               </button>
             </motion.div>
@@ -168,7 +166,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 1 }}
+              transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
               className="lg:col-span-5 relative"
             >
               <span className="text-[10px] uppercase tracking-widest text-zinc-400 mb-4 block">The Standard</span>
@@ -183,7 +181,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 1, delay: 0.2 }}
+              transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
               className="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-12"
             >
               <div className="space-y-8">
