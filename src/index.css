@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-luxury-white text-luxury-black font-sans antialiased;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+@layer components {
+  .font-display {
+    font-family: 'Playfair Display', serif;
+  }
+
+  .btn-luxury {
+    @apply px-luxury-md py-luxury-sm border border-luxury-black text-luxury-black
+           hover:bg-luxury-black hover:text-luxury-white transition-all duration-500
+           ease-in-out uppercase tracking-widest text-xs font-semibold;
+  }
+
+  .input-luxury {
+    @apply bg-transparent border-b border-luxury-slate text-luxury-black
+           focus:border-luxury-black outline-none transition-colors duration-300
+           py-2 px-1 w-full font-sans;
+  }
+
+  .card-luxury {
+    @apply border border-luxury-slate/20 bg-white p-luxury-md
+           hover:border-luxury-black transition-colors duration-500;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

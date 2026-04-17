@@ -1,0 +1,65 @@
+PRD: "The Studio" | Enterprise Minimalist Loyalty Ecosystem
+1. Project Overview
+Objective: Create a sophisticated, ultra-minimalist web experience for a premium barbershop. The platform serves as a digital "Member’s Club" where high-end branding meets a frictionless loyalty economy.
+
+Aesthetic Directive: High-fashion minimalism. No cliché barber imagery. Neutral tones, sophisticated serifs, and expansive whitespace.
+
+2. Aesthetic & UX Framework
+The "Luxury Edit" UI:
+
+Palette: Monochrome (True Black, Paper White, Soft Slate) with a single, muted metallic or earth-tone accent.
+
+Typography: A high-contrast pairing of a "Display" Serif (e.g., Playfair Display or Bodoni) for headings and a clean, wide-tracked Sans-Serif (e.g., Inter or Montserrat) for body text.
+
+Imagery: If used, photography should be abstract or high-fashion portraiture (macro shots of textures, architectural lines) rather than standard shop interior shots.
+
+Interaction Design:
+
+Staggered Reveals: Content fades in elegantly using Framer Motion.
+
+Micro-Gestures: Haptic-like feedback on buttons and smooth, eased transitions between the brand layer and the loyalty lounge.
+
+3. Functional Requirements: Client Side
+3.1 The Digital Facade (Landing)
+Minimalist Entry: A "Hero" section consisting only of the shop name, a single high-concept sentence, and a "Member Entry" CTA.
+
+Navigation: A "Ghost" header that only appears on scroll-up, keeping the visual field clear.
+
+3.2 The Member Lounge (Loyalty)
+Status, Not Points: Users don't "collect points"; they "attain status."
+
+Visual: An elegant, thin horizontal line or a circular "halo" that fills as they progress.
+
+The "Collection" (Rewards): A minimalist grid of rewards. Each reward is presented as a high-end "Product Card" with minimal text.
+
+Voucher Aesthetics: Digital vouchers designed to look like a physical invitation or a premium membership card, including a minimalist QR code.
+
+4. Functional Requirements: Admin Side (Reward Management)
+4.1 The Atelier Dashboard
+Inventory Control: A clean list-view to manage the "Rewards Collection."
+
+Fields: Title, Tier Requirement, Description, and Availability.
+
+Redemption Protocol:
+
+The "Validator": A simple, one-field input for Voucher IDs or a built-in camera scanner for QR codes.
+
+Fulfillment History: A minimalist table tracking which rewards were granted and when, filterable by date.
+
+Point Architecture:
+
+The "Economy" Switch: An admin toggle to adjust point-per-visit ratios or seasonal multipliers.
+
+5. Technical Architecture
+Frontend: React/Vite + Tailwind CSS.
+
+Styling: Custom @layer utilities in Tailwind to maintain strict minimalist spacing rules.
+
+Backend: Firebase (Auth for member login, Firestore for the reward engine).
+
+Performance: All assets served via CDN to ensure the "snappiness" expected of a premium enterprise app.
+
+6. Success Definition
+Brand Perception: The website acts as a filter, positioning the shop as a premium "Studio" rather than a "Barbershop."
+
+Frictionless Loyalty: Members can check their status in under 3 seconds with zero visual clutter.

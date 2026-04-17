@@ -1,0 +1,115 @@
+✅ Main Functional Requirements: Gamification Loyalty Program for Barbershop Website
+
+1. User Registration & Loyalty Profile
+Users can sign up / login (email + password, Google, Apple)
+New users automatically join the loyalty program upon first registration or first booking
+Each user has a dedicated Loyalty Profile containing:
+Current points balance
+Current loyalty tier
+Progress to next tier
+Badge collection
+Activity history
+Referral code
+2. Points System (Core Engine)
+Earning Points:
+
+Booking any service (different points per service value)
+Completing a service (verified after appointment)
+First-time booking bonus
+Birthday bonus
+Review after service
+Referral (both referrer and referee earn points)
+Social media check-in / share
+Spending threshold bonuses (e.g., spend $100 = +150 bonus points)
+Configurable points rates via admin panel (e.g., 10 points = $1 spent)
+
+Points are awarded automatically after service completion
+
+Manual point adjustment capability for admin (for special cases)
+
+3. Loyalty Tier System
+4–5 tier levels (e.g., Rookie → Regular → Legend → Master → Icon)
+Each tier has:
+Minimum points required to reach
+Benefits (e.g., 10% → 15% → 20% → 25% discount on services)
+Priority booking slots
+Exclusive badges
+Monthly bonus points
+Tier progress is visible with progress bar
+Tier upgrades happen automatically when requirements are met
+4. Badges & Achievements
+Unlockable badges for milestones:
+First haircut
+5, 10, 25, 50 bookings
+Referral master (5, 10, 20 referrals)
+Streak badges (book 4 weeks in a row, etc.)
+Seasonal/special event badges
+Badges are displayed in user profile (grid + collection view)
+Rare/epic badges for high engagement
+5. Missions & Challenges (Gamification Core)
+Daily Missions (reset every 24h):
+
+Book an appointment today
+Leave a review
+Share your haircut on Instagram
+Weekly Challenges:
+
+Get 3 haircuts this week
+Bring 2 friends
+Spend $150+
+Long-term Quests:
+
+"Hair Transformation" (4 cuts in 2 months)
+"Beard Legend" (beard service 8 times)
+Progress tracking with clear completion percentage
+
+6. Rewards & Redemption System
+Rewards Catalog (Marketplace style):
+
+Service discounts (10%, 20%, 50% off, Free haircut)
+Free add-on services (beard trim, hair treatment, etc.)
+Merchandise (pomade, shampoo, branded items)
+Experiences (VIP chair, late night exclusive slot)
+Points cost clearly displayed for each reward
+
+One-click redemption (with confirmation)
+
+Redemption history
+
+Some rewards tier-locked (only available from certain loyalty levels)
+
+7. Referral Program
+Unique referral code + shareable link
+Both parties earn points when referee completes first booking
+Referral leaderboard (top referrers)
+8. User Loyalty Dashboard (Most Important Page)
+Must include:
+
+Big points balance with "worth in $" equivalent
+Current tier + progress bar to next tier
+Active missions/challenges
+Recent activity feed
+Available rewards (highlighted)
+Badge showcase
+Streak counter
+9. Notifications System
+Push notifications + Email + In-app:
+Points earned
+Tier upgrade
+Mission completed
+New challenge available
+Reward expiring soon
+Birthday reward reminder
+10. Admin / Backend Management
+Full control over points earning rates
+Create/edit/delete rewards
+Create custom missions & challenges
+Adjust user points manually
+View loyalty analytics (most active users, redemption rate, average tier, etc.)
+Reward redemption approval workflow (optional)
+Export data
+Bonus Recommendations (Highly Suggested)
+Streak System (consecutive bookings)
+Seasonal Events (Summer Glow, Winter Beard, etc.)
+Leaderboards (Monthly top customers)
+Progression Animation when earning points / leveling up
