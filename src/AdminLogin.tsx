@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
-const AdminLogin = ({ setView }) => {
+const AdminLogin = ({ setView }: { setView: (view: string) => void }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 

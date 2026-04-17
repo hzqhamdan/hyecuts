@@ -6,7 +6,7 @@ import AdminLogin from './AdminLogin';
 import { AnimatePresence } from 'framer-motion';
 
 function App() {
-  const [view, setView] = useState<'facade' | 'lounge' | 'admin' | 'login'>('facade');
+  const [view, setView] = useState<string>('facade');
 
   return (
     <AnimatePresence mode="wait">

@@ -4,12 +4,10 @@ import {
   LayoutDashboard,
   Ticket,
   Gem,
-  Settings,
   History,
   CheckCircle2,
   XCircle,
   ShieldCheck,
-  ChevronRight,
   SlidersHorizontal,
   CreditCard
 } from 'lucide-react';
@@ -17,7 +15,7 @@ import {
 type View = 'overview' | 'validator' | 'inventory' | 'economy' | 'history';
 
 interface AtelierDashboardProps {
-  setView?: (view: any) => void;
+  setView?: (view: string) => void;
 }
 
 export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
@@ -43,7 +41,7 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
   };
 
   const springTransition = {
-    type: "spring",
+    type: "spring" as const,
     stiffness: 260,
     damping: 20
   };
@@ -104,7 +102,7 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
               </div>
             </div>
             <button
-              onClick={() => setView('lounge')}
+              onClick={() => setView && setView('lounge')}
               className="w-full py-3 border border-black text-[10px] uppercase tracking-widest font-bold hover:bg-black hover:text-white transition-all text-center"
             >
               Exit to Lounge
@@ -194,7 +192,14 @@ function OverviewView() {
   );
 }
 
-function ValidatorFocusMode({ code, setCode, state, onValidate }: any) {
+interface ValidatorProps {
+  code: string;
+  setCode: (code: string) => void;
+  state: 'idle' | 'granted' | 'denied';
+  onValidate: (e: React.FormEvent) => void;
+}
+
+function ValidatorFocusMode({ code, setCode, state, onValidate }: ValidatorProps) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] max-w-3xl mx-auto">
       <div className="w-full text-center mb-16">
@@ -309,7 +314,14 @@ function RewardsInventory() {
   );
 }
 
-function EconomyControlCenter({ ratio, setRatio, multiplier, setMultiplier }: any) {
+interface EconomyProps {
+  ratio: number;
+  setRatio: (ratio: number) => void;
+  multiplier: number;
+  setMultiplier: (multiplier: number) => void;
+}
+
+function EconomyControlCenter({ ratio, setRatio, multiplier, setMultiplier }: EconomyProps) {
   return (
     <div className="space-y-16">
       <header>

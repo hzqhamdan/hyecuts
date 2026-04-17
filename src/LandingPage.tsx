@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 
-const LandingPage = ({ setView }) => {
+const LandingPage = ({ setView }: { setView: (view: string) => void }) => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {

@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Award, Sparkles, ShieldCheck, ChevronRight } from 'lucide-react';
 
-const MemberLounge = ({ setView }) => {
-  const [progress, setProgress] = useState(78);
-  const [selectedVoucher, setSelectedVoucher] = useState(null);
+const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
+  const [progress] = useState(78);
+  type Voucher = { id: string; title: string; tier: string; desc: string; serial: string; };
+  const [selectedVoucher, setSelectedVoucher] = useState<Voucher | null>(null);
 
   const rewards = [
     { id: 'r1', title: 'Complimentary Hot Towel', tier: 'Silver', desc: 'A signature sensory experience featuring eucalyptus-infused steam.', serial: 'HYE-Lounge-001-S' },
