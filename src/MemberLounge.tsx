@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Award, Sparkles, ShieldCheck, ChevronRight, Activity, Target } from 'lucide-react';
+import { useAuth } from './context/AuthContext';
 
 interface LoyaltyProfile {
   userId: string;
@@ -57,6 +58,10 @@ interface UserMissionProgress {
 }
 
 const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
+  const { user } = useAuth();
+  // Use real user ID if authenticated, fallback to 'user-123' if not for demo purposes
+  const USER_ID = user?.id || "user-123";
+  
   const [profile, setProfile] = useState<LoyaltyProfile | null>(null);
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [activities, setActivities] = useState<ActivityLog[]>([]);
@@ -71,8 +76,6 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
   const [selectedVoucher, setSelectedVoucher] = useState<Reward | null>(null);
   const [redemptionStatus, setRedemptionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
-  // Hardcoded for demo purposes (no auth yet)
-  const USER_ID = "user-123";
   const API_BASE = "http://localhost:8080/api";
 
   useEffect(() => {

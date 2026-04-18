@@ -77,4 +77,18 @@ public class RewardService {
     public List<RewardRedemption> getUserRedemptions(String userId) {
         return redemptionRepository.findByUserId(userId);
     }
+
+    public List<RewardRedemption> getAllRedemptions() {
+        return redemptionRepository.findAll();
+    }
+
+    public RewardRedemption fulfillRedemption(Long redemptionId) {
+        Optional<RewardRedemption> opt = redemptionRepository.findById(redemptionId);
+        if (opt.isPresent()) {
+            RewardRedemption redemption = opt.get();
+            redemption.setStatus("FULFILLED");
+            return redemptionRepository.save(redemption);
+        }
+        throw new RuntimeException("Redemption not found");
+    }
 }

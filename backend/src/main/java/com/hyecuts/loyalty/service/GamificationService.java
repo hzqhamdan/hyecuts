@@ -55,6 +55,10 @@ public class GamificationService {
         return activityLogRepository.findByUserIdOrderByTimestampDesc(userId);
     }
 
+    public List<ActivityLog> getAllActivityLogs() {
+        return activityLogRepository.findAll();
+    }
+
     // Creating entities
     public Badge createBadge(Badge badge) {
         return badgeRepository.save(badge);

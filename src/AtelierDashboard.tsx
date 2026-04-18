@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from './context/AuthContext';
 import {
   LayoutDashboard,
   Ticket,
@@ -21,6 +22,7 @@ interface AtelierDashboardProps {
 }
 
 export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
+  const { logout } = useAuth();
   const [currentView, setCurrentView] = useState<View>('overview');
   const [voucherCode, setVoucherCode] = useState('');
   const [validationState, setValidationState] = useState<'idle' | 'granted' | 'denied'>('idle');
@@ -45,14 +47,32 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
     if (setView) setView(view);
   };
 
-  const validateVoucher = (e: React.FormEvent) => {
+  const validateVoucher = async (e: React.FormEvent) => {
     e.preventDefault();
     setValidationState('idle');
+    
+    // Extract ID from e.g. HC-0005
+    const idMatch = voucherCode.match(/HC-0*(\d+)/i);
+    if (!idMatch) {
+      setValidationState('denied');
+      return;
+    }
+    
+    const redemptionId = idMatch[1];
 
-    setTimeout(() => {
-      const isGranted = voucherCode.toUpperCase().startsWith('HC-');
-      setValidationState(isGranted ? 'granted' : 'denied');
-    }, 800);
+    try {
+      const res = await fetch(`${API_BASE}/admin/redemptions/${redemptionId}/fulfill`, {
+        method: 'POST'
+      });
+      
+      if (res.ok) {
+        setValidationState('granted');
+      } else {
+        setValidationState('denied');
+      }
+    } catch (err) {
+      setValidationState('denied');
+    }
   };
 
   const springTransition = {
@@ -117,10 +137,13 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
               </div>
             </div>
             <button
-              onClick={() => setView && setView('lounge')}
+              onClick={() => {
+                logout();
+                if (setView) setView('facade');
+              }}
               className="w-full py-3 border border-black text-[10px] uppercase tracking-widest font-bold hover:bg-black hover:text-white transition-all text-center"
             >
-              Exit to Lounge
+              Sign Out & Exit
             </button>
           </div>
         </div>
@@ -382,11 +405,31 @@ interface EconomyProps {
 }
 
 function EconomyControlCenter({ ratio, setRatio, multiplier, setMultiplier }: EconomyProps) {
+  const [targetUser, setTargetUser] = useState('user-123');
+  const [adjustAmount, setAdjustAmount] = useState(0);
+  const [adjustStatus, setAdjustStatus] = useState('');
+
+  const handleAdjust = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/admin/points/adjust/${targetUser}?points=${adjustAmount}`, {
+        method: 'POST'
+      });
+      if (res.ok) {
+        setAdjustStatus('Success');
+        setTimeout(() => setAdjustStatus(''), 2000);
+      } else {
+        setAdjustStatus('Error');
+      }
+    } catch(e) {
+      setAdjustStatus('Error');
+    }
+  };
+
   return (
     <div className="space-y-16">
       <header>
         <h2 className="font-serif text-4xl md:text-5xl mb-4 font-light">Economy Center</h2>
-        <p className="text-zinc-400 font-sans uppercase tracking-widest text-[11px]">Engine Calibration</p>
+        <p className="text-zinc-400 font-sans uppercase tracking-widest text-[11px]">Engine Calibration & Adjustments</p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-zinc-200 border border-zinc-200">
@@ -424,6 +467,35 @@ function EconomyControlCenter({ ratio, setRatio, multiplier, setMultiplier }: Ec
           </p>
         </div>
       </div>
+
+      <div className="bg-white p-12 border border-zinc-200 space-y-12">
+          <div className="flex justify-between items-center">
+            <label className="text-[10px] uppercase tracking-widest font-bold text-zinc-400">Manual Point Adjustment</label>
+            <span className="font-serif text-3xl">{adjustAmount > 0 ? '+' : ''}{adjustAmount}</span>
+          </div>
+          <div className="flex flex-col gap-4 max-w-md">
+            <input 
+              type="text" 
+              value={targetUser} 
+              onChange={e => setTargetUser(e.target.value)} 
+              placeholder="User ID" 
+              className="p-3 border border-zinc-200 text-sm" 
+            />
+            <input 
+              type="number" 
+              value={adjustAmount} 
+              onChange={e => setAdjustAmount(parseInt(e.target.value) || 0)} 
+              placeholder="Amount (+ or -)" 
+              className="p-3 border border-zinc-200 text-sm" 
+            />
+            <button 
+              onClick={handleAdjust} 
+              className="w-full py-3 bg-black text-white text-[10px] uppercase tracking-widest font-bold"
+            >
+              Apply Adjustment {adjustStatus && `(${adjustStatus})`}
+            </button>
+          </div>
+      </div>
     </div>
   );
 }
@@ -432,8 +504,7 @@ function FulfillmentHistory() {
   const [logs, setLogs] = useState<any[]>([]);
 
   useEffect(() => {
-    // For demo purposes, we fetch user-123's logs. In reality, an admin endpoint should fetch all logs.
-    fetch(`${API_BASE}/gamification/activity/user-123`)
+    fetch(`${API_BASE}/admin/activity`)
       .then(r => r.json())
       .then(d => setLogs(d))
       .catch(e => console.error(e));
