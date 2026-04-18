@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
@@ -12,6 +12,8 @@ import {
   CreditCard
 } from 'lucide-react';
 
+const API_BASE = "http://localhost:8080/api";
+
 type View = 'overview' | 'validator' | 'inventory' | 'economy' | 'history';
 
 interface AtelierDashboardProps {
@@ -24,6 +26,19 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
   const [validationState, setValidationState] = useState<'idle' | 'granted' | 'denied'>('idle');
   const [pointRatio, setPointRatio] = useState(10);
   const [seasonalMultiplier, setSeasonalMultiplier] = useState(1.2);
+
+  // Data states
+  const [rewards, setRewards] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Fetch initial data
+    if (currentView === 'inventory') {
+      fetch(`${API_BASE}/rewards`)
+        .then(res => res.json())
+        .then(data => setRewards(data))
+        .catch(err => console.error("Failed to load rewards:", err));
+    }
+  }, [currentView]);
 
   const handleNav = (view: View) => {
     setCurrentView(view);
@@ -131,7 +146,7 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
                 onValidate={validateVoucher}
               />
             )}
-            {currentView === 'inventory' && <RewardsInventory />}
+            {currentView === 'inventory' && <RewardsInventory rewards={rewards} setRewards={setRewards} />}
             {currentView === 'economy' && (
               <EconomyControlCenter
                 ratio={pointRatio} setRatio={setPointRatio}
@@ -166,6 +181,14 @@ function NavItem({ active, onClick, icon, label }: { active: boolean, onClick: (
 }
 
 function OverviewView() {
+  const [stats, setStats] = useState({ redemptions: 0, activeRewards: 0 });
+
+  useEffect(() => {
+    fetch(`${API_BASE}/rewards`)
+      .then(r => r.json())
+      .then(d => setStats(s => ({...s, activeRewards: d.length})));
+  }, []);
+
   return (
     <div className="space-y-16">
       <header>
@@ -175,8 +198,8 @@ function OverviewView() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-zinc-200 border border-zinc-200">
         {[
-          { label: 'Total Redemptions', value: '1,284', trend: '+12%' },
-          { label: 'Active Rewards', value: '42', trend: 'Stable' },
+          { label: 'Total Redemptions', value: stats.redemptions.toString(), trend: '+12%' },
+          { label: 'Active Rewards', value: stats.activeRewards.toString(), trend: 'Stable' },
           { label: 'Economy Velocity', value: '8.4x', trend: '+2.1%' },
         ].map((stat, i) => (
           <div key={i} className="p-10 bg-white hover:bg-zinc-50 transition-colors">
@@ -262,13 +285,26 @@ function ValidatorFocusMode({ code, setCode, state, onValidate }: ValidatorProps
   );
 }
 
-function RewardsInventory() {
-  const items = [
-    { id: 'R01', name: 'Signature Cut complimentary', value: '500 pts', stock: 'Unlimited', status: 'Active' },
-    { id: 'R02', name: 'Luxury Shave Experience', value: '800 pts', stock: '12 Left', status: 'Active' },
-    { id: 'R03', name: 'Atelier Grooming Kit', value: '1200 pts', stock: '5 Left', status: 'Limited' },
-    { id: 'R04', name: 'Seasonal Style Consultation', value: '1500 pts', stock: '2 Left', status: 'Rare' },
-  ];
+function RewardsInventory({ rewards, setRewards }: { rewards: any[], setRewards: any }) {
+  const [isAdding, setIsAdding] = useState(false);
+  const [newReward, setNewReward] = useState({ title: '', pointsCost: 1000, type: 'SERVICE_DISCOUNT', minimumTierRequired: 'Rookie', stockAvailable: 10 });
+
+  const handleAddAsset = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/rewards`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newReward)
+      });
+      if (res.ok) {
+        const saved = await res.json();
+        setRewards([...rewards, saved]);
+        setIsAdding(false);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className="space-y-16">
@@ -277,10 +313,31 @@ function RewardsInventory() {
           <h2 className="font-serif text-4xl md:text-5xl mb-4 font-light">Rewards Collection</h2>
           <p className="text-zinc-400 font-sans uppercase tracking-widest text-[11px]">Asset Registry</p>
         </div>
-        <button className="px-8 py-3 border border-black text-[10px] uppercase tracking-widest font-bold hover:bg-black hover:text-white transition-all">
-          Add Asset
+        <button 
+          onClick={() => setIsAdding(!isAdding)}
+          className="px-8 py-3 border border-black text-[10px] uppercase tracking-widest font-bold hover:bg-black hover:text-white transition-all">
+          {isAdding ? 'Cancel' : 'Add Asset'}
         </button>
       </header>
+
+      {isAdding && (
+        <div className="p-8 border border-zinc-200 bg-zinc-50 space-y-6">
+          <h3 className="text-sm font-bold uppercase tracking-widest">Register New Asset</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <input type="text" placeholder="Title" value={newReward.title} onChange={e => setNewReward({...newReward, title: e.target.value})} className="p-3 border border-zinc-200 text-sm" />
+            <input type="number" placeholder="Points Cost" value={newReward.pointsCost} onChange={e => setNewReward({...newReward, pointsCost: parseInt(e.target.value)})} className="p-3 border border-zinc-200 text-sm" />
+            <select value={newReward.minimumTierRequired} onChange={e => setNewReward({...newReward, minimumTierRequired: e.target.value})} className="p-3 border border-zinc-200 text-sm">
+              <option value="Rookie">Rookie</option>
+              <option value="Regular">Regular</option>
+              <option value="Legend">Legend</option>
+              <option value="Master">Master</option>
+              <option value="Icon">Icon</option>
+            </select>
+            <input type="number" placeholder="Stock" value={newReward.stockAvailable} onChange={e => setNewReward({...newReward, stockAvailable: parseInt(e.target.value)})} className="p-3 border border-zinc-200 text-sm" />
+          </div>
+          <button onClick={handleAddAsset} className="bg-black text-white px-8 py-3 text-[10px] uppercase tracking-widest font-bold">Save Asset</button>
+        </div>
+      )}
 
       <div className="overflow-x-auto border border-zinc-200">
         <table className="w-full text-left border-collapse min-w-[600px]">
@@ -294,19 +351,22 @@ function RewardsInventory() {
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-100">
-            {items.map((item) => (
+            {rewards.map((item) => (
               <tr key={item.id} className="hover:bg-zinc-50 transition-colors group cursor-pointer">
                 <td className="p-6 font-mono text-xs text-zinc-400">{item.id}</td>
-                <td className="p-6 font-medium text-sm">{item.name}</td>
-                <td className="p-6 text-sm text-zinc-400">{item.value}</td>
-                <td className="p-6 text-sm text-zinc-400">{item.stock}</td>
+                <td className="p-6 font-medium text-sm">{item.title}</td>
+                <td className="p-6 text-sm text-zinc-400">{item.pointsCost} pts</td>
+                <td className="p-6 text-sm text-zinc-400">{item.stockAvailable ?? 'Unlimited'}</td>
                 <td className="p-6">
                   <span className="text-[9px] uppercase tracking-tighter px-2 py-1 border border-zinc-200 text-zinc-500 font-bold">
-                    {item.status}
+                    {item.minimumTierRequired} Tier
                   </span>
                 </td>
               </tr>
             ))}
+            {rewards.length === 0 && (
+              <tr><td colSpan={5} className="p-6 text-center text-sm text-zinc-400">No assets registered.</td></tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -369,12 +429,15 @@ function EconomyControlCenter({ ratio, setRatio, multiplier, setMultiplier }: Ec
 }
 
 function FulfillmentHistory() {
-  const logs = [
-    { id: 'TX-9901', user: 'Julian Thorne', reward: 'Signature Cut', date: '2026-04-15 14:20', status: 'Fulfilled' },
-    { id: 'TX-9882', user: 'Elena Voss', reward: 'Luxury Shave', date: '2026-04-15 11:05', status: 'Fulfilled' },
-    { id: 'TX-9870', user: 'Marcus Aurelius', reward: 'Atelier Kit', date: '2026-04-14 18:45', status: 'Pending' },
-    { id: 'TX-9865', user: 'Sasha Grey', reward: 'Signature Cut', date: '2026-04-14 09:12', status: 'Fulfilled' },
-  ];
+  const [logs, setLogs] = useState<any[]>([]);
+
+  useEffect(() => {
+    // For demo purposes, we fetch user-123's logs. In reality, an admin endpoint should fetch all logs.
+    fetch(`${API_BASE}/gamification/activity/user-123`)
+      .then(r => r.json())
+      .then(d => setLogs(d))
+      .catch(e => console.error(e));
+  }, []);
 
   return (
     <div className="space-y-16">
@@ -394,20 +457,23 @@ function FulfillmentHistory() {
                 <CreditCard size={14} />
               </div>
               <div className="flex flex-col">
-                <p className="text-sm font-medium">{log.user}</p>
-                <p className="text-[10px] text-zinc-400 font-mono uppercase tracking-tight">{log.id} • {log.reward}</p>
+                <p className="text-sm font-medium">{log.description}</p>
+                <p className="text-[10px] text-zinc-400 font-mono uppercase tracking-tight">{log.actionType}</p>
               </div>
             </div>
             <div className="flex items-center gap-12">
-              <span className="text-[10px] text-zinc-400 font-mono">{log.date}</span>
+              <span className="text-[10px] text-zinc-400 font-mono">{new Date(log.timestamp).toLocaleString()}</span>
               <span className={`text-[9px] uppercase tracking-widest font-bold px-3 py-1 border ${
-                log.status === 'Fulfilled' ? 'border-green-200 text-green-600 bg-green-50/30' : 'border-zinc-200 text-zinc-400 bg-zinc-50'
+                log.pointsEarned < 0 ? 'border-green-200 text-green-600 bg-green-50/30' : 'border-zinc-200 text-zinc-400 bg-zinc-50'
               }`}>
-                {log.status}
+                {log.pointsEarned < 0 ? 'Redeemed' : 'Earned'}
               </span>
             </div>
           </div>
         ))}
+        {logs.length === 0 && (
+          <div className="p-6 bg-white text-center text-sm text-zinc-400">No activity logs found.</div>
+        )}
       </div>
     </div>
   );
