@@ -51,6 +51,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
             <a
               key={item}
               href={`#${item.toLowerCase()}`}
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById(item.toLowerCase())?.scrollIntoView({ behavior: 'smooth' });
+              }}
               className="hover:text-zinc-400 transition-colors duration-300 cursor-pointer"
             >
               {item}
@@ -86,7 +90,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
               key={item}
               href={`#${item.toLowerCase()}`}
               className="text-4xl font-serif italic lowercase tracking-tight hover:pl-4 transition-all duration-300"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={(e) => {
+                e.preventDefault();
+                setIsMenuOpen(false);
+                document.getElementById(item.toLowerCase())?.scrollIntoView({ behavior: 'smooth' });
+              }}
             >
               {item}
             </a>
@@ -220,6 +228,120 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
               </div>
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section id="services" className="py-24 px-6 md:px-12 bg-zinc-50 border-t border-zinc-200">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1 }}
+            className="mb-16 md:mb-24"
+          >
+            <span className="text-[10px] uppercase tracking-widest text-zinc-400 mb-4 block">The Menu</span>
+            <h2 className="font-serif text-5xl md:text-7xl font-light tracking-tighter">Curated Services</h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-24 gap-y-16">
+            {[
+              { title: "The Signature Cut", price: "$65", desc: "A bespoke architectural silhouette tailored to your exact structure. Includes wash and style." },
+              { title: "The Executive Shave", price: "$55", desc: "A traditional hot towel ritual. Straight razor precision combined with essential oil therapy." },
+              { title: "The Master Groom", price: "$110", desc: "The ultimate combined experience. Signature cut, executive shave, and scalp treatment." },
+              { title: "Beard Sculpting", price: "$35", desc: "Geometric refinement of facial hair to complement bone structure and enhance presentation." }
+            ].map((service, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: idx * 0.1 }}
+                className="group border-b border-zinc-200 pb-8 cursor-pointer"
+              >
+                <div className="flex justify-between items-end mb-4">
+                  <h3 className="font-serif text-2xl italic group-hover:pl-4 transition-all duration-300">{service.title}</h3>
+                  <span className="font-mono text-sm tracking-widest">{service.price}</span>
+                </div>
+                <p className="text-xs text-zinc-500 uppercase tracking-widest leading-relaxed max-w-sm">{service.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Experience Section */}
+      <section id="experience" className="py-24 md:py-40 px-6 md:px-12 bg-black text-white text-center">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
+          >
+            <span className="text-[10px] uppercase tracking-[0.4em] text-zinc-500 mb-8 block">Exclusive Access</span>
+            <h2 className="font-serif text-5xl md:text-8xl font-light italic tracking-tighter mb-12">
+              Beyond Grooming.
+            </h2>
+            <p className="text-lg text-zinc-400 font-light mb-16 leading-relaxed">
+              Step into the Atelier. Our members gain access to exclusive events, private collections, and the Hyecuts gamified economy. Elevate your status with every visit.
+            </p>
+            <button
+              onClick={() => setView('login')}
+              className="px-12 py-5 text-xs uppercase tracking-[0.2em] font-bold border border-white hover:bg-white hover:text-black transition-all duration-500"
+            >
+              Unlock The Lounge
+            </button>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="py-24 px-6 md:px-12 bg-white">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-24">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1 }}
+          >
+            <span className="text-[10px] uppercase tracking-widest text-zinc-400 mb-4 block">Location</span>
+            <h2 className="font-serif text-5xl md:text-7xl font-light tracking-tighter mb-12">The Studio</h2>
+            
+            <div className="space-y-8 font-sans text-sm uppercase tracking-widest text-zinc-500">
+              <div>
+                <p className="text-black font-bold mb-1">Address</p>
+                <p>124 Architectural Ave.<br />District 9, Metropolis 10012</p>
+              </div>
+              <div>
+                <p className="text-black font-bold mb-1">Hours</p>
+                <p>Tues - Sat: 10:00 — 20:00<br />Sun - Mon: Closed (Private Bookings)</p>
+              </div>
+              <div>
+                <p className="text-black font-bold mb-1">Direct Line</p>
+                <p>+1 (555) 890-1234<br />concierge@hyecuts.com</p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, delay: 0.2 }}
+            className="flex items-center justify-center bg-zinc-50 border border-zinc-100 p-12"
+          >
+             <div className="text-center">
+                <p className="font-serif text-3xl italic mb-6">Appointments are strictly managed.</p>
+                <button
+                  onClick={() => setView('login')}
+                  className="px-8 py-4 bg-black text-white text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-zinc-800 transition-all duration-500"
+                >
+                  Book Now
+                </button>
+             </div>
+          </motion.div>
         </div>
       </section>
 
