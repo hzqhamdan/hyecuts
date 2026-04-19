@@ -14,18 +14,18 @@
   }
 
   html.dark body {
-    @apply bg-zinc-950 text-zinc-100;
+    @apply bg-luxury-black text-zinc-100;
   }
 
   html.dark .bg-white {
-    @apply bg-zinc-900;
+    @apply bg-zinc-950;
   }
 
   html.dark .bg-zinc-50,
   html.dark .bg-zinc-100,
   html.dark .bg-neutral-50,
   html.dark .bg-neutral-100 {
-    @apply bg-zinc-800;
+    @apply bg-zinc-900;
   }
 
   html.dark .bg-white\/70 {
