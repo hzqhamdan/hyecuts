@@ -28,11 +28,11 @@
     @apply bg-zinc-800;
   }
 
-  html.dark .bg-white\\/70 {
+  html.dark .bg-white\/70 {
     background-color: rgb(24 24 27 / 0.7);
   }
 
-  html.dark .bg-white\\/80 {
+  html.dark .bg-white\/80 {
     background-color: rgb(24 24 27 / 0.8);
   }
 
@@ -42,7 +42,6 @@
 
   html.dark .text-zinc-500,
   html.dark .text-zinc-400,
-  html.dark .text-zinc-300,
   html.dark .text-zinc-200,
   html.dark .text-luxury-slate {
     @apply text-zinc-300;
@@ -52,27 +51,26 @@
   html.dark .border-zinc-100,
   html.dark .border-zinc-200,
   html.dark .border-black,
-  html.dark .border-black\\/10,
-  html.dark .border-black\\/20,
+  html.dark .border-black\/10,
+  html.dark .border-black\/20,
   html.dark .border-white,
-  html.dark .border-white\\/10 {
+  html.dark .border-white\/10 {
     @apply border-zinc-700;
   }
 
-  html.dark button.bg-black,
-  html.dark a.bg-black {
+  html.dark .bg-black {
     @apply bg-zinc-200 text-zinc-900;
   }
 
-  html.dark .hover\\:bg-black:hover {
+  html.dark .hover\:bg-black:hover {
     @apply bg-zinc-200 text-zinc-900;
   }
 
-  html.dark .hover\\:text-black:hover {
+  html.dark .hover\:text-black:hover {
     @apply text-zinc-100;
   }
 
-  html.dark .hover\\:border-black:hover {
+  html.dark .hover\:border-black:hover {
     @apply border-zinc-500;
   }
 
