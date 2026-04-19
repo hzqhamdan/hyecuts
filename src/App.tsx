@@ -7,7 +7,7 @@ import { useAuth } from './context/AuthContext';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Moon, Sun } from 'lucide-react';
 
-const THEME_STORAGE_KEY = 'hyecuts-theme';
+const THEME_STORAGE_KEY = 'hyecuts-theme-v2';
 
 function App() {
   const [view, setView] = useState<string>('facade');
