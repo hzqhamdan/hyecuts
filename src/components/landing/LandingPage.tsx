@@ -284,7 +284,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
             <h2 className="font-serif text-5xl md:text-8xl font-light italic tracking-tighter mb-12">
               Beyond Grooming.
             </h2>
-            <p className="text-lg text-zinc-900 font-light mb-16 leading-relaxed">
+            <p className="text-lg text-[#000000] font-light mb-16 leading-relaxed">
               Step into the Atelier. Our members gain access to exclusive events, private collections, and the Hyecuts gamified economy. Elevate your status with every visit.
             </p>
             <button
