@@ -1,9 +1,11 @@
 package com.hyecuts.loyalty.controller;
 
-import com.hyecuts.loyalty.model.LoyaltyProfile;
+import com.hyecuts.loyalty.model.User;
 import com.hyecuts.loyalty.service.LoyaltyService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/loyalty")
@@ -16,19 +18,18 @@ public class LoyaltyController {
     }
 
     @GetMapping("/profile/{userId}")
-    public ResponseEntity<LoyaltyProfile> getProfile(@PathVariable String userId) {
-        return ResponseEntity.ok(loyaltyService.getOrCreateProfile(userId));
+    public ResponseEntity<User> getProfile(@PathVariable UUID userId) {
+        return ResponseEntity.ok(loyaltyService.getUser(userId));
     }
 
     @PostMapping("/earn/{userId}")
-    public ResponseEntity<LoyaltyProfile> earnPoints(@PathVariable String userId, @RequestParam int points) {
-        // Here we could add logic to ensure points come from a trusted source (e.g. appointment completion event)
-        LoyaltyProfile updatedProfile = loyaltyService.addPoints(userId, points);
-        return ResponseEntity.ok(updatedProfile);
+    public ResponseEntity<User> earnPoints(@PathVariable UUID userId, @RequestParam int points) {
+        User updatedUser = loyaltyService.addPoints(userId, points);
+        return ResponseEntity.ok(updatedUser);
     }
     
     @PostMapping("/redeem/{userId}")
-    public ResponseEntity<String> redeemPoints(@PathVariable String userId, @RequestParam int cost) {
+    public ResponseEntity<String> redeemPoints(@PathVariable UUID userId, @RequestParam int cost) {
         boolean success = loyaltyService.redeemPoints(userId, cost);
         if (success) {
             return ResponseEntity.ok("Points redeemed successfully");

@@ -1,32 +1,33 @@
 package com.hyecuts.loyalty.service;
 
-import com.hyecuts.loyalty.model.Reward;
-import com.hyecuts.loyalty.model.RewardRedemption;
-import com.hyecuts.loyalty.model.ActivityLog;
-import com.hyecuts.loyalty.repository.RewardRepository;
-import com.hyecuts.loyalty.repository.RewardRedemptionRepository;
-import com.hyecuts.loyalty.repository.ActivityLogRepository;
+import com.hyecuts.loyalty.model.*;
+import com.hyecuts.loyalty.repository.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class RewardService {
 
     private final RewardRepository rewardRepository;
-    private final RewardRedemptionRepository redemptionRepository;
+    private final VoucherRepository voucherRepository;
     private final LoyaltyService loyaltyService;
     private final ActivityLogRepository activityLogRepository;
+    private final UserRepository userRepository;
 
     public RewardService(RewardRepository rewardRepository, 
-                         RewardRedemptionRepository redemptionRepository, 
+                         VoucherRepository voucherRepository, 
                          LoyaltyService loyaltyService,
-                         ActivityLogRepository activityLogRepository) {
+                         ActivityLogRepository activityLogRepository,
+                         UserRepository userRepository) {
         this.rewardRepository = rewardRepository;
-        this.redemptionRepository = redemptionRepository;
+        this.voucherRepository = voucherRepository;
         this.loyaltyService = loyaltyService;
         this.activityLogRepository = activityLogRepository;
+        this.userRepository = userRepository;
     }
 
     public List<Reward> getAllRewards() {
@@ -37,58 +38,58 @@ public class RewardService {
         return rewardRepository.save(reward);
     }
 
-    public String redeemReward(String userId, Long rewardId) {
+    @Transactional
+    public String redeemReward(UUID userId, UUID rewardId) {
         Optional<Reward> optReward = rewardRepository.findById(rewardId);
-        
-        if (optReward.isEmpty()) {
-            return "Reward not found";
-        }
+        if (optReward.isEmpty()) return "Reward not found";
         
         Reward reward = optReward.get();
+        if (reward.getStockCount() != null && reward.getStockCount() <= 0) return "Out of stock";
 
-        if (reward.getStockAvailable() != null && reward.getStockAvailable() <= 0) {
-            return "Out of stock";
-        }
+        User user = loyaltyService.getUser(userId);
 
         // Deduct points
         boolean isRedeemed = loyaltyService.redeemPoints(userId, reward.getPointsCost());
-        
-        if (!isRedeemed) {
-            return "Insufficient points or tier requirement not met";
-        }
+        if (!isRedeemed) return "Insufficient points";
 
         // Update stock
-        if (reward.getStockAvailable() != null) {
-            reward.setStockAvailable(reward.getStockAvailable() - 1);
+        if (reward.getStockCount() != null) {
+            reward.setStockCount(reward.getStockCount() - 1);
             rewardRepository.save(reward);
         }
 
-        // Create Redemption Record
-        RewardRedemption redemption = new RewardRedemption(userId, rewardId, reward.getPointsCost(), "PENDING");
-        redemptionRepository.save(redemption);
+        // Create Voucher
+        Voucher voucher = new Voucher();
+        voucher.setId("V-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        voucher.setUser(user);
+        voucher.setReward(reward);
+        voucher.setStatus(Voucher.VoucherStatus.ACTIVE);
+        voucherRepository.save(voucher);
 
         // Log Activity
-        ActivityLog log = new ActivityLog(userId, "REWARD_REDEEMED", "Redeemed " + reward.getTitle(), -reward.getPointsCost());
+        ActivityLog log = new ActivityLog();
+        log.setUser(user);
+        log.setActionType(ActivityLog.TransactionType.REWARD_REDEMPTION);
+        log.setDescription("Redeemed: " + reward.getTitle());
+        log.setPointsEarned(-reward.getPointsCost());
         activityLogRepository.save(log);
 
         return "SUCCESS";
     }
 
-    public List<RewardRedemption> getUserRedemptions(String userId) {
-        return redemptionRepository.findByUserId(userId);
+    public List<Voucher> getUserVouchers(UUID userId) {
+        return voucherRepository.findByUser_Id(userId);
     }
 
-    public List<RewardRedemption> getAllRedemptions() {
-        return redemptionRepository.findAll();
+    public List<Voucher> getAllVouchers() {
+        return voucherRepository.findAll();
     }
 
-    public RewardRedemption fulfillRedemption(Long redemptionId) {
-        Optional<RewardRedemption> opt = redemptionRepository.findById(redemptionId);
-        if (opt.isPresent()) {
-            RewardRedemption redemption = opt.get();
-            redemption.setStatus("FULFILLED");
-            return redemptionRepository.save(redemption);
-        }
-        throw new RuntimeException("Redemption not found");
+    public Voucher fulfillVoucher(String voucherId) {
+        Voucher voucher = voucherRepository.findById(voucherId)
+                .orElseThrow(() -> new RuntimeException("Voucher not found"));
+        voucher.setStatus(Voucher.VoucherStatus.REDEEMED);
+        voucher.setRedeemedAt(java.time.LocalDateTime.now());
+        return voucherRepository.save(voucher);
     }
 }

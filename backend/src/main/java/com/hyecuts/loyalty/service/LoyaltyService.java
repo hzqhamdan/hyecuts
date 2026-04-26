@@ -1,56 +1,65 @@
 package com.hyecuts.loyalty.service;
 
-import com.hyecuts.loyalty.model.LoyaltyProfile;
-import com.hyecuts.loyalty.repository.LoyaltyProfileRepository;
+import com.hyecuts.loyalty.model.Tier;
+import com.hyecuts.loyalty.model.User;
+import com.hyecuts.loyalty.repository.TierRepository;
+import com.hyecuts.loyalty.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class LoyaltyService {
 
-    private final LoyaltyProfileRepository repository;
+    private final UserRepository userRepository;
+    private final TierRepository tierRepository;
 
-    public LoyaltyService(LoyaltyProfileRepository repository) {
-        this.repository = repository;
+    public LoyaltyService(UserRepository userRepository, TierRepository tierRepository) {
+        this.userRepository = userRepository;
+        this.tierRepository = tierRepository;
     }
 
-    public LoyaltyProfile getOrCreateProfile(String userId) {
-        return repository.findByUserId(userId).orElseGet(() -> {
-            LoyaltyProfile newProfile = new LoyaltyProfile(userId);
-            return repository.save(newProfile);
-        });
+    public User getUser(UUID userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public LoyaltyProfile addPoints(String userId, int points) {
-        LoyaltyProfile profile = getOrCreateProfile(userId);
-        profile.setPointsBalance(profile.getPointsBalance() + points);
+    @Transactional
+    public User addPoints(UUID userId, int points) {
+        User user = getUser(userId);
+        user.setCurrentPoints(user.getCurrentPoints() + points);
+        user.setLifetimePoints(user.getLifetimePoints() + points);
         
-        updateTier(profile);
+        updateTier(user);
         
-        return repository.save(profile);
+        return userRepository.save(user);
     }
 
-    private void updateTier(LoyaltyProfile profile) {
-        int pts = profile.getPointsBalance();
-        // Dynamic Tier Thresholds
-        if (pts >= 10000) {
-            profile.setCurrentTier("Icon");
-        } else if (pts >= 5000) {
-            profile.setCurrentTier("Master");
-        } else if (pts >= 2500) {
-            profile.setCurrentTier("Legend");
-        } else if (pts >= 1000) {
-            profile.setCurrentTier("Regular");
-        } else {
-            profile.setCurrentTier("Rookie");
+    @Transactional
+    public void updateTier(User user) {
+        int pts = user.getLifetimePoints();
+        List<Tier> tiers = tierRepository.findAll();
+        
+        // Find the highest tier where points_required <= user's lifetime points
+        Tier bestTier = tiers.stream()
+                .filter(t -> t.getPointsRequired() <= pts)
+                .max(Comparator.comparingInt(Tier::getPointsRequired))
+                .orElse(null);
+
+        if (bestTier != null) {
+            user.setTier(bestTier);
         }
     }
     
-    // Method to deduct points (for rewards)
-    public boolean redeemPoints(String userId, int cost) {
-        LoyaltyProfile profile = getOrCreateProfile(userId);
-        if (profile.getPointsBalance() >= cost) {
-            profile.setPointsBalance(profile.getPointsBalance() - cost);
-            repository.save(profile);
+    @Transactional
+    public boolean redeemPoints(UUID userId, int cost) {
+        User user = getUser(userId);
+        if (user.getCurrentPoints() >= cost) {
+            user.setCurrentPoints(user.getCurrentPoints() - cost);
+            userRepository.save(user);
             return true;
         }
         return false;

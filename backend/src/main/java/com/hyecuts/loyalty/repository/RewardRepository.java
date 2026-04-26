@@ -1,4 +1,7 @@
-﻿package com.hyecuts.loyalty.repository;
+package com.hyecuts.loyalty.repository;
+
 import com.hyecuts.loyalty.model.Reward;
 import org.springframework.data.jpa.repository.JpaRepository;
-public interface RewardRepository extends JpaRepository<Reward, Long> {}
+import java.util.UUID;
+
+public interface RewardRepository extends JpaRepository<Reward, UUID> {}

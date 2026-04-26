@@ -13,6 +13,7 @@ import com.hyecuts.loyalty.repository.UserMissionProgressRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class GamificationService {
@@ -39,20 +40,20 @@ public class GamificationService {
         return badgeRepository.findAll();
     }
     
-    public List<UserBadge> getUserBadges(String userId) {
-        return userBadgeRepository.findByUserId(userId);
+    public List<UserBadge> getUserBadges(UUID userId) {
+        return userBadgeRepository.findByUser_Id(userId);
     }
     
     public List<Mission> getMissionsByType(String type) {
         return missionRepository.findByType(type);
     }
 
-    public List<UserMissionProgress> getUserMissions(String userId) {
-        return userMissionProgressRepository.findByUserId(userId);
+    public List<UserMissionProgress> getUserMissions(UUID userId) {
+        return userMissionProgressRepository.findByUser_Id(userId);
     }
 
-    public List<ActivityLog> getUserActivity(String userId) {
-        return activityLogRepository.findByUserIdOrderByTimestampDesc(userId);
+    public List<ActivityLog> getUserActivity(UUID userId) {
+        return activityLogRepository.findByUser_IdOrderByTimestampDesc(userId);
     }
 
     public List<ActivityLog> getAllActivityLogs() {

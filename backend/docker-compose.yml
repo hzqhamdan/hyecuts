@@ -7,9 +7,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: loyalty_db
-      POSTGRES_USER: loyalty_user
-      POSTGRES_PASSWORD: loyalty_password
+      POSTGRES_DB: hyecuts
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: casillas1
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped

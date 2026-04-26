@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/gamification")
@@ -33,7 +34,7 @@ public class GamificationController {
     }
 
     @GetMapping("/badges/{userId}")
-    public ResponseEntity<List<UserBadge>> getUserBadges(@PathVariable String userId) {
+    public ResponseEntity<List<UserBadge>> getUserBadges(@PathVariable UUID userId) {
         return ResponseEntity.ok(gamificationService.getUserBadges(userId));
     }
 
@@ -49,13 +50,13 @@ public class GamificationController {
     }
 
     @GetMapping("/missions/{userId}")
-    public ResponseEntity<List<UserMissionProgress>> getUserMissions(@PathVariable String userId) {
+    public ResponseEntity<List<UserMissionProgress>> getUserMissions(@PathVariable UUID userId) {
         return ResponseEntity.ok(gamificationService.getUserMissions(userId));
     }
 
     // Activity History endpoint
     @GetMapping("/activity/{userId}")
-    public ResponseEntity<List<ActivityLog>> getUserActivity(@PathVariable String userId) {
+    public ResponseEntity<List<ActivityLog>> getUserActivity(@PathVariable UUID userId) {
         return ResponseEntity.ok(gamificationService.getUserActivity(userId));
     }
 }

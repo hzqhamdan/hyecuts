@@ -1,12 +1,13 @@
 package com.hyecuts.loyalty.controller;
 
 import com.hyecuts.loyalty.model.Reward;
-import com.hyecuts.loyalty.model.RewardRedemption;
+import com.hyecuts.loyalty.model.Voucher;
 import com.hyecuts.loyalty.service.RewardService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/rewards")
@@ -29,7 +30,7 @@ public class RewardController {
     }
 
     @PostMapping("/redeem/{userId}/{rewardId}")
-    public ResponseEntity<String> redeemReward(@PathVariable String userId, @PathVariable Long rewardId) {
+    public ResponseEntity<String> redeemReward(@PathVariable UUID userId, @PathVariable UUID rewardId) {
         String result = rewardService.redeemReward(userId, rewardId);
         if ("SUCCESS".equals(result)) {
             return ResponseEntity.ok("Reward redeemed successfully");
@@ -37,8 +38,8 @@ public class RewardController {
         return ResponseEntity.badRequest().body(result);
     }
 
-    @GetMapping("/redemptions/{userId}")
-    public ResponseEntity<List<RewardRedemption>> getUserRedemptions(@PathVariable String userId) {
-        return ResponseEntity.ok(rewardService.getUserRedemptions(userId));
+    @GetMapping("/vouchers/{userId}")
+    public ResponseEntity<List<Voucher>> getUserVouchers(@PathVariable UUID userId) {
+        return ResponseEntity.ok(rewardService.getUserVouchers(userId));
     }
 }

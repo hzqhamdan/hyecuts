@@ -1,10 +1,10 @@
 package com.hyecuts.loyalty.service;
 
+import com.hyecuts.loyalty.model.ActivityLog;
 import com.hyecuts.loyalty.model.Booking;
-import com.hyecuts.loyalty.model.PointTransaction;
 import com.hyecuts.loyalty.model.User;
+import com.hyecuts.loyalty.repository.ActivityLogRepository;
 import com.hyecuts.loyalty.repository.BookingRepository;
-import com.hyecuts.loyalty.repository.PointTransactionRepository;
 import com.hyecuts.loyalty.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,17 +20,16 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final GlobalSettingsService globalSettingsService;
     private final UserRepository userRepository;
-    private final PointTransactionRepository pointTransactionRepository;
-    // Assuming GamificationService or LoyaltyService later if needed for tiers
+    private final ActivityLogRepository activityLogRepository;
 
     public BookingService(BookingRepository bookingRepository,
                           GlobalSettingsService globalSettingsService,
                           UserRepository userRepository,
-                          PointTransactionRepository pointTransactionRepository) {
+                          ActivityLogRepository activityLogRepository) {
         this.bookingRepository = bookingRepository;
         this.globalSettingsService = globalSettingsService;
         this.userRepository = userRepository;
-        this.pointTransactionRepository = pointTransactionRepository;
+        this.activityLogRepository = activityLogRepository;
     }
 
     public Booking createBooking(Booking booking) {
@@ -71,13 +70,13 @@ public class BookingService {
         user.setLifetimePoints(user.getLifetimePoints() + calculatedPoints);
         userRepository.save(user);
 
-        // Log transaction
-        PointTransaction transaction = new PointTransaction();
-        transaction.setUser(user);
-        transaction.setAmount(calculatedPoints);
-        transaction.setTransactionType(PointTransaction.TransactionType.BOOKING);
-        transaction.setDescription("Points earned for completing " + booking.getService().getName());
-        pointTransactionRepository.save(transaction);
+        // Log activity
+        ActivityLog log = new ActivityLog();
+        log.setUser(user);
+        log.setPointsEarned(calculatedPoints);
+        log.setActionType(ActivityLog.TransactionType.BOOKING);
+        log.setDescription("Points earned for completing " + booking.getService().getName());
+        activityLogRepository.save(log);
 
         return bookingRepository.save(booking);
     }

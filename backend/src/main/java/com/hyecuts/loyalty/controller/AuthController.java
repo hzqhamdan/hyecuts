@@ -53,13 +53,13 @@ public class AuthController {
         }
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.username);
-        Optional<User> optUser = userRepository.findByUsername(authRequest.username);
+        Optional<User> optUser = userRepository.findByEmail(authRequest.username);
         
         if (optUser.isPresent()) {
-            final String jwt = jwtUtil.generateToken(userDetails.getUsername(), optUser.get().getId());
-            Map<String, String> response = new HashMap<>();
+            final String jwt = jwtUtil.generateToken(userDetails.getUsername(), optUser.get().getId().toString());
+            Map<String, Object> response = new HashMap<>();
             response.put("token", jwt);
-            response.put("userId", optUser.get().getId());
+            response.put("userId", optUser.get().getId().toString());
             response.put("role", optUser.get().getRole());
             return ResponseEntity.ok(response);
         }
@@ -68,18 +68,20 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody AuthRequest authRequest) {
-        if (userRepository.findByUsername(authRequest.username).isPresent()) {
-            return ResponseEntity.badRequest().body("Username is already taken");
+        if (userRepository.findByEmail(authRequest.username).isPresent()) {
+            return ResponseEntity.badRequest().body("Email is already taken");
         }
 
-        User newUser = new User(authRequest.username, passwordEncoder.encode(authRequest.password), "ROLE_USER");
+        User newUser = new User();
+        newUser.setEmail(authRequest.username);
+        newUser.setPasswordHash(passwordEncoder.encode(authRequest.password));
+        newUser.setRole("ROLE_USER");
         User savedUser = userRepository.save(newUser);
 
-        // Optional: you can automatically log them in
-        final String jwt = jwtUtil.generateToken(authRequest.username, savedUser.getId());
-        Map<String, String> response = new HashMap<>();
+        final String jwt = jwtUtil.generateToken(authRequest.username, savedUser.getId().toString());
+        Map<String, Object> response = new HashMap<>();
         response.put("token", jwt);
-        response.put("userId", savedUser.getId());
+        response.put("userId", savedUser.getId().toString());
         response.put("role", savedUser.getRole());
 
         return ResponseEntity.ok(response);
