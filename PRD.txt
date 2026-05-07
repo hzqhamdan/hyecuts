@@ -1,65 +1,155 @@
-PRD: "The Studio" | Enterprise Minimalist Loyalty Ecosystem
-1. Project Overview
-Objective: Create a sophisticated, ultra-minimalist web experience for a premium barbershop. The platform serves as a digital "Memberâ€™s Club" where high-end branding meets a frictionless loyalty economy.
 
-Aesthetic Directive: High-fashion minimalism. No clichÃ© barber imagery. Neutral tones, sophisticated serifs, and expansive whitespace.
+THE STUDIO
+Revised Product Requirements Document
+v2.0  ·  Conflict-Resolved Edition
 
-2. Aesthetic & UX Framework
-The "Luxury Edit" UI:
+What changed and why
+This document supersedes the original PRD and functional requirements. It resolves four documented conflicts between the brand aesthetic and the gamification scope, closes six critical gaps, and adds compliance and architectural guardrails. Every change is explained so the team understands not just what to build, but why.
 
-Palette: Monochrome (True Black, Paper White, Soft Slate) with a single, muted metallic or earth-tone accent.
+1. Project Vision & Scope (Revised)
+The Studio is a premium digital membership platform for a high-end barbershop. It serves two simultaneous purposes: brand perception (positioning the shop as a creative studio, not a transactional service) and member retention (a loyalty engine that rewards repeat visits).
 
-Typography: A high-contrast pairing of a "Display" Serif (e.g., Playfair Display or Bodoni) for headings and a clean, wide-tracked Sans-Serif (e.g., Inter or Montserrat) for body text.
+DECISIONThe brand aesthetic is the container. Every gamification element must be rendered to fit inside it — not the reverse. If a feature cannot be presented in a minimalist, typographic way, it is either redesigned or deferred.
+This decision was made to resolve the fundamental tension between the original PRD's 'zero visual clutter' directive and the functional requirements' badge grids, streak counters, and leaderboards. Both goals are achievable — but aesthetic must take precedence in every design dispute.
 
-Imagery: If used, photography should be abstract or high-fashion portraiture (macro shots of textures, architectural lines) rather than standard shop interior shots.
+1.1 What We Are Building
+– A public-facing landing page that functions as a brand statement and member entry point.
+– A private Member Lounge where members track their status, complete challenges, and redeem rewards — all within a restrained, editorial UI.
+– An admin Atelier Dashboard for reward management, point adjustments, and redemption validation.
+– A points and tier engine backed by Firebase, with atomic transaction guarantees.
 
-Interaction Design:
+1.2 What Is Explicitly Out of Scope (v1)
+– Booking system: The Studio does not build or own a booking platform in v1. Integration with a third-party scheduler is defined in Section 4.
+– Native mobile app: The web app must work on mobile browsers; a native app is a v2 consideration.
+– Multi-location: The architecture must not preclude multi-location in v2, but v1 is single-branch.
+– Leaderboards: Deferred to v2. Public ranking creates social risk inconsistent with the premium brand.
 
-Staggered Reveals: Content fades in elegantly using Framer Motion.
 
-Micro-Gestures: Haptic-like feedback on buttons and smooth, eased transitions between the brand layer and the loyalty lounge.
+2. Conflict Resolutions
+The following table documents each identified conflict between the original PRD and functional requirements, the decision made, and who owns that decision in the product process.
 
-3. Functional Requirements: Client Side
-3.1 The Digital Facade (Landing)
-Minimalist Entry: A "Hero" section consisting only of the shop name, a single high-concept sentence, and a "Member Entry" CTA.
+AspectOld DirectionResolved DirectionOwnerAesthetic vs. GamificationFunctional req. lists badge grids, animations, streak countersGamification is present but rendered in the Studio visual language. No confetti. No badge grids. See Section 3 for UI rules.Design LeadStatus vs. PointsPRD says 'status not points'; func. req. shows big $ points balanceMembers see a Tier name and a single progress arc. Points are visible in the activity log only — not the hero stat.Product LeadNotifications vs. MinimalismFunc. req. lists 9+ push/email/in-app triggersMax 3 push types (tier upgrade, reward expiring, birthday). All others are email-only, opt-in. In-app: none.Product LeadSocial Check-in as TriggerFunc. req. rewards social media shares for pointsRemoved from v1. User-generated content is uncontrolled and risks the brand. Replace with 'Review after service'.Marketing Lead
 
-Navigation: A "Ghost" header that only appears on scroll-up, keeping the visual field clear.
+3. Aesthetic & UX Framework (Revised)
+3.1 The Non-Negotiable Design Rules
+These rules apply to every screen in the product. They are not suggestions — they are constraints.
 
-3.2 The Member Lounge (Loyalty)
-Status, Not Points: Users don't "collect points"; they "attain status."
+– Monochrome. Palette:
+True Black (#1A1A1A), Paper White (#FAFAFA), Soft Slate (#6B6B6B). One accent: a warm, muted gold (#B8A070) used exclusively for tier status indicators and active CTAs. Never used decoratively.
 
-Visual: An elegant, thin horizontal line or a circular "halo" that fills as they progress.
+– Two typefaces maximum. Typography:
+Display Serif (Playfair Display or Cormorant Garamond) for tier names, headings, and reward titles only. Wide-tracked Sans-Serif (Inter, tracking +0.06em) for all UI text, labels, and body copy. No mixing within a single UI element.
 
-The "Collection" (Rewards): A minimalist grid of rewards. Each reward is presented as a high-end "Product Card" with minimal text.
+– Generous. Spacing:
+Minimum 48px vertical rhythm between sections. Content width capped at 640px on member-facing screens. The whitespace is part of the product, not wasted space.
 
-Voucher Aesthetics: Digital vouchers designed to look like a physical invitation or a premium membership card, including a minimalist QR code.
+– Purposeful. Motion:
+Framer Motion is used for three interactions only: page-level fade-in on initial load (400ms, ease-out), the tier progress arc animation on dashboard mount (800ms, spring), and the reward card reveal on scroll (200ms stagger per card). No other animations.
 
-4. Functional Requirements: Admin Side (Reward Management)
-4.1 The Atelier Dashboard
-Inventory Control: A clean list-view to manage the "Rewards Collection."
+3.2 How Gamification Elements Are Rendered
+Each gamification feature from the functional requirements is redesigned here to fit the Studio aesthetic:
 
-Fields: Title, Tier Requirement, Description, and Availability.
+TIER DISPLAYThe tier name is displayed in Display Serif at 32px. Below it, a single hairline arc (SVG, 1px stroke, gold fill) shows progress to the next tier. No percentage numbers. No point totals. The arc speaks for itself.
+BADGESDisplayed as a horizontal 'collection' of minimal monogram-style marks — not colourful icons. Maximum 5 badges visible at once. Rare badges use the gold accent. The grid view is accessed via a secondary 'View Collection' link, not shown by default.
+MISSIONSPresented as a clean checklist under the heading 'This Week.' Maximum 3 active missions visible at once. Completed missions are struck through with a single line and fade to 30% opacity. No progress bars on individual missions.
+STREAKDisplayed as a number only: '4-week streak.' No fire icons. No animations. Placed in the activity section, not the hero.
 
-Redemption Protocol:
+4. Functional Requirements (Gap-Closed)
+4.1 Booking Integration (Critical Gap — Resolved)
+The points engine requires a verified service completion event. The Studio does not build a booking system in v1. The following integration model is required:
 
-The "Validator": A simple, one-field input for Voucher IDs or a built-in camera scanner for QR codes.
+– The admin marks a service as 'Completed' in the Atelier Dashboard for a named member.
+– This triggers the points award via a Firestore-backed Cloud Function.
+– If a third-party booking system (e.g., Booksy, Fresha, Square Appointments) is adopted, it must expose a webhook that maps to the same Cloud Function.
+– The integration point is documented in the Technical Architecture (separate document). The booking provider decision does not block frontend development.
 
-Fulfillment History: A minimalist table tracking which rewards were granted and when, filterable by date.
+NOTEManual completion marking by admin is the v1 default. It is intentionally simple. The webhook integration is designed but only activated when a booking platform is confirmed.
+4.2 Points System
+– Service completion (primary trigger): Points awarded by admin confirmation or booking webhook.
+– First booking bonus: +50 points, awarded once per account lifetime.
+– Birthday bonus: +100 points, awarded in the member's birthday month. Requires verified birth month, not full date (privacy).
+– Review after service: +25 points. Validated by admin — no automated social scraping.
+– Referral: +75 points to referrer when referee completes first paid service. +25 points to referee. Minimum 7-day delay before referee points unlock (anti-abuse).
+– Spending threshold: +150 bonus points when cumulative spend in a rolling 90-day window exceeds the configured threshold (admin-settable, default: MYR 300).
 
-Point Architecture:
+REMOVEDSocial media check-in / share as a points trigger is removed from v1. See Section 2 conflict resolution.
+4.3 Tier System
+Five tiers. Tier names use the Studio vocabulary — aspirational, not gamified:
 
-The "Economy" Switch: An admin toggle to adjust point-per-visit ratios or seasonal multipliers.
+TierPoints RequiredService DiscountPriority BookingMonthly BonusInitiate0—No—Member25010%No25 ptsArtisan75015%Yes50 ptsConnoisseur200020%Yes (48hr)75 ptsPatron500025%Yes (72hr)100 pts
+DOWNGRADE POLICYIf a member earns zero points in a rolling 180-day window, they are demoted one tier. They receive an email notification 30 days before demotion. This is configurable via admin toggle.
+4.4 Voucher & Redemption Security (Critical Gap — Resolved)
+– Every voucher has a unique UUID, a single-use flag, and a 30-day expiry by default (configurable per reward).
+– On scan or ID entry, the server checks: (a) voucher exists, (b) belongs to the presenting member, (c) has not been redeemed, (d) has not expired.
+– Redemption is a Firestore atomic transaction. The voucher status is updated to 'REDEEMED' with a timestamp and staff ID before any fulfillment action.
+– QR codes are not static image files — they are generated server-side on each dashboard load and signed with a short-lived HMAC. A screenshot of a QR code expires with the session.
 
-5. Technical Architecture
-Frontend: React/Vite + Tailwind CSS.
+4.5 Referral Abuse Prevention (Critical Gap — Resolved)
+– Email verification is required before any referral points are credited.
+– A device fingerprint (browser fingerprinting via FingerprintJS) flags accounts created from the same device within 30 days.
+– The referee must complete a paid service (not just register) before either party earns points.
+– The 7-day unlock delay applies to both parties.
+– Admin dashboard shows a 'Referral Risk' flag on accounts with 3+ referrals from the same device or IP subnet.
 
-Styling: Custom @layer utilities in Tailwind to maintain strict minimalist spacing rules.
+4.6 Points Expiry (Missing — Added)
+– Points expire after 12 months of account inactivity (no points earned or redeemed) by default.
+– Members receive an email warning 60 days and 14 days before expiry.
+– Expiry window and warning schedule are configurable in admin settings.
+– Expired points are logged in the fulfillment history for audit purposes — they are never silently deleted.
 
-Backend: Firebase (Auth for member login, Firestore for the reward engine).
+4.7 Account Recovery (Missing — Added)
+– Password reset via email link (Firebase Auth built-in).
+– If a member signed up via Google or Apple and loses access to that account, they can verify identity via email + last 4 digits of a recorded phone number and request manual account transfer by admin.
+– Loyalty history, points, and tier are tied to the member UID — they survive an email change.
 
-Performance: All assets served via CDN to ensure the "snappiness" expected of a premium enterprise app.
+4.8 Notification Policy (Conflict — Resolved)
+Push notifications are limited to three triggers only:
+– Tier upgrade — sent immediately on upgrade event.
+– Reward expiring soon — sent 7 days before a redeemed-but-unused voucher expires.
+– Birthday reward — sent on the first day of the member's birthday month.
 
-6. Success Definition
-Brand Perception: The website acts as a filter, positioning the shop as a premium "Studio" rather than a "Barbershop."
+All other notifications (points earned, mission completed, new challenge) are delivered via a weekly digest email, sent every Monday. In-app notification banners are not used in v1 — the Member Lounge activity feed serves this purpose.
 
-Frictionless Loyalty: Members can check their status in under 3 seconds with zero visual clutter.
+4.9 Reward Inventory Management (Missing — Added)
+– Physical rewards (merchandise) have a stock count field. When stock reaches zero, the reward is automatically marked 'Unavailable' in the member-facing catalogue.
+– Admin receives an in-dashboard alert when any physical reward has 3 or fewer units remaining.
+– Members who attempt to redeem an out-of-stock reward see a 'Currently unavailable' state — no error, no friction, just a clear status.
+
+
+5. Compliance (Critical Gap — Resolved)
+5.1 PDPA Malaysia (Personal Data Protection Act 2010)
+LEGAL REQUIREMENTThe Studio collects names, email addresses, birth months, purchase history, and device data. This is personal data under PDPA 2010. Compliance is not optional.
+– A consent screen is shown on first registration, explicitly stating what data is collected, how it is used, and who it is shared with (Firebase / Google infrastructure only).
+– Members can download their data as a JSON export from their profile settings.
+– Members can delete their account and all associated data. Deletion is permanent within 30 days and irreversible.
+– Device fingerprinting data (used for referral fraud detection) is hashed and retained for 90 days only.
+– The privacy policy is linked from every page footer and from the consent screen. It is written in plain English and Bahasa Malaysia.
+
+5.2 Data Minimisation
+– Birthday: Only birth month and year are collected — not full date. This satisfies the birthday bonus trigger while reducing sensitivity.
+– Phone number: Optional, used only for account recovery. Not shared or used for marketing.
+– Social media: Not collected. The social check-in feature has been removed.
+
+
+6. Success Metrics (Revised)
+
+MetricTarget (6 months)MeasurementMember registration rate60% of new clients registerFirebase Auth new users / admin service recordsLoyalty dashboard load time< 2 seconds on 4GLighthouse + real user monitoringTier 2+ attainment30% of registered members reach ArtisanFirestore tier distribution queryReward redemption rate> 15% of eligible members redeem per monthFulfillment history reportReferral conversion> 20% of referred leads complete first serviceReferral ledger trackingPush opt-in rate> 40% of members opt into pushFirebase messaging analytics
+
+Appendix: Decision Log
+Every major decision made in this document is recorded below with rationale, so future contributors understand intent.
+
+– Decision: D-01: Leaderboards deferred to v2.
+Public rankings are inconsistent with the premium, private-club aesthetic. They also create social risk (public shaming of low-engagement members). Revisit when the member base exceeds 500.
+
+– Decision: D-02: Social check-in removed.
+User-generated content is inherently off-brand. The Studio's visual identity cannot survive uncontrolled Instagram posts. Replace with a curated 'Styled by The Studio' gallery managed by the shop — a separate marketing initiative, not a product feature.
+
+– Decision: D-03: Push limited to 3 types.
+A luxury product should never feel like it is pestering its members. Three push types are the maximum that can be justified as high-signal. All others are opt-in email.
+
+– Decision: D-04: Points not surfaced as the hero stat.
+Points are a mechanism, not the brand. The member's tier is the brand. Points are visible in the activity log for transparency, but they are not the first thing a member sees. This is consistent with how Amex and high-end hotel programmes present membership.
+THE STUDIO  ·  Revised Product Requirements Document  ·  Confidential
+
+Page 1 of 2
+

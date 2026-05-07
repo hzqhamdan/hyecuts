@@ -6,6 +6,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   flyway:
     enabled: false
+    baseline-on-migrate: true
   jpa:
     hibernate:
       ddl-auto: update

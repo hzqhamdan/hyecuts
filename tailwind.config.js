@@ -8,24 +8,22 @@ export default {
   theme: {
     extend: {
       colors: {
-        luxury: {
-          black: '#000000',
-          white: '#FFFFFF',
-          slate: '#707070',
-          metallic: '#A8A29E', // Muted metallic accent
-          earth: '#5C5346',    // Earth-tone alternative
+        studio: {
+          black: '#1A1A1A',
+          white: '#FAFAFA',
+          slate: '#6B6B6B',
+          gold: '#B8A070',
         },
       },
       fontFamily: {
         display: ['"Playfair Display"', 'serif'],
         sans: ['"Inter"', 'sans-serif'],
       },
+      letterSpacing: {
+        studio: '0.06em',
+      },
       spacing: {
-        'luxury-xs': '0.5rem',
-        'luxury-sm': '1rem',
-        'luxury-md': '2rem',
-        'luxury-lg': '4rem',
-        'luxury-xl': '8rem',
+        '12': '3rem', // 48px vertical rhythm minimum base
       },
     },
   },

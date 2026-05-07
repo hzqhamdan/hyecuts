@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Award, Sparkles, ShieldCheck, ChevronRight, Activity, Target } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ArrowLeft, Award, Sparkles, ChevronRight, Activity, Target } from 'lucide-react';
 import { useAuth } from './context/AuthContext';
 
 interface LoyaltyProfile {
@@ -161,18 +161,16 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.8 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
       className="min-h-screen bg-white text-black px-12 py-16 font-sans overflow-x-hidden"
     >
       {/* Navigation Header */}
       <nav className="flex justify-between items-center max-w-7xl mx-auto mb-24">
-        <motion.button
-          whileHover={{ x: -4 }}
-          onClick={() => setView('facade')}
-          className="flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] text-luxury-slate hover:text-luxury-black transition-colors"
+        <button onClick={() => setView('facade')}
+          className="flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] text-studio-slate hover:text-studio-black transition-colors"
         >
           <ArrowLeft className="w-3 h-3" /> Return to Facade
-        </motion.button>
+        </button>
         <div className="font-display text-2xl tracking-tighter uppercase font-medium italic">
           The Member Lounge
         </div>
@@ -188,73 +186,39 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
 
         {/* SECTION 1: STATUS CARD (The Centerpiece) */}
         <section className="lg:w-1/3 flex flex-col items-center">
-          <div className="relative group">
-            {/* Ambient Glow Effect */}
-            <div className="absolute -inset-4 bg-gradient-to-tr from-luxury-slate/20 to-transparent blur-2xl rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+          <div className="w-80 flex flex-col items-center bg-studio-white border border-black/10 px-8 py-16">
+            <span className="text-[10px] uppercase tracking-studio text-studio-slate font-sans mb-4">Membership Tier</span>
+            <h2 className="font-display text-[32px] text-studio-black">
+              {isLoading ? '...' : profile?.currentTier || 'Rookie'}
+            </h2>
 
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              className="relative w-80 h-[460px] bg-gradient-to-br from-neutral-900 via-neutral-800 to-black rounded-3xl p-8 text-white shadow-2xl overflow-hidden flex flex-col justify-between border border-white/10"
-              style={{ perspective: '1000px' }}
-            >
-              {/* Metallic Texture Overlay */}
-              <div className="absolute inset-0 opacity-20 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/brushed-alum.png')]" />
-
-              <div className="relative z-10 flex justify-between items-start">
-                <div className="flex flex-col">
-                  <span className="text-[10px] uppercase tracking-widest opacity-50 font-sans">Membership Tier</span>
-                  <h2 className="font-display text-3xl uppercase tracking-tight mt-1">
-                    {isLoading ? '...' : profile?.currentTier || 'Rookie'}
-                  </h2>
-                </div>
-                <ShieldCheck className="w-6 h-6 opacity-80" />
-              </div>
-
-              {/* The Status Halo / Progress Ring */}
-              <div className="relative z-10 flex justify-center py-12">
-                <div className="relative w-48 h-48 flex items-center justify-center">
-                  {/* Outer Multi-layered Ring */}
-                  <svg className="w-full h-full transform -rotate-90">
-                    <circle
-                      cx="96" cy="96" r="90"
-                      stroke="currentColor" strokeWidth="1"
-                      fill="transparent"
-                      className="text-white/10"
-                    />
-                    <circle
-                      cx="96" cy="96" r="90"
-                      stroke="currentColor" strokeWidth="4"
-                      fill="transparent"
-                      strokeDasharray={565}
-                      strokeDashoffset={565 - (565 * progressData.percentage) / 100}
-                      className="text-white transition-all duration-1000 ease-out"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  <div className="absolute flex flex-col items-center mt-3">
-                    <span className="font-serif text-5xl font-light tracking-tighter">
-                      {isLoading ? '...' : profile?.pointsBalance || 0}
-                    </span>
-                    <span className="text-[9px] uppercase tracking-[0.2em] opacity-40 mt-1 text-center leading-tight">
-                      to {progressData.nextTier}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="relative z-10 space-y-6">
-                <div className="text-center text-[10px] uppercase tracking-[0.3em] opacity-30 pt-6 border-t border-white/10">
-                  Certified Hyecuts Elite
-                </div>
-              </div>
-            </motion.div>
-          </div>
-
-          <div className="mt-12 text-center max-w-xs">
-            <p className="font-sans text-luxury-slate text-xs leading-relaxed italic">
-              "The pinnacle of grooming. Your status grants you access to the most refined services in the city."
-            </p>
+            {/* The Hairline Progress Arc */}
+            <div className="mt-12 relative w-48 h-24 overflow-hidden flex justify-center">
+              <svg className="w-48 h-48 absolute top-0" viewBox="0 0 192 192">
+                <path
+                  d="M 24 96 A 72 72 0 0 1 168 96"
+                  stroke="#E5E5E5" 
+                  strokeWidth="1"
+                  fill="transparent"
+                />
+                <motion.path
+                  d="M 24 96 A 72 72 0 0 1 168 96"
+                  stroke="#B8A070" 
+                  strokeWidth="1"
+                  fill="transparent"
+                  strokeDasharray="226.2"
+                  initial={{ strokeDashoffset: 226.2 }}
+                  animate={{ strokeDashoffset: 226.2 - (226.2 * progressData.percentage) / 100 }}
+                  transition={{ type: 'spring', damping: 20, stiffness: 50, duration: 0.8 }}
+                />
+              </svg>
+            </div>
+            
+            <div className="mt-8 text-center">
+              <p className="font-sans text-studio-slate text-xs leading-relaxed max-w-[200px]">
+                The pinnacle of grooming. Your status grants you access to the most refined services in the city.
+              </p>
+            </div>
           </div>
         </section>
 
@@ -263,10 +227,10 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
           <div className="flex items-end justify-between mb-12">
             <div>
               <h3 className="font-display text-4xl uppercase tracking-tighter mb-2">The Portfolio</h3>
-              <p className="font-sans text-luxury-slate text-sm tracking-wide">Curated rewards and invitations</p>
+              <p className="font-sans text-studio-slate text-sm tracking-wide">Curated rewards and invitations</p>
             </div>
             <div className="text-right">
-              <span className="text-xs font-medium uppercase tracking-widest border-b border-luxury-black pb-1">
+              <span className="text-xs font-medium uppercase tracking-widest border-b border-studio-black pb-1">
                 {rewards.length} Available Assets
               </span>
             </div>
@@ -275,11 +239,11 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
           {/* Editorial Layout Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
             {isLoading ? (
-              <div className="col-span-2 text-center py-12 text-luxury-slate text-[10px] uppercase tracking-widest">
+              <div className="col-span-2 text-center py-12 text-studio-slate text-[10px] uppercase tracking-widest">
                 Retrieving Secure Assets...
               </div>
             ) : rewards.length === 0 ? (
-              <div className="col-span-2 text-center py-12 text-luxury-slate text-[10px] uppercase tracking-widest">
+              <div className="col-span-2 text-center py-12 text-studio-slate text-[10px] uppercase tracking-widest">
                 No Assets Available
               </div>
             ) : rewards.map((reward, idx) => (
@@ -287,7 +251,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
                 key={reward.id}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.15 }}
+                transition={{ delay: idx * 0.2 }}
                 className="relative group cursor-pointer"
                 onClick={() => {
                   setSelectedVoucher(reward);
@@ -299,7 +263,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
                   {/* Top Row */}
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-luxury-black rounded-full" />
+                      <div className="w-2 h-2 bg-studio-black rounded-full" />
                       <span className="text-[9px] uppercase tracking-widest font-medium">
                         {reward.minimumTierRequired || 'Any'} Tier
                       </span>
@@ -309,7 +273,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
 
                   {/* Middle Content Overlay */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none">
-                    <div className="bg-luxury-black text-white px-4 py-2 text-[10px] uppercase tracking-widest flex items-center gap-2 translate-y-2 group-hover:translate-y-0 transition-transform duration-700">
+                    <div className="bg-studio-black text-white px-4 py-2 text-[10px] uppercase tracking-widest flex items-center gap-2 translate-y-2 group-hover:translate-y-0 transition-transform duration-700">
                       Reveal Invitation <ChevronRight className="w-3 h-3" />
                     </div>
                   </div>
@@ -318,10 +282,10 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
                     <h4 className="font-display text-xl uppercase tracking-tight mb-2 group-hover:translate-x-1 transition-transform duration-300">
                       {reward.title}
                     </h4>
-                    <p className="text-xs text-luxury-slate font-sans leading-relaxed max-w-xs line-clamp-2 mb-3">
+                    <p className="text-xs text-studio-slate font-sans leading-relaxed max-w-xs line-clamp-2 mb-3">
                       {reward.description}
                     </p>
-                    <div className="font-mono text-[10px] tracking-widest text-luxury-slate uppercase">
+                    <div className="font-mono text-[10px] tracking-widest text-studio-slate uppercase">
                       {reward.pointsCost} PTS {reward.stockAvailable !== null && `? ${reward.stockAvailable} Left`}
                     </div>
                   </div>
@@ -338,15 +302,15 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
                 {activities.slice(0, 3).map((act) => (
                   <div key={act.id} className="flex justify-between items-center p-4 bg-neutral-50 border border-neutral-100">
                     <div className="flex items-center gap-4">
-                      <Activity className="w-4 h-4 text-luxury-slate" />
+                      <Activity className="w-4 h-4 text-studio-slate" />
                       <div>
                         <p className="text-sm font-medium">{act.description}</p>
-                        <p className="text-[10px] text-luxury-slate uppercase tracking-widest mt-1">
+                        <p className="text-[10px] text-studio-slate uppercase tracking-widest mt-1">
                           {new Date(act.timestamp).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
-                    <div className={`font-mono text-sm ${act.pointsEarned > 0 ? 'text-green-600' : 'text-luxury-slate'}`}>
+                    <div className={`font-mono text-sm ${act.pointsEarned > 0 ? 'text-green-600' : 'text-studio-slate'}`}>
                       {act.pointsEarned > 0 ? '+' : ''}{act.pointsEarned} PTS
                     </div>
                   </div>
@@ -358,47 +322,45 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
       </div>
 
       {/* SECTION 3: MISSIONS & BADGES */}
-      <div className="max-w-7xl mx-auto mt-32 grid grid-cols-1 lg:grid-cols-2 gap-20 border-t border-black/10 pt-24">
+      <div className="max-w-7xl mx-auto mt-32 grid grid-cols-1 lg:grid-cols-2 gap-20 border-t border-black/10 pt-24 pb-24">
         
         {/* Active Missions */}
         <section>
           <div className="flex items-end justify-between mb-12">
             <div>
               <h3 className="font-display text-4xl uppercase tracking-tighter mb-2">Directives</h3>
-              <p className="font-sans text-neutral-500 text-sm tracking-wide">Active challenges & objectives</p>
+              <p className="font-sans text-studio-slate text-sm tracking-wide">Active challenges</p>
             </div>
             <Target className="w-6 h-6 opacity-40" />
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-4">
             {missions.length === 0 ? (
-              <div className="text-[10px] uppercase tracking-widest text-neutral-400">No active directives.</div>
+              <div className="text-[10px] uppercase tracking-widest text-studio-slate">No active directives.</div>
             ) : (
-              missions.map(mission => {
+              missions.slice(0, 3).map(mission => {
                 const prog = missionProgress.find(p => p.missionId === mission.id) || { currentProgress: 0, completed: false };
-                const percent = Math.min(100, (prog.currentProgress / mission.requiredCount) * 100);
 
                 return (
-                  <div key={mission.id} className="p-6 border border-black/10 flex flex-col gap-4 bg-white hover:border-black transition-colors">
-                    <div className="flex justify-between items-start">
+                  <div key={mission.id} className="py-4 border-b border-black/5 flex justify-between items-center group">
+                    <div className={`flex items-center gap-4 ${prog.completed ? 'opacity-30 line-through' : ''}`}>
+                      <div className="w-1.5 h-1.5 bg-studio-gold rounded-full" />
                       <div>
-                        <div className="text-[9px] uppercase tracking-widest font-bold mb-1 text-neutral-400">{mission.type}</div>
-                        <h4 className="font-display text-lg uppercase tracking-tight leading-tight">{mission.title}</h4>
-                        <p className="text-xs text-neutral-500 font-sans mt-2">{mission.description}</p>
+                        <h4 className="font-sans text-sm uppercase tracking-widest font-medium text-studio-black">
+                          {mission.title}
+                        </h4>
+                        {!prog.completed && (
+                          <div className="text-[10px] text-studio-slate uppercase tracking-widest mt-1">
+                            {prog.currentProgress} / {mission.requiredCount} {mission.targetAction}
+                          </div>
+                        )}
                       </div>
-                      <span className="text-[10px] font-mono tracking-widest bg-neutral-100 px-3 py-1 text-black font-bold">
+                    </div>
+                    {!prog.completed && (
+                      <span className="text-[10px] font-mono tracking-widest text-studio-slate">
                         +{mission.rewardPoints} PTS
                       </span>
-                    </div>
-                    <div className="w-full h-1 bg-neutral-100 mt-4 relative overflow-hidden">
-                      <div className="absolute top-0 left-0 h-full bg-black transition-all duration-1000 ease-out" style={{ width: `${percent}%` }} />
-                    </div>
-                    <div className="flex justify-between text-[9px] uppercase tracking-widest font-mono text-neutral-500">
-                      <span>{prog.currentProgress} / {mission.requiredCount} {mission.targetAction}</span>
-                      <span className={prog.completed ? 'text-green-600 font-bold' : ''}>
-                        {prog.completed ? 'COMPLETED' : 'IN PROGRESS'}
-                      </span>
-                    </div>
+                    )}
                   </div>
                 );
               })
@@ -411,71 +373,65 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
           <div className="flex items-end justify-between mb-12">
             <div>
               <h3 className="font-display text-4xl uppercase tracking-tighter mb-2">The Archive</h3>
-              <p className="font-sans text-neutral-500 text-sm tracking-wide">Honors and achievements</p>
+              <p className="font-sans text-studio-slate text-sm tracking-wide">Honors collection</p>
             </div>
             <Award className="w-6 h-6 opacity-40" />
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+          <div className="flex flex-col gap-4">
             {badges.length === 0 ? (
-              <div className="col-span-3 text-[10px] uppercase tracking-widest text-neutral-400">No honors registered.</div>
+              <div className="text-[10px] uppercase tracking-widest text-studio-slate">No honors registered.</div>
             ) : (
-              badges.map(badge => {
-                const unlocked = userBadges.some(ub => ub.badgeId === badge.id);
-                return (
-                  <div 
-                    key={badge.id} 
-                    className={`aspect-square p-6 border flex flex-col items-center justify-center gap-4 text-center transition-all ${
-                      unlocked ? 'border-black text-black bg-neutral-50' : 'border-neutral-200 text-neutral-400 opacity-40 bg-white'
-                    }`}
-                  >
-                    <Award className="w-8 h-8" />
-                    <div>
-                      <div className="font-display text-sm uppercase tracking-widest leading-none mb-2">{badge.name}</div>
-                      <div className="text-[8px] uppercase tracking-widest leading-relaxed line-clamp-2">{badge.description}</div>
+              <div className="flex flex-wrap gap-4">
+                {badges.slice(0, 5).map(badge => {
+                  const unlocked = userBadges.some(ub => ub.badgeId === badge.id);
+                  return (
+                    <div 
+                      key={badge.id} 
+                      className={`px-6 py-4 border transition-all ${
+                        unlocked ? 'border-studio-black text-studio-black bg-studio-white' : 'border-neutral-200 text-neutral-400 opacity-40 bg-white'
+                      }`}
+                    >
+                      <div className="font-display text-sm uppercase tracking-widest leading-none">{badge.name}</div>
                     </div>
-                  </div>
-                );
-              })
+                  );
+                })}
+              </div>
+            )}
+            
+            {badges.length > 5 && (
+              <div className="mt-4">
+                <a href="#" className="text-[10px] uppercase tracking-widest text-studio-slate hover:text-studio-black border-b border-transparent hover:border-studio-black transition-colors">
+                  View Collection
+                </a>
+              </div>
             )}
           </div>
         </section>
       </div>
 
       {/* SIGNATURE TRANSITION: Voucher Modal */}
-      <AnimatePresence>
+      
         {selectedVoucher && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-luxury-black/95 backdrop-blur-md p-6"
-          >
-            <motion.div
-              initial={{ scale: 0.9, y: 20, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.9, y: 20, opacity: 0 }}
-              transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-              className="bg-[#F9F9F7] w-full max-w-lg relative overflow-hidden shadow-2xl"
-              style={{ perspective: '1000px' }}
-            >
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-studio-black/95 backdrop-blur-md p-6">
+            <div className="bg-[#F9F9F7] w-full max-w-lg relative overflow-hidden shadow-2xl">
               {/* Luxury Invitation Styling */}
               <div className="p-12 flex flex-col items-center text-center bg-[url('https://www.transparenttextures.com/patterns/paper.png')] bg-repeat">
-                <div className="w-full border-t border-b border-luxury-black py-8 mb-12">
-                  <span className="font-sans text-[10px] uppercase tracking-[0.4em] text-luxury-slate block mb-4">Exclusive Invitation</span>
+                <div className="w-full border-t border-b border-studio-black py-8 mb-12">
+                  <span className="font-sans text-[10px] uppercase tracking-[0.4em] text-studio-slate block mb-4">Exclusive Invitation</span>
                   <h2 className="font-display text-4xl uppercase tracking-tighter mb-2">The Studio</h2>
-                  <div className="h-px w-12 bg-luxury-black mx-auto mt-6" />
+                  <div className="h-px w-12 bg-studio-black mx-auto mt-6" />
                 </div>
 
                 <div className="relative group mb-12">
                   {/* Physical Card Feel */}
-                  <div className="bg-neutral-50 border border-luxury-black/20 p-10 flex flex-col items-center gap-8 w-72 shadow-sm">
+                  <div className="bg-neutral-50 border border-studio-black/20 p-10 flex flex-col items-center gap-8 w-72 shadow-sm">
                     <div className="bg-black p-6 rounded-none">
                       <Award className="w-20 h-20 text-white" />
                     </div>
                     <div className="space-y-2">
                       <div className="font-display text-lg uppercase tracking-tight leading-tight">{selectedVoucher.title}</div>
-                      <div className="font-mono text-[10px] text-luxury-slate tracking-widest">
+                      <div className="font-mono text-[10px] text-studio-slate tracking-widest">
                         COST: {selectedVoucher.pointsCost} PTS
                       </div>
                     </div>
@@ -492,19 +448,17 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
                       Insufficient Points or Stock
                     </div>
                   ) : (
-                    <motion.button
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => handleRedeem(selectedVoucher.id)}
+                    <button onClick={() => handleRedeem(selectedVoucher.id)}
                       disabled={redemptionStatus === 'loading'}
-                      className="bg-luxury-black text-white py-4 text-[10px] uppercase tracking-widest hover:bg-neutral-800 transition-colors disabled:opacity-50"
+                      className="bg-studio-black text-white py-4 text-[10px] uppercase tracking-widest hover:bg-neutral-800 transition-colors disabled:opacity-50"
                     >
                       {redemptionStatus === 'loading' ? 'Processing...' : 'Redeem Asset'}
-                    </motion.button>
+                    </button>
                   )}
                   
                   <button
                     onClick={() => setSelectedVoucher(null)}
-                    className="text-[10px] uppercase tracking-widest text-luxury-slate hover:text-luxury-black transition-colors mt-2"
+                    className="text-[10px] uppercase tracking-widest text-studio-slate hover:text-studio-black transition-colors mt-2"
                   >
                     Close Portfolio
                   </button>
@@ -512,14 +466,14 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
               </div>
 
               {/* Decorative Corner Elements */}
-              <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-luxury-black/10" />
-              <div className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-luxury-black/10" />
-              <div className="absolute bottom-0 left-0 w-12 h-12 border-b-2 border-l-2 border-luxury-black/10" />
-              <div className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 border-luxury-black/10" />
-            </motion.div>
-          </motion.div>
+              <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-studio-black/10" />
+              <div className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-studio-black/10" />
+              <div className="absolute bottom-0 left-0 w-12 h-12 border-b-2 border-l-2 border-studio-black/10" />
+              <div className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 border-studio-black/10" />
+            </div>
+          </div>
         )}
-      </AnimatePresence>
+      
     </motion.div>
   );
 };

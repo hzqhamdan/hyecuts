@@ -1,0 +1,57 @@
+version: "3.8"
+
+services:
+  # 1. PostgreSQL Database
+  db:
+    image: postgres:15-alpine
+    container_name: thestudio-postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: hyecuts
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: casillas1
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d hyecuts"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Spring Boot Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: thestudio-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - DATABASE_URL=jdbc:postgresql://db:5432/hyecuts
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=casillas1
+      # Note: In production, inject these secrets via an .env file
+      - JWT_SECRET=c2VjdXJlX2tleV90aGF0X211c3RfYmVfYXRfbGVhc3RfNTEyX2JpdHNfbG9uZ19mb3JfaG1hY19zaGE1MTI=
+      - QR_SECRET=c3R1ZGlvX3FyX3NlY3JldF9rZXlfdGhhdF9zaG91bGRfYmVfbG9uZ19lbm91Z2g=
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # 3. React Frontend UI
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: thestudio-frontend
+    ports:
+      - "3000:80" # Maps localhost:3000 to Nginx port 80 inside the container
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
