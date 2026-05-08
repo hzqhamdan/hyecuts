@@ -3,6 +3,7 @@ import LandingPage from './components/landing/LandingPage';
 import MemberLounge from './MemberLounge';
 import AtelierDashboard from './AtelierDashboard';
 import LoginScreen from './LoginScreen';
+import BookingFlow from './components/booking/BookingFlow';
 import { useAuth } from './context/AuthContext';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Moon, Sun } from 'lucide-react';
@@ -55,6 +56,8 @@ function App() {
           <LandingPage key="facade" setView={setView as any} />
         ) : view === 'login' ? (
           <LoginScreen key="login" setView={setView as any} />
+        ) : view === 'booking' ? (
+          token ? <BookingFlow key="booking" setView={setView as any} /> : <LoginScreen key="login" setView={setView as any} />
         ) : view === 'lounge' ? (
           token ? <MemberLounge key="lounge" setView={setView as any} /> : <LoginScreen key="login" setView={setView as any} />
         ) : (

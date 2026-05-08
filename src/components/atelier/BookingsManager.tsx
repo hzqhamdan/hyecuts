@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { User, Clock, Calendar, CheckCircle2 } from 'lucide-react';
 import type { Booking } from '../../types/loyalty';
 
-const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:8081') + '/api';
+import { API_BASE } from '../../config';
 
 export function BookingsManager({ token }: { token: string }) {
   const [bookings, setBookings] = useState<Booking[]>([]);

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Reward } from '../../types/loyalty';
 
-const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:8081') + '/api';
+import { API_BASE } from '../../config';
 
 export function RewardsInventory({ rewards, setRewards }: { rewards: Reward[], setRewards: React.Dispatch<React.SetStateAction<Reward[]>> }) {
   const [isAdding, setIsAdding] = useState(false);

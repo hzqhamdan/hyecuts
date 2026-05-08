@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Award, Sparkles, ChevronRight, Activity, Target } from 'lucide-react';
 import { useAuth } from './context/AuthContext';
+import { API_BASE } from './config';
 
 interface LoyaltyProfile {
   userId: string;
@@ -76,8 +77,6 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
   const [selectedVoucher, setSelectedVoucher] = useState<Reward | null>(null);
   const [redemptionStatus, setRedemptionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-
-  const API_BASE = "http://localhost:8080/api";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -183,6 +182,12 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
           The Member Lounge
         </div>
         <div className="flex items-center gap-8">
+          <button
+            onClick={() => setView('booking')}
+            className="text-[10px] uppercase tracking-widest text-zinc-400 hover:text-black transition-colors font-medium"
+          >
+            Book Appointment
+          </button>
           <button
             onClick={() => setShowSettingsModal(true)}
             className="text-[10px] uppercase tracking-widest text-zinc-400 hover:text-black transition-colors font-medium"

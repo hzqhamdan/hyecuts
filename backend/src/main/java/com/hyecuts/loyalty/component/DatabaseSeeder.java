@@ -61,35 +61,18 @@ public class DatabaseSeeder implements CommandLineRunner {
             loyaltyService.addPoints(user.getId(), 2600);
 
             // 2. Create Barber Services
-            BarberService s1 = new BarberService();
-            s1.setName("Adult Hair Cut");
-            s1.setDescription("Precision cut tailored to your style.");
-            s1.setPriceMyr(new BigDecimal("25.00"));
-            s1.setDurationMinutes(30);
-            s1.setBasePoints(250);
-
-            BarberService s2 = new BarberService();
-            s2.setName("Cut & Shave");
-            s2.setDescription("The ultimate combo: Signature cut & traditional shave.");
-            s2.setPriceMyr(new BigDecimal("30.00"));
-            s2.setDurationMinutes(30);
-            s2.setBasePoints(300);
-
-            BarberService s3 = new BarberService();
-            s3.setName("Keratin Treatment");
-            s3.setDescription("Premium hair treatment for smoothing and repair.");
-            s3.setPriceMyr(new BigDecimal("200.00"));
-            s3.setDurationMinutes(120);
-            s3.setBasePoints(2000);
-
-            BarberService s4 = new BarberService();
-            s4.setName("Beard Trim/Shape");
-            s4.setDescription("Expert beard sculpting and refinement.");
-            s4.setPriceMyr(new BigDecimal("10.00"));
-            s4.setDurationMinutes(10);
-            s4.setBasePoints(100);
-
-            serviceRepository.saveAll(List.of(s1, s2, s3, s4));
+            serviceRepository.saveAll(List.of(
+                    createService("Adult Hair Cut", "Precision cut tailored to your style.", "25.00", 30, 250),
+                    createService("Cut & Shave", "Signature cut and traditional shave.", "30.00", 30, 300),
+                    createService("Keratin Treatment", "Premium hair treatment for smoothing and repair.", "200.00", 120, 2000),
+                    createService("Teenager Hair Cut", "Stylish haircut for teens.", "20.00", 30, 200),
+                    createService("Senior Citizen Hair Cut", "Classic haircut for senior citizens.", "15.00", 30, 150),
+                    createService("Senior Cut & Shave", "Haircut and shave for senior citizens.", "20.00", 40, 200),
+                    createService("Kids Hair Cut", "Gentle and neat cuts for kids.", "15.00", 30, 150),
+                    createService("Beard Trim/Shape", "Quick trim and styling for your beard.", "10.00", 10, 100),
+                    createService("Shave/Clean", "Clean shave service.", "10.00", 10, 100),
+                    createService("Hair Colour", "Full hair coloring service.", "180.00", 180, 1800)
+            ));
 
             // 3. Create Default Rewards
             Reward r1 = new Reward();
@@ -151,5 +134,15 @@ public class DatabaseSeeder implements CommandLineRunner {
 
             System.out.println("Seeding Complete!");
         }
+    }
+
+    private BarberService createService(String name, String description, String price, int durationMinutes, int basePoints) {
+        BarberService service = new BarberService();
+        service.setName(name);
+        service.setDescription(description);
+        service.setPriceMyr(new BigDecimal(price));
+        service.setDurationMinutes(durationMinutes);
+        service.setBasePoints(basePoints);
+        return service;
     }
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:8081') + '/api';
+import { API_BASE } from '../../config';
 
 interface EconomyProps {
   ratio: number;

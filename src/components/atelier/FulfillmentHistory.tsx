@@ -3,7 +3,7 @@ import { CreditCard } from 'lucide-react';
 
 import type { ActivityLog } from '../../types/loyalty';
 
-const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:8081') + '/api';
+import { API_BASE } from '../../config';
 
 export function FulfillmentHistory() {
   const [logs, setLogs] = useState<ActivityLog[]>([]);

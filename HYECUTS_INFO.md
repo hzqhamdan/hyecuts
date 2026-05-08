@@ -7,8 +7,8 @@ This document contains all the information scraped and researched for Hyecuts Ba
 - **Location:** 3361 Jalan Sungai Penchala, 60000 Kuala Lumpur, Wilayah Persekutuan
 - **Navigation:** Waze: Hyecuts Barbershop
 - **Team Members:** 
-  - Haiqal
-  - Naim
+  - Haiqal - Master Barber
+  - Naim - Senior Artisan
 
 ## Services & Pricing
 
@@ -37,18 +37,18 @@ This document contains all the information scraped and researched for Hyecuts Ba
 ## Contact Information
 - **Phone:** 013-366 6693
 - **Email:** haiqalqal7@gmail.com
-- **Instagram:** [@hyecuts](https://www.instagram.com/hyecuts/)
-- **Facebook:** [Hyecuts Barbershop](https://www.facebook.com/hyecuts/)
-- **Booking Page:** [Setmore](https://hyecutsbarbershop.setmore.com/)
+- **Instagram:** [@hyecuts_barbershop](https://www.instagram.com/hyecuts_barbershop/)
+- **Facebook:** [Hyecuts Barbershop](https://www.facebook.com/hyecuts.barbershop.754)
+- **Booking Page: Redirect to the booking page
 
 ## Business Hours (Malaysia Time)
-- **Monday:** 12:00 PM – 10:00 PM
-- **Tuesday:** 12:00 PM – 10:00 PM
-- **Wednesday:** 12:00 PM – 10:00 PM
+- **Monday:** 12:00 PM - 10:00 PM
+- **Tuesday:** 12:00 PM - 10:00 PM
+- **Wednesday:** 12:00 PM - 10:00 PM
 - **Thursday:** **Closed**
-- **Friday:** 2:30 PM – 10:00 PM
-- **Saturday:** 12:00 PM – 10:00 PM
-- **Sunday:** 12:00 PM – 10:00 PM
+- **Friday:** 2:30 PM - 10:00 PM
+- **Saturday:** 12:00 PM - 10:00 PM
+- **Sunday:** 12:00 PM - 10:00 PM
 
 ## Booking Policies
 - **Punctuality:** Customers are requested to arrive **10 minutes early** to ensure the schedule is maintained.

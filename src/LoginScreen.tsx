@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from './context/AuthContext';
 import { ArrowLeft, ShieldCheck } from 'lucide-react';
+import { API_URL } from './config';
 
 export default function LoginScreen({ setView }: { setView: (view: string) => void }) {
   const [username, setUsername] = useState('');
@@ -20,7 +21,7 @@ export default function LoginScreen({ setView }: { setView: (view: string) => vo
     const endpoint = isRegistering ? '/api/auth/register' : '/api/auth/login';
     
     try {
-      const res = await fetch(`http://localhost:8080${endpoint}`, {
+      const res = await fetch(`${API_URL}${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })

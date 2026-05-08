@@ -129,5 +129,19 @@ INSERT INTO global_settings (setting_key, setting_value, description) VALUES
 ('SEASONAL_MULTIPLIER', '1.0', 'Global multiplier for all point earnings')
 ON CONFLICT (setting_key) DO NOTHING;
 
+-- 4. Seed Barber Services
+INSERT INTO barber_services (name, description, price_myr, base_points, duration_minutes, is_active) VALUES
+('Adult Hair Cut', 'Precision cut tailored to your style.', 25.00, 250, 30, TRUE),
+('Cut & Shave', 'Signature cut and traditional shave.', 30.00, 300, 30, TRUE),
+('Keratin Treatment', 'Premium hair treatment for smoothing and repair.', 200.00, 2000, 120, TRUE),
+('Teenager Hair Cut', 'Stylish haircut for teens.', 20.00, 200, 30, TRUE),
+('Senior Citizen Hair Cut', 'Classic haircut for senior citizens.', 15.00, 150, 30, TRUE),
+('Senior Cut & Shave', 'Haircut and shave for senior citizens.', 20.00, 200, 40, TRUE),
+('Kids Hair Cut', 'Gentle and neat cuts for kids.', 15.00, 150, 30, TRUE),
+('Beard Trim/Shape', 'Quick trim and styling for your beard.', 10.00, 100, 10, TRUE),
+('Shave/Clean', 'Clean shave service.', 10.00, 100, 10, TRUE),
+('Hair Colour', 'Full hair coloring service.', 180.00, 1800, 180, TRUE)
+ON CONFLICT (name) DO NOTHING;
+
 -- Note: The admin and services will be seeded automatically by the Spring Boot app 
 -- (DatabaseSeeder.java) when it detects the tables are empty.
