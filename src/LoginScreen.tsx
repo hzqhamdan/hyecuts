@@ -7,6 +7,7 @@ export default function LoginScreen({ setView }: { setView: (view: string) => vo
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
+  const [pdpaConsent, setPdpaConsent] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -96,9 +97,27 @@ export default function LoginScreen({ setView }: { setView: (view: string) => vo
               required
             />
           </div>
+          {isRegistering && (
+            <div className="flex items-start gap-3 mt-4 mb-6">
+              <input
+                type="checkbox"
+                id="pdpa"
+                checked={pdpaConsent}
+                onChange={(e) => setPdpaConsent(e.target.checked)}
+                className="mt-1 accent-black"
+                required
+              />
+              <label htmlFor="pdpa" className="text-xs text-zinc-500 leading-relaxed">
+                I consent to the collection and processing of my personal data (name, email, birth month, purchase history) in accordance with the Personal Data Protection Act (PDPA) 2010. Data is used exclusively for loyalty rewards and stored securely.
+                <br />
+                <a href="#" className="underline hover:text-black">Read our Privacy Policy</a>
+              </label>
+            </div>
+          )}
+
           <button 
             type="submit" 
-            disabled={loading}
+            disabled={loading || (isRegistering && !pdpaConsent)}
             className="w-full py-4 bg-black text-white text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 transition-colors disabled:opacity-50"
           >
             {loading ? 'Authenticating...' : isRegistering ? 'Register Profile' : 'Authenticate'}

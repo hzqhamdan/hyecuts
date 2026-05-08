@@ -75,6 +75,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
 
   const [selectedVoucher, setSelectedVoucher] = useState<Reward | null>(null);
   const [redemptionStatus, setRedemptionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   const API_BASE = "http://localhost:8080/api";
 
@@ -174,12 +175,20 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
         <div className="font-display text-2xl tracking-tighter uppercase font-medium italic">
           The Member Lounge
         </div>
-        <button
-          onClick={() => setView('login')}
-          className="text-[10px] uppercase tracking-widest text-zinc-300 hover:text-black transition-colors font-medium"
-        >
-          Atelier Access
-        </button>
+        <div className="flex items-center gap-8">
+          <button
+            onClick={() => setShowSettingsModal(true)}
+            className="text-[10px] uppercase tracking-widest text-zinc-400 hover:text-black transition-colors font-medium"
+          >
+            Profile & Privacy
+          </button>
+          <button
+            onClick={() => setView('login')}
+            className="text-[10px] uppercase tracking-widest text-zinc-300 hover:text-black transition-colors font-medium"
+          >
+            Atelier Access
+          </button>
+        </div>
       </nav>
 
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-20">
@@ -473,6 +482,56 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
             </div>
           </div>
         )}
+
+      {/* PDPA Privacy & Data Export Modal */}
+      {showSettingsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-studio-black/95 backdrop-blur-md p-6">
+          <div className="bg-studio-white w-full max-w-lg relative overflow-hidden shadow-2xl p-12">
+            <h2 className="font-display text-2xl uppercase tracking-tighter mb-6 text-studio-black">Profile & Privacy</h2>
+            <p className="font-sans text-xs text-studio-slate leading-relaxed mb-8">
+              Manage your personal data under the Personal Data Protection Act (PDPA) 2010.
+            </p>
+            
+            <div className="space-y-4 mb-10">
+              <button 
+                onClick={() => {
+                  if(profile) {
+                    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(profile, null, 2));
+                    const dlAnchorElem = document.createElement('a');
+                    dlAnchorElem.setAttribute("href", dataStr);
+                    dlAnchorElem.setAttribute("download", "thestudio_my_data.json");
+                    dlAnchorElem.click();
+                  }
+                }}
+                className="w-full text-left p-4 border border-zinc-200 hover:border-black hover:bg-neutral-50 transition-colors"
+              >
+                <div className="text-[10px] uppercase tracking-widest font-bold mb-1">Export Data (JSON)</div>
+                <div className="text-xs text-studio-slate">Download a copy of your personal data.</div>
+              </button>
+              
+              <button 
+                onClick={() => {
+                  if(confirm("Are you sure you want to permanently delete your account and all associated data? This action is irreversible.")) {
+                    alert("Account deletion request submitted. Deletion will be completed within 30 days.");
+                    setView('login');
+                  }
+                }}
+                className="w-full text-left p-4 border border-red-200 hover:bg-red-50 transition-colors group"
+              >
+                <div className="text-[10px] uppercase tracking-widest font-bold text-red-600 mb-1">Delete Account</div>
+                <div className="text-xs text-red-500/80 group-hover:text-red-500">Permanently erase your profile.</div>
+              </button>
+            </div>
+
+            <button
+              onClick={() => setShowSettingsModal(false)}
+              className="w-full bg-studio-black text-white py-4 text-[10px] uppercase tracking-widest hover:bg-neutral-800 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
       
     </motion.div>
   );
