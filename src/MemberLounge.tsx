@@ -59,8 +59,8 @@ interface UserMissionProgress {
 
 const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
   const { user } = useAuth();
-  // Use real user ID if authenticated, fallback to 'user-123' if not for demo purposes
-  const USER_ID = user?.id || "user-123";
+  // Use real user ID if authenticated, fallback to a valid UUID if not for demo purposes
+  const USER_ID = user?.id || "00000000-0000-0000-0000-000000000000";
   
   const [profile, setProfile] = useState<LoyaltyProfile | null>(null);
   const [rewards, setRewards] = useState<Reward[]>([]);
@@ -85,13 +85,20 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
         setIsLoading(true);
         // Fetch Profile
         const profileRes = await fetch(`${API_BASE}/loyalty/profile/${USER_ID}`);
-        if (profileRes.ok) setProfile(await profileRes.json());
+        if (profileRes.ok) {
+          const userData = await profileRes.json();
+          setProfile({
+            userId: userData.id,
+            pointsBalance: userData.currentPoints || 0,
+            currentTier: userData.tier ? userData.tier.name : 'Rookie'
+          });
+        }
 
         // Fetch Rewards
         const rewardsRes = await fetch(`${API_BASE}/rewards`);
         if (rewardsRes.ok) setRewards(await rewardsRes.json());
 
-        // Fetch Activity
+        // Fetch Activity History
         const activityRes = await fetch(`${API_BASE}/gamification/activity/${USER_ID}`);
         if (activityRes.ok) setActivities(await activityRes.json());
 
