@@ -59,7 +59,7 @@ interface UserMissionProgress {
 }
 
 const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   // Use real user ID if authenticated, fallback to a valid UUID if not for demo purposes
   const USER_ID = user?.id || "00000000-0000-0000-0000-000000000000";
   
@@ -181,26 +181,35 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
         <div className="font-display text-2xl tracking-tighter uppercase font-medium italic">
           The Member Lounge
         </div>
-        <div className="flex items-center gap-8">
-          <button
-            onClick={() => setView('booking')}
-            className="text-[10px] uppercase tracking-widest text-zinc-400 hover:text-black transition-colors font-medium"
-          >
-            Book Appointment
-          </button>
-          <button
-            onClick={() => setShowSettingsModal(true)}
-            className="text-[10px] uppercase tracking-widest text-zinc-400 hover:text-black transition-colors font-medium"
-          >
-            Profile & Privacy
-          </button>
-          <button
-            onClick={() => setView('login')}
-            className="text-[10px] uppercase tracking-widest text-zinc-300 hover:text-black transition-colors font-medium"
-          >
-            Atelier Access
-          </button>
-        </div>
+          <div className="flex items-center gap-8">
+            <button
+              onClick={() => setView('booking')}
+              className="text-[10px] uppercase tracking-widest text-zinc-400 hover:text-black transition-colors font-medium"
+            >
+              Book Appointment
+            </button>
+            <button
+              onClick={() => setShowSettingsModal(true)}
+              className="text-[10px] uppercase tracking-widest text-zinc-400 hover:text-black transition-colors font-medium"
+            >
+              Profile & Privacy
+            </button>
+            <button
+              onClick={() => setView('login')}
+              className="text-[10px] uppercase tracking-widest text-zinc-300 hover:text-black transition-colors font-medium"
+            >
+              Atelier Access
+            </button>
+            <button
+              onClick={() => {
+                logout();
+                setView('facade');
+              }}
+              className="text-[10px] uppercase tracking-widest text-red-400 hover:text-red-600 transition-colors font-medium"
+            >
+              Logout
+            </button>
+          </div>
       </nav>
 
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-20">

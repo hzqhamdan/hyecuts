@@ -57,7 +57,7 @@ function App() {
         ) : view === 'login' ? (
           <LoginScreen key="login" setView={setView as any} />
         ) : view === 'booking' ? (
-          token ? <BookingFlow key="booking" setView={setView as any} /> : <LoginScreen key="login" setView={setView as any} />
+          <BookingFlow key="booking" setView={setView as any} />
         ) : view === 'lounge' ? (
           token ? <MemberLounge key="lounge" setView={setView as any} /> : <LoginScreen key="login" setView={setView as any} />
         ) : (

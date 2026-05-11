@@ -12,5 +12,9 @@
       "Bash(git branch *)",
       "Bash(unzip *)"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "shadcn"
+  ],
+  "enableAllProjectMcpServers": true
 }

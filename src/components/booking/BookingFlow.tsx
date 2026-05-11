@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ChevronRight, Calendar, Clock, CheckCircle, ShieldCheck } from 'lucide-react';
-import { BOOKING_POLICIES, BUSINESS_HOURS, HYECUTS, SERVICE_MENU, TEAM_MEMBERS } from '../../data/hyecuts';
+import { ArrowLeft, ChevronRight, ChevronDown, Calendar, Clock, CheckCircle, ShieldCheck, UserCircle, UserPlus } from 'lucide-react';
+import { BOOKING_POLICIES, BUSINESS_HOURS, HYECUTS, ALL_SERVICES, SERVICE_CATEGORIES, TEAM_MEMBERS } from '../../data/hyecuts';
+import { useAuth } from '../../context/AuthContext';
 
 const STAFF = [
   { id: 'haiqal', name: 'Haiqal', role: 'Master Barber' },
@@ -18,7 +19,10 @@ const DATES = BUSINESS_HOURS.filter((slot) => slot.open).map((slot, index) => ({
 const TIMES = ['12:00 PM', '2:30 PM', '4:00 PM', '6:00 PM', '8:00 PM'];
 
 export default function BookingFlow({ setView }: { setView: (view: string) => void }) {
-  const [step, setStep] = useState(1);
+  const { token } = useAuth();
+  // Automatically skip step 0 if the user is already logged in
+  const [step, setStep] = useState(token ? 1 : 0);
+  const [openCategory, setOpenCategory] = useState<string | null>('Haircuts');
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [selectedStaff, setSelectedStaff] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -38,7 +42,7 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
     }, 1200);
   };
 
-  const getService = () => SERVICE_MENU.find((service) => service.name === selectedService);
+  const getService = () => ALL_SERVICES.find((service) => service.name === selectedService);
   const getStaff = () => STAFF.find((staff) => staff.id === selectedStaff);
   const getDate = () => DATES.find((date) => date.id === selectedDate);
 
@@ -51,46 +55,110 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
     >
       <nav className="flex justify-between items-center max-w-5xl mx-auto w-full mb-10">
         <button
-          onClick={() => (step === 1 || step === 5 ? setView('lounge') : prevStep())}
+          onClick={() => {
+            if (step === 0) setView('facade');
+            else if (step === 1 && !token) setStep(0);
+            else if (step === 1 || step === 5) setView(token ? 'lounge' : 'facade');
+            else prevStep();
+          }}
           className="flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] text-zinc-500 hover:text-black transition-colors"
         >
           <ArrowLeft className="w-3 h-3" />
-          {step === 1 || step === 5 ? 'Return to Lounge' : 'Previous Step'}
+          {step === 0 ? 'Return Home' : step === 1 || step === 5 ? (token ? 'Return to Lounge' : 'Return Home') : 'Previous Step'}
         </button>
         <div className="font-display text-xl tracking-tighter uppercase font-medium italic">Atelier Booking</div>
-        <div className="text-[10px] uppercase tracking-widest text-zinc-400">Step {Math.min(step, 4)} of 4</div>
+        {step > 0 && <div className="text-[10px] uppercase tracking-widest text-zinc-400">Step {Math.min(step, 4)} of 4</div>}
       </nav>
 
       <div className="max-w-5xl mx-auto w-full flex-1 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-10">
         <div className="w-full">
           <AnimatePresence mode="wait">
+            {step === 0 && (
+              <motion.div key="step0" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="flex flex-col items-center justify-center py-12">
+                <h2 className="font-display text-4xl uppercase tracking-tighter mb-4 text-center">How would you like to proceed?</h2>
+                <p className="text-zinc-500 mb-12 text-center max-w-md leading-relaxed">
+                  Sign in to track your booking history, manage appointments, and access exclusive member benefits in the Lounge.
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl">
+                  <button
+                    onClick={() => setView('login')}
+                    className="p-8 border border-black bg-black text-white hover:bg-zinc-900 transition-all flex flex-col items-center text-center group"
+                  >
+                    <UserCircle className="w-8 h-8 mb-4 opacity-80 group-hover:opacity-100 transition-opacity" />
+                    <span className="text-[10px] uppercase tracking-widest font-bold mb-2">Member Login</span>
+                    <span className="text-xs text-zinc-400">Sign in or create an account</span>
+                  </button>
+
+                  <button
+                    onClick={() => setStep(1)}
+                    className="p-8 border border-zinc-200 bg-white hover:border-black transition-all flex flex-col items-center text-center group"
+                  >
+                    <UserPlus className="w-8 h-8 mb-4 text-zinc-400 group-hover:text-black transition-colors" />
+                    <span className="text-[10px] uppercase tracking-widest font-bold mb-2 text-black">Continue as Guest</span>
+                    <span className="text-xs text-zinc-500">Book quickly without an account</span>
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
             {step === 1 && (
               <motion.div key="step1" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
                 <h2 className="font-display text-3xl uppercase tracking-tighter mb-2">Select Service</h2>
                 <p className="text-sm text-zinc-500 mb-8">Choose from the Hyecuts service menu.</p>
 
-                <div className="space-y-4">
-                  {SERVICE_MENU.map((service) => (
-                    <div
-                      key={service.name}
-                      onClick={() => setSelectedService(service.name)}
-                      className={`p-6 border cursor-pointer transition-all duration-300 ${
-                        selectedService === service.name ? 'border-black bg-neutral-50' : 'border-zinc-200 hover:border-zinc-400'
-                      }`}
-                    >
-                      <div className="flex justify-between items-start mb-2 gap-4">
-                        <div>
-                          <div className="text-[10px] uppercase tracking-widest text-zinc-400 mb-1">{service.category}</div>
-                          <h3 className="font-display text-xl uppercase tracking-tight">{service.name}</h3>
+                  <div className="space-y-4">
+                    {SERVICE_CATEGORIES.map((categoryGroup) => {
+                      const isOpen = openCategory === categoryGroup.category;
+                      return (
+                        <div key={categoryGroup.category} className="border border-zinc-200 bg-white">
+                          <button
+                            onClick={() => setOpenCategory(isOpen ? null : categoryGroup.category)}
+                            className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-zinc-50 transition-colors"
+                          >
+                            <span className="font-serif text-2xl italic">{categoryGroup.category}</span>
+                            <ChevronDown
+                              className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+                              size={20}
+                            />
+                          </button>
+                          <AnimatePresence>
+                            {isOpen && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.3, ease: "easeInOut" }}
+                                className="overflow-hidden"
+                              >
+                                <div className="px-6 pb-6 pt-2 space-y-3 border-t border-zinc-100">
+                                  {categoryGroup.services.map((service) => (
+                                    <div
+                                      key={service.name}
+                                      onClick={() => setSelectedService(service.name)}
+                                      className={`p-4 border cursor-pointer transition-all duration-300 ${
+                                        selectedService === service.name ? 'border-black bg-neutral-50' : 'border-zinc-200 hover:border-zinc-400'
+                                      }`}
+                                    >
+                                      <div className="flex justify-between items-start mb-1 gap-4">
+                                        <div>
+                                          <h4 className="font-display text-lg uppercase tracking-tight">{service.name}</h4>
+                                        </div>
+                                        <span className="font-mono text-xs whitespace-nowrap">{service.price}</span>
+                                      </div>
+                                      <div className="flex gap-4 text-[10px] uppercase tracking-widest text-zinc-400">
+                                        <span>{service.duration}</span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
                         </div>
-                        <span className="font-mono text-xs whitespace-nowrap">{service.price}</span>
-                      </div>
-                      <div className="flex gap-4 text-[10px] uppercase tracking-widest text-zinc-400">
-                        <span>{service.duration}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                      );
+                    })}
+                  </div>
 
                 <button
                   onClick={nextStep}

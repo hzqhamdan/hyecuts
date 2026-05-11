@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { motion, type Variants } from 'framer-motion';
-import { ArrowRight, Menu, X } from 'lucide-react';
-import { BOOKING_POLICIES, BUSINESS_HOURS, HYECUTS, SERVICE_MENU, TEAM_MEMBERS } from '../../data/hyecuts';
+import { motion, type Variants, AnimatePresence } from 'framer-motion';
+import { ArrowRight, Menu, X, ChevronDown } from 'lucide-react';
+import { BOOKING_POLICIES, BUSINESS_HOURS, HYECUTS, SERVICE_CATEGORIES, TEAM_MEMBERS } from '../../data/hyecuts';
 
 interface LandingPageProps {
   setView: (view: string) => void;
@@ -9,6 +9,8 @@ interface LandingPageProps {
 
 const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [openCategory, setOpenCategory] = useState<string | null>('Haircuts');
+  const [selectedService, setSelectedService] = useState<string | null>(null);
 
   const fadeUp: Variants = {
     hidden: { opacity: 0, y: 14 },
@@ -44,29 +46,36 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
           Hyecuts
         </motion.div>
 
-        <div className="hidden md:flex gap-10 text-[10px] uppercase tracking-widest font-medium">
-          {['services', 'hours', 'contact'].map((item) => (
-            <a
-              key={item}
-              href={`#${item}`}
-              className="hover:text-zinc-400 transition-colors duration-300"
-            >
-              {item}
-            </a>
-          ))}
-        </div>
+          <div className="hidden md:flex gap-10 text-[10px] uppercase tracking-widest font-medium">
+            {['services', 'hours', 'contact'].map((item) => (
+              <a
+                key={item}
+                href={`#${item}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById(item)?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="hover:text-zinc-400 transition-colors duration-300"
+              >
+                {item}
+              </a>
+            ))}
+          </div>
 
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => setView('booking')}
-            className="hidden md:block px-6 py-2 text-[10px] uppercase tracking-widest border border-black hover:bg-black hover:text-white transition-all duration-500 font-bold"
-          >
-            Book Appointment
-          </button>
-          <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setView('booking')}
+              className="hidden md:block px-6 py-2 text-[10px] uppercase tracking-widest border border-black hover:bg-black hover:text-white transition-all duration-500 font-bold active:scale-95"
+            >
+              Book Appointment
+            </button>
+            <button 
+              className="md:hidden active:scale-90 transition-transform duration-200" 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
       </nav>
 
       {isMenuOpen && (
@@ -139,31 +148,88 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
         <div className="max-w-7xl mx-auto">
           <div className="mb-14">
             <span className="text-[10px] uppercase tracking-widest text-zinc-400 mb-4 block">Services & Pricing</span>
-            <h2 className="font-serif text-5xl md:text-7xl font-light tracking-tighter">The Menu</h2>
+            <h2 className="font-serif text-5xl md:text-7xl font-light tracking-tighter">Services</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {SERVICE_MENU.map((service) => (
-              <motion.div
-                key={service.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-                className="border border-zinc-200 bg-white p-6"
-              >
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <div>
-                    <p className="text-[10px] uppercase tracking-widest text-zinc-400 mb-2">{service.category}</p>
-                    <h3 className="font-serif text-2xl italic leading-tight">{service.name}</h3>
+          <div className="max-w-3xl mx-auto">
+            {/* Accordion Categories */}
+            <div className="space-y-4">
+              {SERVICE_CATEGORIES.map((categoryGroup) => {
+                const isOpen = openCategory === categoryGroup.category;
+                return (
+                  <div key={categoryGroup.category} className="border border-zinc-200 bg-white">
+                    <button
+                      onClick={() => setOpenCategory(isOpen ? null : categoryGroup.category)}
+                      className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-zinc-50 transition-colors"
+                    >
+                      <span className="font-serif text-2xl italic">{categoryGroup.category}</span>
+                      <ChevronDown
+                        className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+                        size={20}
+                      />
+                    </button>
+                    <AnimatePresence>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3, ease: "easeInOut" }}
+                          className="overflow-hidden"
+                        >
+                          <div className="px-6 pb-6 pt-2 space-y-3 border-t border-zinc-100">
+                            {categoryGroup.services.map((service) => {
+                              const isServiceOpen = selectedService === service.name;
+                              return (
+                                <div 
+                                  key={service.name} 
+                                  onClick={() => setSelectedService(isServiceOpen ? null : service.name)}
+                                  className={`p-4 border cursor-pointer transition-all duration-300 group ${
+                                    isServiceOpen ? 'border-black bg-neutral-50' : 'border-transparent hover:border-zinc-200'
+                                  }`}
+                                >
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <h4 className="text-sm font-medium mb-1">{service.name}</h4>
+                                      <div className="text-[10px] uppercase tracking-widest text-zinc-500">{service.duration}</div>
+                                    </div>
+                                    <div className="font-mono text-xs bg-zinc-50 px-3 py-1 group-hover:bg-zinc-100 transition-colors">
+                                      {service.price}
+                                    </div>
+                                  </div>
+                                  
+                                  <AnimatePresence>
+                                    {isServiceOpen && (
+                                      <motion.div
+                                        initial={{ height: 0, opacity: 0, marginTop: 0 }}
+                                        animate={{ height: 'auto', opacity: 1, marginTop: 16 }}
+                                        exit={{ height: 0, opacity: 0, marginTop: 0 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="overflow-hidden"
+                                      >
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setView('booking');
+                                          }}
+                                          className="w-full py-3 bg-black text-white text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 transition-colors flex items-center justify-center gap-2"
+                                        >
+                                          Book Now <ArrowRight size={14} />
+                                        </button>
+                                      </motion.div>
+                                    )}
+                                  </AnimatePresence>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
-                  <span className="font-mono text-sm whitespace-nowrap">{service.price}</span>
-                </div>
-                <div className="flex items-center gap-4 text-[10px] uppercase tracking-widest text-zinc-500">
-                  <span>{service.duration}</span>
-                </div>
-              </motion.div>
-            ))}
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
