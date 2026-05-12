@@ -189,6 +189,12 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
               Book Appointment
             </button>
             <button
+              onClick={() => setView('my-bookings')}
+              className="text-[10px] uppercase tracking-widest text-zinc-400 hover:text-black transition-colors font-medium"
+            >
+              My Appointments
+            </button>
+            <button
               onClick={() => setShowSettingsModal(true)}
               className="text-[10px] uppercase tracking-widest text-zinc-400 hover:text-black transition-colors font-medium"
             >

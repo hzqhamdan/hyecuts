@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ChevronRight, ChevronDown, Calendar, Clock, CheckCircle, ShieldCheck, UserCircle, UserPlus } from 'lucide-react';
 import { BOOKING_POLICIES, BUSINESS_HOURS, HYECUTS, ALL_SERVICES, SERVICE_CATEGORIES, TEAM_MEMBERS } from '../../data/hyecuts';
 import { useAuth } from '../../context/AuthContext';
+import { API_BASE } from '../../config';
 
 const STAFF = [
   { id: 'haiqal', name: 'Haiqal', role: 'Master Barber' },
@@ -19,7 +20,7 @@ const DATES = BUSINESS_HOURS.filter((slot) => slot.open).map((slot, index) => ({
 const TIMES = ['12:00 PM', '2:30 PM', '4:00 PM', '6:00 PM', '8:00 PM'];
 
 export default function BookingFlow({ setView }: { setView: (view: string) => void }) {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   // Automatically skip step 0 if the user is already logged in
   const [step, setStep] = useState(token ? 1 : 0);
   const [openCategory, setOpenCategory] = useState<string | null>('Haircuts');
@@ -33,13 +34,71 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
   const nextStep = () => setStep((prev) => prev + 1);
   const prevStep = () => setStep((prev) => prev - 1);
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     setIsConfirming(true);
-    setTimeout(() => {
-      setIsConfirming(false);
+    
+    try {
+      if (token && user) {
+        let serviceId = 1; // Fallback
+        try {
+          const servicesRes = await fetch(`${API_BASE}/services/active`);
+          if (servicesRes.ok) {
+            const services = await servicesRes.json();
+            const matchedService = services.find((s: any) => s.name === selectedService);
+            if (matchedService) {
+              serviceId = matchedService.id;
+            }
+          }
+        } catch (e) {
+          console.error("Error fetching services", e);
+        }
+
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        let hours = 12, mins = 0;
+        if (selectedTime) {
+          const match = selectedTime.match(/(\d+):(\d+)\s*(AM|PM)/i);
+          if (match) {
+            hours = parseInt(match[1]);
+            mins = parseInt(match[2]);
+            if (match[3].toUpperCase() === 'PM' && hours < 12) hours += 12;
+            if (match[3].toUpperCase() === 'AM' && hours === 12) hours = 0;
+          }
+        }
+        tomorrow.setHours(hours, mins, 0, 0);
+
+        const bookingReq = {
+          userId: user.id,
+          serviceId: serviceId,
+          appointmentTime: tomorrow.toISOString().split('.')[0]
+        };
+
+        const res = await fetch(`${API_BASE}/bookings`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(bookingReq)
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          setBookingRef(`HYC-${data.id.toString().slice(-4)}`);
+        } else {
+          const errorText = await res.text();
+          console.error("Booking failed:", res.status, errorText);
+          alert(`Booking failed: ${errorText}`);
+          setBookingRef(`HYC-${Date.now().toString().slice(-4)}`);
+        }
+      } else {
+        // Guest flow
+        setBookingRef(`HYC-${Date.now().toString().slice(-4)}`);
+      }
+    } catch (error) {
+      console.error(error);
       setBookingRef(`HYC-${Date.now().toString().slice(-4)}`);
-      setStep(5);
-    }, 1200);
+    }
+
+    setIsConfirming(false);
+    setStep(5);
   };
 
   const getService = () => ALL_SERVICES.find((service) => service.name === selectedService);
@@ -329,12 +388,22 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
                   REF: {bookingRef || 'HYC-0000'}
                 </div>
 
-                <button
-                  onClick={() => setView('lounge')}
-                  className="w-full py-5 border border-black text-black text-[10px] uppercase tracking-widest hover:bg-neutral-50 transition-colors"
-                >
-                  Return to Lounge
-                </button>
+                <div className="flex flex-col gap-4">
+                  {token && (
+                    <button
+                      onClick={() => setView('my-bookings')}
+                      className="w-full py-5 bg-black text-white text-[10px] uppercase tracking-widest hover:bg-zinc-800 transition-colors"
+                    >
+                      View My Appointments
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setView(token ? 'lounge' : 'facade')}
+                    className="w-full py-5 border border-black text-black text-[10px] uppercase tracking-widest hover:bg-neutral-50 transition-colors"
+                  >
+                    {token ? 'Return to Lounge' : 'Return Home'}
+                  </button>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>

@@ -4,6 +4,7 @@ import MemberLounge from './MemberLounge';
 import AtelierDashboard from './AtelierDashboard';
 import LoginScreen from './LoginScreen';
 import BookingFlow from './components/booking/BookingFlow';
+import UserBookings from './components/booking/UserBookings';
 import { useAuth } from './context/AuthContext';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Moon, Sun } from 'lucide-react';
@@ -58,6 +59,8 @@ function App() {
           <LoginScreen key="login" setView={setView as any} />
         ) : view === 'booking' ? (
           <BookingFlow key="booking" setView={setView as any} />
+        ) : view === 'my-bookings' ? (
+          token ? <UserBookings key="my-bookings" setView={setView as any} /> : <LoginScreen key="login" setView={setView as any} />
         ) : view === 'lounge' ? (
           token ? <MemberLounge key="lounge" setView={setView as any} /> : <LoginScreen key="login" setView={setView as any} />
         ) : (

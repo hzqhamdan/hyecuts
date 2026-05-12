@@ -46,7 +46,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
           Hyecuts
         </motion.div>
 
-          <div className="hidden md:flex gap-10 text-[10px] uppercase tracking-widest font-medium">
+          <div className="hidden md:flex gap-10 text-[10px] uppercase tracking-widest font-medium items-center">
             {['services', 'hours', 'contact'].map((item) => (
               <a
                 key={item}
@@ -60,6 +60,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
                 {item}
               </a>
             ))}
+            <button
+              onClick={() => setView('lounge')}
+              className="hover:text-zinc-400 transition-colors duration-300 uppercase"
+            >
+              Lounge
+            </button>
           </div>
 
           <div className="flex items-center gap-4">
@@ -94,20 +100,29 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
                 setIsMenuOpen(false);
                 document.getElementById(item)?.scrollIntoView({ behavior: 'smooth' });
               }}
+              >
+                {item}
+              </a>
+            ))}
+            <button
+              onClick={() => {
+                setIsMenuOpen(false);
+                setView('lounge');
+              }}
+              className="text-4xl font-serif italic tracking-tight capitalize"
             >
-              {item}
-            </a>
-          ))}
-          <button
-            onClick={() => {
-              setIsMenuOpen(false);
-              setView('booking');
-            }}
-            className="mt-8 px-8 py-4 bg-black text-white uppercase tracking-widest text-xs font-bold"
-          >
-            Book Appointment
-          </button>
-        </motion.div>
+              Lounge
+            </button>
+            <button
+              onClick={() => {
+                setIsMenuOpen(false);
+                setView('booking');
+              }}
+              className="mt-4 px-8 py-4 bg-black text-white uppercase tracking-widest text-xs font-bold"
+            >
+              Book Appointment
+            </button>
+          </motion.div>
       )}
 
       <section className="relative min-h-screen flex items-center justify-center px-6 md:px-12 text-center pt-24">
