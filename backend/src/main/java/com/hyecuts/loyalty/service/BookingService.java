@@ -40,6 +40,10 @@ public class BookingService {
         return bookingRepository.findByUserIdOrderByAppointmentTimeDesc(userId);
     }
 
+    public List<Booking> getAllBookings() {
+        return bookingRepository.findAllByOrderByAppointmentTimeDesc();
+    }
+
     public Optional<Booking> getBookingById(UUID bookingId) {
         return bookingRepository.findById(bookingId);
     }

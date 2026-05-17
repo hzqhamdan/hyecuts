@@ -11,6 +11,7 @@ import {
 
 // Tab Views
 import { BookingsManager } from './components/atelier/BookingsManager';
+import { LoyaltyConfigurator } from './components/atelier/LoyaltyConfigurator';
 
 type View = 'booking-manager' | 'member-manager' | 'loyalty-configurator' | 'analytics';
 
@@ -107,7 +108,7 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
           >
             {currentView === 'booking-manager' && <BookingsManager token={token || ''} />}
             {currentView === 'member-manager' && <div className="p-10 border border-zinc-200"><h2 className="font-serif text-3xl">Member Manager</h2><p className="text-zinc-400 mt-4">Module under construction.</p></div>}
-            {currentView === 'loyalty-configurator' && <div className="p-10 border border-zinc-200"><h2 className="font-serif text-3xl">Loyalty Configurator</h2><p className="text-zinc-400 mt-4">Module under construction.</p></div>}
+            {currentView === 'loyalty-configurator' && <LoyaltyConfigurator />}
             {currentView === 'analytics' && <div className="p-10 border border-zinc-200"><h2 className="font-serif text-3xl">Analytics Overview</h2><p className="text-zinc-400 mt-4">Module under construction.</p></div>}
           </motion.div>
         </AnimatePresence>

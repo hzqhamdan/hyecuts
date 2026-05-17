@@ -29,6 +29,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
     },
   };
 
+  const navTap = { scale: 0.94, y: 1 };
+  const navTapTransition = { type: 'spring' as const, stiffness: 420, damping: 24 };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -48,39 +51,47 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
 
           <div className="hidden md:flex gap-10 text-[10px] uppercase tracking-widest font-medium items-center">
             {['services', 'hours', 'contact'].map((item) => (
-              <a
+              <motion.a
                 key={item}
                 href={`#${item}`}
                 onClick={(e) => {
                   e.preventDefault();
                   document.getElementById(item)?.scrollIntoView({ behavior: 'smooth' });
                 }}
+                whileTap={navTap}
+                transition={navTapTransition}
                 className="hover:text-zinc-400 transition-colors duration-300"
               >
                 {item}
-              </a>
+              </motion.a>
             ))}
-            <button
+            <motion.button
               onClick={() => setView('lounge')}
+              whileTap={navTap}
+              transition={navTapTransition}
               className="hover:text-zinc-400 transition-colors duration-300 uppercase"
             >
               Lounge
-            </button>
+            </motion.button>
           </div>
 
           <div className="flex items-center gap-4">
-            <button
+            <motion.button
               onClick={() => setView('booking')}
+              whileTap={navTap}
+              transition={navTapTransition}
               className="hidden md:block px-6 py-2 text-[10px] uppercase tracking-widest border border-black hover:bg-black hover:text-white transition-all duration-500 font-bold active:scale-95"
             >
               Book Appointment
-            </button>
-            <button 
+            </motion.button>
+            <motion.button 
               className="md:hidden active:scale-90 transition-transform duration-200" 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              whileTap={navTap}
+              transition={navTapTransition}
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+            </motion.button>
           </div>
       </nav>
 
@@ -91,7 +102,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
           className="fixed inset-0 z-40 bg-white pt-24 px-10 flex flex-col gap-8 text-center"
         >
           {['services', 'hours', 'contact'].map((item) => (
-            <a
+            <motion.a
               key={item}
               href={`#${item}`}
               className="text-4xl font-serif italic tracking-tight capitalize"
@@ -100,28 +111,34 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
                 setIsMenuOpen(false);
                 document.getElementById(item)?.scrollIntoView({ behavior: 'smooth' });
               }}
+              whileTap={navTap}
+              transition={navTapTransition}
               >
                 {item}
-              </a>
+              </motion.a>
             ))}
-            <button
+            <motion.button
               onClick={() => {
                 setIsMenuOpen(false);
                 setView('lounge');
               }}
+              whileTap={navTap}
+              transition={navTapTransition}
               className="text-4xl font-serif italic tracking-tight capitalize"
             >
               Lounge
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               onClick={() => {
                 setIsMenuOpen(false);
                 setView('booking');
               }}
+              whileTap={navTap}
+              transition={navTapTransition}
               className="mt-4 px-8 py-4 bg-black text-white uppercase tracking-widest text-xs font-bold"
             >
               Book Appointment
-            </button>
+            </motion.button>
           </motion.div>
       )}
 
@@ -313,12 +330,30 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
 
           <div className="bg-white border border-zinc-200 p-8">
             <span className="text-[10px] uppercase tracking-widest text-zinc-400 mb-4 block">Social</span>
-            <div className="space-y-4">
-              <a className="block text-sm hover:underline" href={HYECUTS.instagram} target="_blank" rel="noreferrer">
-                Instagram
+            <div className="flex items-center gap-4">
+              <a
+                aria-label="Instagram"
+                className="inline-flex items-center justify-center w-10 h-10 border border-zinc-200 hover:bg-zinc-100 transition-colors"
+                href={HYECUTS.instagram}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <svg viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+                  <circle cx="12" cy="12" r="4" />
+                  <circle cx="17" cy="7" r="1" fill="currentColor" stroke="none" />
+                </svg>
               </a>
-              <a className="block text-sm hover:underline" href={HYECUTS.facebook} target="_blank" rel="noreferrer">
-                Facebook
+              <a
+                aria-label="Facebook"
+                className="inline-flex items-center justify-center w-10 h-10 border border-zinc-200 hover:bg-zinc-100 transition-colors"
+                href={HYECUTS.facebook}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <svg viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="currentColor">
+                  <path d="M14.5 8H16V5.2C15.74 5.16 14.86 5 13.83 5C11.66 5 10.17 6.36 10.17 8.86V11H8V14.2H10.17V22H13.54V14.2H16.17L16.59 11H13.54V9.17C13.54 8.24 13.79 8 14.5 8Z" />
+                </svg>
               </a>
             </div>
             <button

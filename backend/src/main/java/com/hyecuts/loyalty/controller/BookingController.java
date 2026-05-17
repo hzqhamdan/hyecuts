@@ -67,6 +67,12 @@ public class BookingController {
     }
 
     // Admin endpoint
+    @GetMapping("/all")
+    public ResponseEntity<List<Booking>> getAllBookings() {
+        return ResponseEntity.ok(bookingService.getAllBookings());
+    }
+
+    // Admin endpoint
     @PutMapping("/{bookingId}/complete")
     public ResponseEntity<?> completeBooking(@PathVariable UUID bookingId) {
         try {

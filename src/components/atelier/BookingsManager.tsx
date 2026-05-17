@@ -10,7 +10,7 @@ export function BookingsManager({ token }: { token: string }) {
 
   const fetchBookings = async () => {
     try {
-      const res = await fetch(`${API_BASE}/admin/bookings`, {
+      const res = await fetch(`${API_BASE}/bookings/all`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {

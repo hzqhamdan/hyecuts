@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import type { Reward } from '../../types/loyalty';
+import { useAuth } from '../../context/AuthContext';
 
 import { API_BASE } from '../../config';
 
 export function RewardsInventory({ rewards, setRewards }: { rewards: Reward[], setRewards: React.Dispatch<React.SetStateAction<Reward[]>> }) {
+  const { token } = useAuth();
   const [isAdding, setIsAdding] = useState(false);
   const [newReward, setNewReward] = useState({ 
     title: '', 
@@ -17,7 +19,10 @@ export function RewardsInventory({ rewards, setRewards }: { rewards: Reward[], s
     try {
       const res = await fetch(`${API_BASE}/rewards`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(newReward)
       });
       if (res.ok) {

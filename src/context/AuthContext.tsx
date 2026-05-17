@@ -14,8 +14,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('hc_token');
-    const storedUser = localStorage.getItem('hc_user');
+    const storedToken = sessionStorage.getItem('hc_token');
+    const storedUser = sessionStorage.getItem('hc_user');
     if (storedToken && storedUser) {
       setToken(storedToken);
       setUser(JSON.parse(storedUser));
@@ -26,15 +26,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const userData = { id: userId, role, username };
     setToken(newToken);
     setUser(userData);
-    localStorage.setItem('hc_token', newToken);
-    localStorage.setItem('hc_user', JSON.stringify(userData));
+    sessionStorage.setItem('hc_token', newToken);
+    sessionStorage.setItem('hc_user', JSON.stringify(userData));
   };
 
   const logout = () => {
     setToken(null);
     setUser(null);
-    localStorage.removeItem('hc_token');
-    localStorage.removeItem('hc_user');
+    sessionStorage.removeItem('hc_token');
+    sessionStorage.removeItem('hc_user');
   };
 
   return (

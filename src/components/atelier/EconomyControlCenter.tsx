@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
 
 import { API_BASE } from '../../config';
 
@@ -10,6 +11,7 @@ interface EconomyProps {
 }
 
 export function EconomyControlCenter({ ratio, setRatio, multiplier, setMultiplier }: EconomyProps) {
+  const { token } = useAuth();
   const [targetUser, setTargetUser] = useState('user-123');
   const [adjustAmount, setAdjustAmount] = useState(0);
   const [adjustStatus, setAdjustStatus] = useState('');
@@ -17,7 +19,8 @@ export function EconomyControlCenter({ ratio, setRatio, multiplier, setMultiplie
   const handleAdjust = async () => {
     try {
       const res = await fetch(`${API_BASE}/admin/points/adjust/${targetUser}?points=${adjustAmount}`, {
-        method: 'POST'
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
         setAdjustStatus('Success');

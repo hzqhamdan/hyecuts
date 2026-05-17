@@ -15,4 +15,7 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
     
     @EntityGraph(attributePaths = {"service", "user"})
     List<Booking> findByUserIdAndStatusOrderByAppointmentTimeDesc(UUID userId, Booking.BookingStatus status);
+
+    @EntityGraph(attributePaths = {"service", "user"})
+    List<Booking> findAllByOrderByAppointmentTimeDesc();
 }
