@@ -41,7 +41,29 @@
     "history": "History",
     "no_rewards": "No rewards available yet.",
     "no_activity": "No recent activity.",
-    "total": "Total"
+    "total": "Total",
+    "retrieving_assets": "Retrieving Secure Assets...",
+    "any_tier": "Any",
+    "left": "Left",
+    "reveal_invitation": "Reveal Invitation",
+    "no_directives": "No active directives.",
+    "view_collection": "View Collection",
+    "tier_description": "The pinnacle of grooming. Your status grants you access to the most refined services in the city.",
+    "exclusive_invitation": "Exclusive Invitation",
+    "cost": "COST",
+    "redemption_confirmed": "Redemption Confirmed",
+    "insufficient_points": "Insufficient Points or Stock",
+    "redeem_asset": "Redeem Asset",
+    "close_portfolio": "Close Portfolio",
+    "profile_privacy": "Profile & Privacy",
+    "pdpa_description": "Manage your personal data under the Personal Data Protection Act (PDPA) 2010.",
+    "export_data": "Export Data (JSON)",
+    "export_data_desc": "Download a copy of your personal data.",
+    "delete_account": "Delete Account",
+    "delete_account_desc": "Permanently erase your profile.",
+    "delete_confirm": "Are you sure you want to permanently delete your account and all associated data? This action is irreversible.",
+    "delete_submitted": "Account deletion request submitted. Deletion will be completed within 30 days.",
+    "close": "Close"
   },
   "booking": {
     "title": "Atelier Booking",
@@ -70,7 +92,10 @@
     "closed_note": "Thursday is closed. Choose a day that works with your schedule.",
     "barber_note": "Haiqal and Naim are the listed team members in the studio notes.",
     "service_note": "Choose from the Hyecuts service menu.",
-    "policy_note": "Please confirm your appointment details and the studio policy reminders."
+    "policy_note": "Please confirm your appointment details and the studio policy reminders.",
+    "appointment_confirmed": "Your appointment has been confirmed.",
+    "arrive_early": "Please arrive early and bring your booking reference.",
+    "notes": "Hyecuts Notes"
   },
   "admin": {
     "atelier": "Atelier",

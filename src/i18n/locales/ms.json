@@ -41,7 +41,29 @@
     "history": "Sejarah",
     "no_rewards": "Tiada ganjaran tersedia lagi.",
     "no_activity": "Tiada aktiviti terkini.",
-    "total": "Jumlah"
+    "total": "Jumlah",
+    "retrieving_assets": "Mengambil Aset Selamat...",
+    "any_tier": "Mana-mana",
+    "left": "Baki",
+    "reveal_invitation": "Lihat Jemputan",
+    "no_directives": "Tiada arahan aktif.",
+    "view_collection": "Lihat Koleksi",
+    "tier_description": "Kemuncak penjagaan diri. Status anda memberikan akses kepada perkhidmatan paling terpilih di bandar.",
+    "exclusive_invitation": "Jemputan Eksklusif",
+    "cost": "KOS",
+    "redemption_confirmed": "Penebusan Disahkan",
+    "insufficient_points": "Mata Tidak Mencukupi atau Stok Habis",
+    "redeem_asset": "Tebus Aset",
+    "close_portfolio": "Tutup Portfolio",
+    "profile_privacy": "Profil & Privasi",
+    "pdpa_description": "Urus data peribadi anda di bawah Akta Perlindungan Data Peribadi (PDPA) 2010.",
+    "export_data": "Eksport Data (JSON)",
+    "export_data_desc": "Muat turun salinan data peribadi anda.",
+    "delete_account": "Padam Akaun",
+    "delete_account_desc": "Padamkan profil anda secara kekal.",
+    "delete_confirm": "Adakah anda pasti mahu memadam akaun dan semua data berkaitan secara kekal? Tindakan ini tidak boleh dibatalkan.",
+    "delete_submitted": "Permintaan pemadaman akaun telah dihantar. Pemadaman akan diselesaikan dalam tempoh 30 hari.",
+    "close": "Tutup"
   },
   "booking": {
     "title": "Tempahan Atelier",
@@ -70,7 +92,10 @@
     "closed_note": "Tutup pada hari Khamis. Pilih hari yang sesuai dengan jadual anda.",
     "barber_note": "Haiqal dan Naim adalah ahli pasukan yang disenaraikan di nota studio.",
     "service_note": "Pilih daripada menu perkhidmatan Hyecuts.",
-    "policy_note": "Sila sahkan butiran temu janji anda dan peringatan polisi studio."
+    "policy_note": "Sila sahkan butiran temu janji anda dan peringatan polisi studio.",
+    "appointment_confirmed": "Temu janji anda telah disahkan.",
+    "arrive_early": "Sila hadir awal dan bawa rujukan tempahan anda.",
+    "notes": "Nota Hyecuts"
   },
   "admin": {
     "atelier": "Atelier",

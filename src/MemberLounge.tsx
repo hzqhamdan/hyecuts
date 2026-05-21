@@ -226,8 +226,10 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
               onClick={toggleLanguage}
               className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-zinc-400 hover:text-black transition-colors font-medium border-l border-zinc-200 pl-8 ml-2"
             >
-              <Globe size={12} />
-              {i18n.language === 'en' ? 'MS' : 'EN'}
+              {i18n.language === 'en' ? (
+                <img src="/flags/my.svg" alt="Malaysia" className="w-4 h-3 rounded-sm" />
+              ) : <Globe size={12} />}
+              {i18n.language === 'en' ? 'MY' : 'EN'}
             </button>
           </div>
       </nav>
@@ -266,7 +268,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
             
             <div className="mt-8 text-center">
               <p className="font-sans text-zinc-500 text-xs leading-relaxed max-w-[200px]">
-                The pinnacle of grooming. Your status grants you access to the most refined services in the city.
+                {t('lounge.tier_description')}
               </p>
             </div>
           </div>
@@ -290,7 +292,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
             {isLoading ? (
               <div className="col-span-2 text-center py-12 text-zinc-500 text-[10px] uppercase tracking-widest">
-                Retrieving Secure Assets...
+                {t('lounge.retrieving_assets')}
               </div>
             ) : rewards.length === 0 ? (
               <div className="col-span-2 text-center py-12 text-zinc-500 text-[10px] uppercase tracking-widest">
@@ -315,7 +317,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-black rounded-full" />
                       <span className="text-[9px] uppercase tracking-widest font-medium">
-                        {reward.minimumTierRequired || 'Any'} Tier
+                        {reward.minimumTierRequired ? `${reward.minimumTierRequired} ` : ''}{t('lounge.any_tier')} Tier
                       </span>
                     </div>
                     <Sparkles className="w-4 h-4 opacity-20 group-hover:opacity-100 transition-opacity" />
@@ -324,7 +326,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
                   {/* Middle Content Overlay */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none">
                     <div className="bg-black text-white px-4 py-2 text-[10px] uppercase tracking-widest flex items-center gap-2 translate-y-2 group-hover:translate-y-0 transition-transform duration-700">
-                      Reveal Invitation <ChevronRight className="w-3 h-3" />
+                      {t('lounge.reveal_invitation')} <ChevronRight className="w-3 h-3" />
                     </div>
                   </div>
 
@@ -336,7 +338,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
                       {reward.description}
                     </p>
                     <div className="font-mono text-[10px] tracking-widest text-zinc-500 uppercase">
-                      {reward.pointsCost.toString()} {t('lounge.pts')} {reward.stockAvailable !== null && `? ${reward.stockAvailable.toString()} Left`}
+                      {reward.pointsCost.toString()} {t('lounge.pts')} {reward.stockAvailable !== null && `? ${reward.stockAvailable.toString()} ${t('lounge.left')}`}
                     </div>
                   </div>
                 </div>
@@ -386,7 +388,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
 
           <div className="space-y-4">
             {missions.length === 0 ? (
-              <div className="text-[10px] uppercase tracking-widest text-zinc-500">No active directives.</div>
+              <div className="text-[10px] uppercase tracking-widest text-zinc-500">{t('lounge.no_directives')}</div>
             ) : (
               missions.slice(0, 3).map(mission => {
                 const prog = missionProgress.find(p => p.missionId === mission.id) ?? { currentProgress: 0, completed: false };
@@ -447,7 +449,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
 
           <div className="mt-4">
             <a href="#" className="text-[10px] uppercase tracking-widest text-zinc-500 hover:text-black border-b border-transparent hover:border-black transition-colors">
-              View Collection
+              {t('lounge.view_collection')}
             </a>
           </div>
           </div>
@@ -462,7 +464,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
               {/* Luxury Invitation Styling */}
               <div className="p-12 flex flex-col items-center text-center bg-repeat">
                 <div className="w-full border-t border-b border-black py-8 mb-12">
-                  <span className="font-sans text-[10px] uppercase tracking-[0.4em] text-zinc-500 block mb-4">Exclusive Invitation</span>
+                  <span className="font-sans text-[10px] uppercase tracking-[0.4em] text-zinc-500 block mb-4">{t('lounge.exclusive_invitation')}</span>
                   <h2 className="font-serif text-4xl uppercase tracking-tighter mb-2">The Studio</h2>
                   <div className="h-px w-12 bg-black mx-auto mt-6" />
                 </div>
@@ -476,7 +478,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
                     <div className="space-y-2">
                       <div className="font-serif text-lg uppercase tracking-tight leading-tight">{selectedVoucher.title}</div>
                       <div className="font-mono text-[10px] text-zinc-500 tracking-widest">
-                        COST: {selectedVoucher.pointsCost.toString()} {t('lounge.pts')}
+                        {t('lounge.cost')}: {selectedVoucher.pointsCost.toString()} {t('lounge.pts')}
                       </div>
                     </div>
                   </div>
@@ -485,18 +487,18 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
                 <div className="flex flex-col gap-4 w-full max-w-xs">
                   {redemptionStatus === 'success' ? (
                     <div className="py-4 text-[10px] uppercase tracking-widest text-green-700 font-bold border border-green-200 bg-green-50">
-                      Redemption Confirmed
+                      {t('lounge.redemption_confirmed')}
                     </div>
                   ) : redemptionStatus === 'error' ? (
                     <div className="py-4 text-[10px] uppercase tracking-widest text-red-700 font-bold border border-red-200 bg-red-50">
-                      Insufficient Points or Stock
+                      {t('lounge.insufficient_points')}
                     </div>
                   ) : (
                     <button onClick={() => { void handleRedeem(selectedVoucher.id); }}
                       disabled={redemptionStatus === 'loading'}
                       className="bg-black text-white py-4 text-[10px] uppercase tracking-widest hover:bg-neutral-800 transition-colors disabled:opacity-50"
                     >
-                      {redemptionStatus === 'loading' ? 'Processing...' : 'Redeem Asset'}
+                      {redemptionStatus === 'loading' ? t('login.processing') : t('lounge.redeem_asset')}
                     </button>
                   )}
                   
@@ -504,7 +506,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
                     onClick={() => { setSelectedVoucher(null); }}
                     className="text-[10px] uppercase tracking-widest text-zinc-500 hover:text-black transition-colors mt-2"
                   >
-                    Close Portfolio
+                    {t('lounge.close_portfolio')}
                   </button>
                 </div>
               </div>
@@ -522,9 +524,9 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
       {showSettingsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-md p-6">
           <div className="bg-white w-full max-w-lg relative overflow-hidden shadow-2xl p-12">
-            <h2 className="font-serif text-2xl uppercase tracking-tighter mb-6 text-black">Profile & Privacy</h2>
+            <h2 className="font-serif text-2xl uppercase tracking-tighter mb-6 text-black">{t('lounge.profile_privacy')}</h2>
             <p className="font-sans text-xs text-zinc-500 leading-relaxed mb-8">
-              Manage your personal data under the Personal Data Protection Act (PDPA) 2010.
+              {t('lounge.pdpa_description')}
             </p>
             
             <div className="space-y-4 mb-10">
@@ -540,21 +542,21 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
                 }}
                 className="w-full text-left p-4 border border-zinc-200 hover:border-black hover:bg-neutral-50 transition-colors"
               >
-                <div className="text-[10px] uppercase tracking-widest font-bold mb-1">Export Data (JSON)</div>
-                <div className="text-xs text-zinc-500">Download a copy of your personal data.</div>
+                <div className="text-[10px] uppercase tracking-widest font-bold mb-1">{t('lounge.export_data')}</div>
+                <div className="text-xs text-zinc-500">{t('lounge.export_data_desc')}</div>
               </button>
               
               <button 
                 onClick={() => {
-                  if(confirm("Are you sure you want to permanently delete your account and all associated data? This action is irreversible.")) {
-                    alert("Account deletion request submitted. Deletion will be completed within 30 days.");
+                  if(confirm(t('lounge.delete_confirm'))) {
+                    alert(t('lounge.delete_submitted'));
                     setView('login');
                   }
                 }}
                 className="w-full text-left p-4 border border-red-200 hover:bg-red-50 transition-colors group"
               >
-                <div className="text-[10px] uppercase tracking-widest font-bold text-red-600 mb-1">Delete Account</div>
-                <div className="text-xs text-red-500/80 group-hover:text-red-500">Permanently erase your profile.</div>
+                <div className="text-[10px] uppercase tracking-widest font-bold text-red-600 mb-1">{t('lounge.delete_account')}</div>
+                <div className="text-xs text-red-500/80 group-hover:text-red-500">{t('lounge.delete_account_desc')}</div>
               </button>
             </div>
 
@@ -562,7 +564,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
               onClick={() => { setShowSettingsModal(false); }}
               className="w-full bg-black text-white py-4 text-[10px] uppercase tracking-widest hover:bg-neutral-800 transition-colors"
             >
-              Close
+              {t('lounge.close')}
             </button>
           </div>
         </div>

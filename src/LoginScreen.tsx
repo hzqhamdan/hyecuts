@@ -72,7 +72,10 @@ export default function LoginScreen({ setView }: { setView: (view: string) => vo
         onClick={toggleLanguage}
         className="absolute top-12 right-12 flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-zinc-400 hover:text-black transition-colors"
       >
-        <Globe className="w-3 h-3" /> {i18n.language === 'en' ? 'MS' : 'EN'}
+        {i18n.language === 'en' ? (
+          <img src="/flags/my.svg" alt="Malaysia" className="w-4 h-3 rounded-sm" />
+        ) : <Globe className="w-3 h-3" />}
+        {i18n.language === 'en' ? 'MY' : 'EN'}
       </button>
 
       <motion.div 

@@ -166,8 +166,10 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
             }}
             className={`flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-zinc-500 hover:text-black transition-colors ${step > 0 && step < 5 ? 'sm:border-l sm:border-zinc-200 sm:pl-4' : ''}`}
           >
-            <Globe size={12} />
-            {i18n.language === 'en' ? 'MS' : 'EN'}
+            {i18n.language === 'en' ? (
+              <img src="/flags/my.svg" alt="Malaysia" className="w-4 h-3 rounded-sm" />
+            ) : <Globe size={12} />}
+            {i18n.language === 'en' ? 'MY' : 'EN'}
           </button>
         </div>
       </nav>
@@ -424,8 +426,8 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
                   <CheckCircle className="w-8 h-8" />
                 </div>
                 <h2 className="font-serif text-4xl uppercase tracking-tighter mb-4">{t('booking.secured')}</h2>
-                <p className="text-sm text-zinc-500 mb-2">Your appointment has been confirmed.</p>
-                <p className="text-sm text-zinc-500 mb-12">Please arrive early and bring your booking reference.</p>
+                <p className="text-sm text-zinc-500 mb-2">{t('booking.appointment_confirmed')}</p>
+                <p className="text-sm text-zinc-500 mb-12">{t('booking.arrive_early')}</p>
 
                 <div className="font-mono text-xs bg-neutral-50 p-4 border border-zinc-200 mb-12 inline-block">
                   {t('booking.ref_label')}: {bookingRef || 'HYC-0000'}
@@ -453,7 +455,7 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
         </div>
 
         <aside className="w-full lg:sticky lg:top-6 h-fit bg-zinc-50 border border-zinc-100 p-6 self-start">
-          <span className="text-[10px] uppercase tracking-widest text-zinc-400 mb-4 block">Hyecuts Notes</span>
+          <span className="text-[10px] uppercase tracking-widest text-zinc-400 mb-4 block">{t('booking.notes')}</span>
           <h3 className="font-serif text-2xl italic mb-6">{HYECUTS.name}</h3>
           <div className="space-y-4 text-sm text-zinc-600">
             <div>
