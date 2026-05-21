@@ -5,7 +5,7 @@ const AdminLogin = ({ setView }: { setView: (view: string) => void }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = (e: React.SyntheticEvent) => {
     e.preventDefault();
     // In a real app, this would be a secure API call.
     // For this prototype, we use a simple master key.
@@ -37,7 +37,7 @@ const AdminLogin = ({ setView }: { setView: (view: string) => void }) => {
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => { setPassword(e.target.value); }}
               placeholder="Enter Access Key"
               className="w-full text-center py-4 bg-transparent border-b border-black focus:outline-none font-mono text-sm tracking-widest placeholder:text-zinc-200 transition-all"
               autoFocus
@@ -64,7 +64,7 @@ const AdminLogin = ({ setView }: { setView: (view: string) => void }) => {
 
         <div className="flex flex-col gap-4 pt-4">
           <button
-            onClick={() => setView('facade')}
+            onClick={() => { setView('facade'); }}
             className="text-[10px] uppercase tracking-widest text-zinc-300 hover:text-black transition-colors"
           >
             Return to Facade

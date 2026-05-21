@@ -6,7 +6,7 @@ interface ValidatorProps {
   code: string;
   setCode: (code: string) => void;
   state: 'idle' | 'granted' | 'denied';
-  onValidate: (e: React.FormEvent) => void;
+  onValidate: (e: React.SyntheticEvent) => void;
 }
 
 export function ValidatorFocusMode({ code, setCode, state, onValidate }: ValidatorProps) {
@@ -30,7 +30,7 @@ export function ValidatorFocusMode({ code, setCode, state, onValidate }: Validat
           <input
             type="text"
             value={code}
-            onChange={(e) => setCode(e.target.value)}
+            onChange={(e) => { setCode(e.target.value); }}
             placeholder="HC-XXXX-XXXX"
             className="w-full text-center text-5xl font-serif uppercase tracking-[0.3em] bg-transparent border-b border-black focus:outline-none focus:border-black transition-all placeholder:text-zinc-200"
             autoFocus

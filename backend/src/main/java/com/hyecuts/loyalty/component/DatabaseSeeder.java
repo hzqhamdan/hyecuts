@@ -18,6 +18,7 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final BadgeRepository badgeRepository;
     private final MissionRepository missionRepository;
     private final BarberServiceRepository serviceRepository;
+    private final GlobalSettingsRepository globalSettingsRepository;
     private final PasswordEncoder passwordEncoder;
     private final LoyaltyService loyaltyService;
 
@@ -26,6 +27,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                           BadgeRepository badgeRepository, 
                           MissionRepository missionRepository,
                           BarberServiceRepository serviceRepository,
+                          GlobalSettingsRepository globalSettingsRepository,
                           PasswordEncoder passwordEncoder,
                           LoyaltyService loyaltyService) {
         this.userRepository = userRepository;
@@ -33,6 +35,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         this.badgeRepository = badgeRepository;
         this.missionRepository = missionRepository;
         this.serviceRepository = serviceRepository;
+        this.globalSettingsRepository = globalSettingsRepository;
         this.passwordEncoder = passwordEncoder;
         this.loyaltyService = loyaltyService;
     }
@@ -41,6 +44,12 @@ public class DatabaseSeeder implements CommandLineRunner {
     public void run(String... args) throws Exception {
         if (userRepository.count() == 0) {
             System.out.println("Seeding Database...");
+
+            // 0. Global Settings
+            globalSettingsRepository.saveAll(List.of(
+                    new GlobalSettings("POINTS_PER_MYR", "10", "Points earned per 1 MYR spent"),
+                    new GlobalSettings("SEASONAL_MULTIPLIER", "1.0", "Active seasonal points multiplier")
+            ));
 
             // 1. Create Default Users
             User admin = new User();

@@ -9,10 +9,10 @@ export function FulfillmentHistory() {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
 
   useEffect(() => {
-    fetch(`${API_BASE}/admin/activity`)
-      .then(r => r.json())
-      .then(d => setLogs(d))
-      .catch(e => console.error(e));
+    void fetch(`${API_BASE}/admin/activity`)
+      .then(r => r.json() as Promise<ActivityLog[]>)
+      .then(d => { setLogs(d); })
+      .catch((err: unknown) => { console.error(err); });
   }, []);
 
   return (

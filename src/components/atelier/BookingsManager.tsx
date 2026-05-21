@@ -1,45 +1,35 @@
-import { useState, useEffect } from 'react';
 import { User, Clock, Calendar, CheckCircle2 } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Booking } from '../../types/loyalty';
 
 import { API_BASE } from '../../config';
 
 export function BookingsManager({ token }: { token: string }) {
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  const fetchBookings = async () => {
-    try {
+  const { data: bookings = [], isLoading } = useQuery<Booking[]>({
+    queryKey: ['bookings', token],
+    queryFn: async () => {
       const res = await fetch(`${API_BASE}/bookings/all`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      if (res.ok) {
-        setBookings(await res.json());
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+      if (!res.ok) throw new Error('Failed to fetch bookings');
+      return res.json() as Promise<Booking[]>;
     }
-  };
+  });
 
-  useEffect(() => {
-    fetchBookings();
-  }, []);
-
-  const completeBooking = async (id: string) => {
-    try {
+  const completeMutation = useMutation({
+    mutationFn: async (id: string) => {
       const res = await fetch(`${API_BASE}/bookings/${id}/complete`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      if (res.ok) {
-        fetchBookings();
-      }
-    } catch (err) {
-      console.error(err);
+      if (!res.ok) throw new Error('Failed to complete booking');
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['bookings', token] });
     }
-  };
+  });
 
   return (
     <div className="space-y-16">
@@ -49,7 +39,7 @@ export function BookingsManager({ token }: { token: string }) {
       </header>
 
       <div className="grid grid-cols-1 gap-px bg-zinc-200 border border-zinc-200">
-        {loading ? (
+        {isLoading ? (
           <div className="p-20 bg-white text-center text-zinc-400 uppercase tracking-widest text-xs">Accessing Schedule...</div>
         ) : bookings.filter(b => b.status === 'PENDING').length === 0 ? (
           <div className="p-20 bg-white text-center text-zinc-400 uppercase tracking-widest text-xs">No Pending Appointments</div>
@@ -61,7 +51,7 @@ export function BookingsManager({ token }: { token: string }) {
                   <User size={24} />
                 </div>
                 <div className="space-y-1">
-                  <h4 className="font-serif text-2xl italic">{booking.user.fullName || booking.user.email}</h4>
+                  <h4 className="font-serif text-2xl italic">{booking.user.fullName ?? booking.user.email}</h4>
                   <div className="flex items-center gap-4 text-[10px] uppercase tracking-widest text-zinc-400 font-bold">
                     <span className="flex items-center gap-1"><Clock size={12} /> {new Date(booking.appointmentTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     <span className="flex items-center gap-1"><Calendar size={12} /> {new Date(booking.appointmentTime).toLocaleDateString()}</span>
@@ -76,10 +66,11 @@ export function BookingsManager({ token }: { token: string }) {
                   <span className="font-serif text-2xl">RM {booking.totalPriceMyr}</span>
                 </div>
                 <button
-                  onClick={() => completeBooking(booking.id)}
-                  className="w-full md:w-auto px-10 py-4 bg-black text-white text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 transition-all flex items-center justify-center gap-2"
+                  onClick={() => { completeMutation.mutate(booking.id); }}
+                  disabled={completeMutation.isPending}
+                  className="w-full md:w-auto px-10 py-4 bg-black text-white text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  <CheckCircle2 size={14} /> Complete & Award Points
+                  <CheckCircle2 size={14} /> {completeMutation.isPending ? 'Completing...' : 'Complete & Award Points'}
                 </button>
               </div>
             </div>

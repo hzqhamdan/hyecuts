@@ -41,7 +41,7 @@ export const RewardPortfolio = ({ rewards, isLoading, onSelectVoucher, activitie
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.15 }}
             className="relative group cursor-pointer"
-            onClick={() => onSelectVoucher(reward)}
+            onClick={() => { onSelectVoucher(reward); }}
           >
             <div className="relative overflow-hidden aspect-[1.6/1] bg-white border border-black/10 p-8 flex flex-col justify-between transition-all duration-500 group-hover:shadow-xl group-hover:border-black">
               {/* Top Row */}
@@ -70,7 +70,7 @@ export const RewardPortfolio = ({ rewards, isLoading, onSelectVoucher, activitie
                   {reward.description}
                 </p>
                 <div className="font-mono text-[10px] tracking-widest text-luxury-slate uppercase">
-                  {reward.pointsCost} PTS {reward.stockAvailable !== null && `• ${reward.stockAvailable} Left`}
+                  {reward.pointsCost.toString()} PTS {reward.stockAvailable !== null && `• ${reward.stockAvailable.toString()} Left`}
                 </div>
               </div>
             </div>

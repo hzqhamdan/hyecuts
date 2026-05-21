@@ -30,8 +30,8 @@ public class AdminController {
 
     // Assuming RewardRedemption needs mapping/fix later if it references LoyaltyProfile
     @PostMapping("/redemptions/{redemptionId}/fulfill")
-    public ResponseEntity<Object> fulfillRedemption(@PathVariable Long redemptionId) {
-        return ResponseEntity.ok(rewardService.fulfillVoucher(voucherRepository.toString()));
+    public ResponseEntity<Object> fulfillRedemption(@PathVariable String redemptionId) {
+        return ResponseEntity.ok(rewardService.fulfillVoucher(redemptionId));
     }
 
     @GetMapping("/redemptions")

@@ -62,7 +62,7 @@ export const VoucherModal = ({ selectedVoucher, redemptionStatus, onRedeem, onCl
                 ) : (
                   <motion.button
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => onRedeem(selectedVoucher.id)}
+                    onClick={() => { onRedeem(selectedVoucher.id); }}
                     disabled={redemptionStatus === 'loading'}
                     className="bg-luxury-black text-white py-4 text-[10px] uppercase tracking-widest hover:bg-neutral-800 transition-colors disabled:opacity-50"
                   >

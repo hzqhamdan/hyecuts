@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar, Clock, Scissors } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../context/AuthContext';
 import { API_BASE } from '../../config';
 
@@ -17,27 +17,17 @@ interface Booking {
 
 export default function UserBookings({ setView }: { setView: (view: string) => void }) {
   const { user } = useAuth();
-  const USER_ID = user?.id || "00000000-0000-0000-0000-000000000000";
-  
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const USER_ID = user?.id ?? "00000000-0000-0000-0000-000000000000";
 
-  useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        setIsLoading(true);
-        const res = await fetch(`${API_BASE}/bookings/user/${USER_ID}`);
-        if (res.ok) {
-          setBookings(await res.json());
-        }
-      } catch (error) {
-        console.error("Error fetching bookings:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchBookings();
-  }, [USER_ID]);
+  const { data: bookings = [], isLoading } = useQuery<Booking[]>({
+    queryKey: ['user-bookings', USER_ID],
+    queryFn: async () => {
+      const res = await fetch(`${API_BASE}/bookings/user/${USER_ID}`);
+      if (!res.ok) throw new Error('Failed to fetch bookings');
+      return res.json() as Promise<Booking[]>;
+    },
+    enabled: !!user?.id,
+  });
 
   return (
     <motion.div
@@ -48,7 +38,7 @@ export default function UserBookings({ setView }: { setView: (view: string) => v
     >
       <nav className="flex justify-between items-center max-w-5xl mx-auto mb-16">
         <button
-          onClick={() => setView('lounge')}
+          onClick={() => { setView('lounge'); }}
           className="flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] text-zinc-500 hover:text-black transition-colors"
         >
           <ArrowLeft className="w-3 h-3" /> Return to Lounge
@@ -69,7 +59,7 @@ export default function UserBookings({ setView }: { setView: (view: string) => v
             <h2 className="font-display text-2xl uppercase tracking-tighter mb-2">No Appointments Yet</h2>
             <p className="text-sm text-zinc-500 mb-8">You haven't made any bookings.</p>
             <button
-              onClick={() => setView('booking')}
+              onClick={() => { setView('booking'); }}
               className="px-8 py-4 bg-black text-white text-[10px] uppercase tracking-widest hover:bg-zinc-800 transition-colors"
             >
               Book an Appointment
@@ -94,7 +84,7 @@ export default function UserBookings({ setView }: { setView: (view: string) => v
                         {booking.status}
                       </span>
                     </div>
-                    <h3 className="font-display text-2xl uppercase tracking-tight mb-4">{booking.service?.name || "Service"}</h3>
+                    <h3 className="font-display text-2xl uppercase tracking-tight mb-4">{booking.service.name}</h3>
                     <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 text-sm text-zinc-600">
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4" /> {dateStr}
@@ -103,7 +93,7 @@ export default function UserBookings({ setView }: { setView: (view: string) => v
                         <Clock className="w-4 h-4" /> {timeStr}
                       </div>
                       <div className="flex items-center gap-2">
-                        <Scissors className="w-4 h-4" /> {booking.service?.durationMinutes || 60} mins
+                        <Scissors className="w-4 h-4" /> {booking.service.durationMinutes} mins
                       </div>
                     </div>
                   </div>

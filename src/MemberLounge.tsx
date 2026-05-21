@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Award, Sparkles, ChevronRight, Activity, Target } from 'lucide-react';
+import { ArrowLeft, Award, Sparkles, ChevronRight, Activity, Target, Globe } from 'lucide-react';
 import { useAuth } from './context/AuthContext';
 import { API_BASE } from './config';
+import { useTranslation } from 'react-i18next';
 
 interface LoyaltyProfile {
   userId: string;
@@ -17,7 +18,7 @@ interface Reward {
   type: string;
   pointsCost: number;
   minimumTierRequired: string;
-  stockAvailable: number;
+  stockAvailable: number | null;
 }
 
 interface ActivityLog {
@@ -59,9 +60,15 @@ interface UserMissionProgress {
 }
 
 const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
+  const { t, i18n } = useTranslation();
   const { user, logout } = useAuth();
+  
+  const toggleLanguage = () => {
+    const newLang = i18n.language === 'en' ? 'ms' : 'en';
+    void i18n.changeLanguage(newLang);
+  };
   // Use real user ID if authenticated, fallback to a valid UUID if not for demo purposes
-  const USER_ID = user?.id || "00000000-0000-0000-0000-000000000000";
+  const USER_ID = user?.id ?? "00000000-0000-0000-0000-000000000000";
   
   const [profile, setProfile] = useState<LoyaltyProfile | null>(null);
   const [rewards, setRewards] = useState<Reward[]>([]);
@@ -85,35 +92,35 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
         // Fetch Profile
         const profileRes = await fetch(`${API_BASE}/loyalty/profile/${USER_ID}`);
         if (profileRes.ok) {
-          const userData = await profileRes.json();
+          const userData = (await profileRes.json()) as { id: string; currentPoints: number; tier?: { name: string } };
           setProfile({
             userId: userData.id,
-            pointsBalance: userData.currentPoints || 0,
+            pointsBalance: userData.currentPoints,
             currentTier: userData.tier ? userData.tier.name : 'Rookie'
           });
         }
 
         // Fetch Rewards
         const rewardsRes = await fetch(`${API_BASE}/rewards`);
-        if (rewardsRes.ok) setRewards(await rewardsRes.json());
+        if (rewardsRes.ok) setRewards((await rewardsRes.json()) as Reward[]);
 
         // Fetch Activity History
         const activityRes = await fetch(`${API_BASE}/gamification/activity/${USER_ID}`);
-        if (activityRes.ok) setActivities(await activityRes.json());
+        if (activityRes.ok) setActivities((await activityRes.json()) as ActivityLog[]);
 
         // Fetch Gamification data
         const bRes = await fetch(`${API_BASE}/gamification/badges`);
-        if (bRes.ok) setBadges(await bRes.json());
+        if (bRes.ok) setBadges((await bRes.json()) as Badge[]);
         
         const ubRes = await fetch(`${API_BASE}/gamification/badges/${USER_ID}`);
-        if (ubRes.ok) setUserBadges(await ubRes.json());
+        if (ubRes.ok) setUserBadges((await ubRes.json()) as UserBadge[]);
 
-        const mDaily = await fetch(`${API_BASE}/gamification/missions/type/DAILY`).then(r => r.ok ? r.json() : []);
-        const mWeekly = await fetch(`${API_BASE}/gamification/missions/type/WEEKLY`).then(r => r.ok ? r.json() : []);
+        const mDaily = (await fetch(`${API_BASE}/gamification/missions/type/DAILY`).then(r => r.ok ? r.json() : [])) as Mission[];
+        const mWeekly = (await fetch(`${API_BASE}/gamification/missions/type/WEEKLY`).then(r => r.ok ? r.json() : [])) as Mission[];
         setMissions([...mDaily, ...mWeekly]);
 
         const umpRes = await fetch(`${API_BASE}/gamification/missions/${USER_ID}`);
-        if (umpRes.ok) setMissionProgress(await umpRes.json());
+        if (umpRes.ok) setMissionProgress((await umpRes.json()) as UserMissionProgress[]);
 
       } catch (error) {
         console.error("Error fetching loyalty data:", error);
@@ -122,24 +129,24 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
       }
     };
 
-    fetchData();
-  }, []);
+    void fetchData();
+  }, [USER_ID]);
 
   const handleRedeem = async (rewardId: number) => {
     setRedemptionStatus('loading');
     try {
-      const res = await fetch(`${API_BASE}/rewards/redeem/${USER_ID}/${rewardId}`, {
+      const res = await fetch(`${API_BASE}/rewards/redeem/${USER_ID}/${rewardId.toString()}`, {
         method: 'POST'
       });
       if (res.ok) {
         setRedemptionStatus('success');
         // Refresh profile to show deducted points
         const profileRes = await fetch(`${API_BASE}/loyalty/profile/${USER_ID}`);
-        if (profileRes.ok) setProfile(await profileRes.json());
+        if (profileRes.ok) setProfile((await profileRes.json()) as LoyaltyProfile);
       } else {
         setRedemptionStatus('error');
       }
-    } catch (error) {
+    } catch {
       setRedemptionStatus('error');
     }
   };
@@ -173,38 +180,38 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
     >
       {/* Navigation Header */}
       <nav className="flex justify-between items-center max-w-7xl mx-auto mb-24">
-        <button onClick={() => setView('facade')}
-          className="flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] text-studio-slate hover:text-studio-black transition-colors"
+        <button onClick={() => { setView('facade'); }}
+          className="flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] text-zinc-400 hover:text-black transition-colors"
         >
-          <ArrowLeft className="w-3 h-3" /> Return to Facade
+          <ArrowLeft className="w-3 h-3" /> {t('nav.return_facade')}
         </button>
-        <div className="font-display text-2xl tracking-tighter uppercase font-medium italic">
-          The Member Lounge
+        <div className="font-serif text-2xl tracking-tighter uppercase font-medium italic">
+          {t('lounge.title')}
         </div>
           <div className="flex items-center gap-8">
             <button
-              onClick={() => setView('booking')}
+              onClick={() => { setView('booking'); }}
               className="text-[10px] uppercase tracking-widest text-zinc-400 hover:text-black transition-colors font-medium"
             >
-              Book Appointment
+              {t('nav.book')}
             </button>
             <button
-              onClick={() => setView('my-bookings')}
+              onClick={() => { setView('my-bookings'); }}
               className="text-[10px] uppercase tracking-widest text-zinc-400 hover:text-black transition-colors font-medium"
             >
-              My Appointments
+              {t('nav.appointments')}
             </button>
             <button
-              onClick={() => setShowSettingsModal(true)}
+              onClick={() => { setShowSettingsModal(true); }}
               className="text-[10px] uppercase tracking-widest text-zinc-400 hover:text-black transition-colors font-medium"
             >
-              Profile & Privacy
+              {t('nav.profile')}
             </button>
             <button
-              onClick={() => setView('login')}
+              onClick={() => { setView('login'); }}
               className="text-[10px] uppercase tracking-widest text-zinc-300 hover:text-black transition-colors font-medium"
             >
-              Atelier Access
+              {t('nav.login')}
             </button>
             <button
               onClick={() => {
@@ -213,7 +220,14 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
               }}
               className="text-[10px] uppercase tracking-widest text-red-400 hover:text-red-600 transition-colors font-medium"
             >
-              Logout
+              {t('nav.logout')}
+            </button>
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-zinc-400 hover:text-black transition-colors font-medium border-l border-zinc-200 pl-8 ml-2"
+            >
+              <Globe size={12} />
+              {i18n.language === 'en' ? 'MS' : 'EN'}
             </button>
           </div>
       </nav>
@@ -222,10 +236,10 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
 
         {/* SECTION 1: STATUS CARD (The Centerpiece) */}
         <section className="lg:w-1/3 flex flex-col items-center">
-          <div className="w-80 flex flex-col items-center bg-studio-white border border-black/10 px-8 py-16">
-            <span className="text-[10px] uppercase tracking-studio text-studio-slate font-sans mb-4">Membership Tier</span>
-            <h2 className="font-display text-[32px] text-studio-black">
-              {isLoading ? '...' : profile?.currentTier || 'Rookie'}
+          <div className="w-80 flex flex-col items-center bg-white border border-black/10 px-8 py-16">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 font-sans mb-4">{t('lounge.tier_label')}</span>
+            <h2 className="font-serif text-[32px] text-black">
+              {isLoading ? '...' : profile?.currentTier ?? 'Rookie'}
             </h2>
 
             {/* The Hairline Progress Arc */}
@@ -239,7 +253,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
                 />
                 <motion.path
                   d="M 24 96 A 72 72 0 0 1 168 96"
-                  stroke="#B8A070" 
+                  stroke="#000000" 
                   strokeWidth="1"
                   fill="transparent"
                   strokeDasharray="226.2"
@@ -251,7 +265,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
             </div>
             
             <div className="mt-8 text-center">
-              <p className="font-sans text-studio-slate text-xs leading-relaxed max-w-[200px]">
+              <p className="font-sans text-zinc-500 text-xs leading-relaxed max-w-[200px]">
                 The pinnacle of grooming. Your status grants you access to the most refined services in the city.
               </p>
             </div>
@@ -262,12 +276,12 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
         <section className="lg:w-2/3">
           <div className="flex items-end justify-between mb-12">
             <div>
-              <h3 className="font-display text-4xl uppercase tracking-tighter mb-2">The Portfolio</h3>
-              <p className="font-sans text-studio-slate text-sm tracking-wide">Curated rewards and invitations</p>
+              <h3 className="font-serif text-4xl uppercase tracking-tighter mb-2">{t('lounge.portfolio_title')}</h3>
+              <p className="font-sans text-zinc-500 text-sm tracking-wide">{t('lounge.portfolio_subtitle')}</p>
             </div>
             <div className="text-right">
-              <span className="text-xs font-medium uppercase tracking-widest border-b border-studio-black pb-1">
-                {rewards.length} Available Assets
+              <span className="text-xs font-medium uppercase tracking-widest border-b border-black pb-1">
+                {rewards.length} {t('lounge.available_assets')}
               </span>
             </div>
           </div>
@@ -275,12 +289,12 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
           {/* Editorial Layout Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
             {isLoading ? (
-              <div className="col-span-2 text-center py-12 text-studio-slate text-[10px] uppercase tracking-widest">
+              <div className="col-span-2 text-center py-12 text-zinc-500 text-[10px] uppercase tracking-widest">
                 Retrieving Secure Assets...
               </div>
             ) : rewards.length === 0 ? (
-              <div className="col-span-2 text-center py-12 text-studio-slate text-[10px] uppercase tracking-widest">
-                No Assets Available
+              <div className="col-span-2 text-center py-12 text-zinc-500 text-[10px] uppercase tracking-widest">
+                {t('lounge.no_rewards')}
               </div>
             ) : rewards.map((reward, idx) => (
               <motion.div
@@ -299,7 +313,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
                   {/* Top Row */}
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-studio-black rounded-full" />
+                      <div className="w-2 h-2 bg-black rounded-full" />
                       <span className="text-[9px] uppercase tracking-widest font-medium">
                         {reward.minimumTierRequired || 'Any'} Tier
                       </span>
@@ -309,20 +323,20 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
 
                   {/* Middle Content Overlay */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none">
-                    <div className="bg-studio-black text-white px-4 py-2 text-[10px] uppercase tracking-widest flex items-center gap-2 translate-y-2 group-hover:translate-y-0 transition-transform duration-700">
+                    <div className="bg-black text-white px-4 py-2 text-[10px] uppercase tracking-widest flex items-center gap-2 translate-y-2 group-hover:translate-y-0 transition-transform duration-700">
                       Reveal Invitation <ChevronRight className="w-3 h-3" />
                     </div>
                   </div>
 
                   <div className="relative z-10">
-                    <h4 className="font-display text-xl uppercase tracking-tight mb-2 group-hover:translate-x-1 transition-transform duration-300">
+                    <h4 className="font-serif text-xl uppercase tracking-tight mb-2 group-hover:translate-x-1 transition-transform duration-300">
                       {reward.title}
                     </h4>
-                    <p className="text-xs text-studio-slate font-sans leading-relaxed max-w-xs line-clamp-2 mb-3">
+                    <p className="text-xs text-zinc-500 font-sans leading-relaxed max-w-xs line-clamp-2 mb-3">
                       {reward.description}
                     </p>
-                    <div className="font-mono text-[10px] tracking-widest text-studio-slate uppercase">
-                      {reward.pointsCost} PTS {reward.stockAvailable !== null && `? ${reward.stockAvailable} Left`}
+                    <div className="font-mono text-[10px] tracking-widest text-zinc-500 uppercase">
+                      {reward.pointsCost.toString()} {t('lounge.pts')} {reward.stockAvailable !== null && `? ${reward.stockAvailable.toString()} Left`}
                     </div>
                   </div>
                 </div>
@@ -333,21 +347,21 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
           {/* Recent Activity Feed */}
           {activities.length > 0 && (
             <div className="mt-24">
-              <h3 className="font-display text-2xl uppercase tracking-tighter mb-8 border-b border-black/10 pb-4">Recent Activity</h3>
+              <h3 className="font-serif text-2xl uppercase tracking-tighter mb-8 border-b border-black/10 pb-4">{t('lounge.activity_title')}</h3>
               <div className="space-y-4">
                 {activities.slice(0, 3).map((act) => (
                   <div key={act.id} className="flex justify-between items-center p-4 bg-neutral-50 border border-neutral-100">
                     <div className="flex items-center gap-4">
-                      <Activity className="w-4 h-4 text-studio-slate" />
+                      <Activity className="w-4 h-4 text-zinc-500" />
                       <div>
                         <p className="text-sm font-medium">{act.description}</p>
-                        <p className="text-[10px] text-studio-slate uppercase tracking-widest mt-1">
+                        <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1">
                           {new Date(act.timestamp).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
-                    <div className={`font-mono text-sm ${act.pointsEarned > 0 ? 'text-green-600' : 'text-studio-slate'}`}>
-                      {act.pointsEarned > 0 ? '+' : ''}{act.pointsEarned} PTS
+                    <div className={`font-mono text-sm ${act.pointsEarned > 0 ? 'text-green-600' : 'text-zinc-500'}`}>
+                      {act.pointsEarned > 0 ? '+' : ''}{act.pointsEarned.toString()} {t('lounge.pts')}
                     </div>
                   </div>
                 ))}
@@ -364,37 +378,37 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
         <section>
           <div className="flex items-end justify-between mb-12">
             <div>
-              <h3 className="font-display text-4xl uppercase tracking-tighter mb-2">Directives</h3>
-              <p className="font-sans text-studio-slate text-sm tracking-wide">Active challenges</p>
+              <h3 className="font-serif text-4xl uppercase tracking-tighter mb-2">{t('lounge.directives_title')}</h3>
+              <p className="font-sans text-zinc-500 text-sm tracking-wide">{t('lounge.directives_subtitle')}</p>
             </div>
             <Target className="w-6 h-6 opacity-40" />
           </div>
 
           <div className="space-y-4">
             {missions.length === 0 ? (
-              <div className="text-[10px] uppercase tracking-widest text-studio-slate">No active directives.</div>
+              <div className="text-[10px] uppercase tracking-widest text-zinc-500">No active directives.</div>
             ) : (
               missions.slice(0, 3).map(mission => {
-                const prog = missionProgress.find(p => p.missionId === mission.id) || { currentProgress: 0, completed: false };
+                const prog = missionProgress.find(p => p.missionId === mission.id) ?? { currentProgress: 0, completed: false };
 
                 return (
                   <div key={mission.id} className="py-4 border-b border-black/5 flex justify-between items-center group">
                     <div className={`flex items-center gap-4 ${prog.completed ? 'opacity-30 line-through' : ''}`}>
-                      <div className="w-1.5 h-1.5 bg-studio-gold rounded-full" />
+                      <div className="w-1.5 h-1.5 bg-black rounded-full" />
                       <div>
-                        <h4 className="font-sans text-sm uppercase tracking-widest font-medium text-studio-black">
+                        <h4 className="font-sans text-sm uppercase tracking-widest font-medium text-black">
                           {mission.title}
                         </h4>
                         {!prog.completed && (
-                          <div className="text-[10px] text-studio-slate uppercase tracking-widest mt-1">
-                            {prog.currentProgress} / {mission.requiredCount} {mission.targetAction}
+                          <div className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1">
+                            {prog.currentProgress.toString()} / {mission.requiredCount.toString()} {mission.targetAction}
                           </div>
                         )}
                       </div>
                     </div>
                     {!prog.completed && (
-                      <span className="text-[10px] font-mono tracking-widest text-studio-slate">
-                        +{mission.rewardPoints} PTS
+                      <span className="text-[10px] font-mono tracking-widest text-zinc-500">
+                        +{mission.rewardPoints.toString()} {t('lounge.pts')}
                       </span>
                     )}
                   </div>
@@ -408,40 +422,34 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
         <section>
           <div className="flex items-end justify-between mb-12">
             <div>
-              <h3 className="font-display text-4xl uppercase tracking-tighter mb-2">The Archive</h3>
-              <p className="font-sans text-studio-slate text-sm tracking-wide">Honors collection</p>
+              <h3 className="font-serif text-4xl uppercase tracking-tighter mb-2">{t('lounge.archive_title')}</h3>
+              <p className="font-sans text-zinc-500 text-sm tracking-wide">{t('lounge.archive_subtitle')}</p>
             </div>
             <Award className="w-6 h-6 opacity-40" />
           </div>
 
           <div className="flex flex-col gap-4">
-            {badges.length === 0 ? (
-              <div className="text-[10px] uppercase tracking-widest text-studio-slate">No honors registered.</div>
-            ) : (
-              <div className="flex flex-wrap gap-4">
-                {badges.slice(0, 5).map(badge => {
-                  const unlocked = userBadges.some(ub => ub.badgeId === badge.id);
-                  return (
-                    <div 
-                      key={badge.id} 
-                      className={`px-6 py-4 border transition-all ${
-                        unlocked ? 'border-studio-black text-studio-black bg-studio-white' : 'border-neutral-200 text-neutral-400 opacity-40 bg-white'
-                      }`}
-                    >
-                      <div className="font-display text-sm uppercase tracking-widest leading-none">{badge.name}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-            
-            {badges.length > 5 && (
-              <div className="mt-4">
-                <a href="#" className="text-[10px] uppercase tracking-widest text-studio-slate hover:text-studio-black border-b border-transparent hover:border-studio-black transition-colors">
-                  View Collection
-                </a>
-              </div>
-            )}
+            <div className="flex flex-wrap gap-4">
+              {badges.slice(0, 5).map(badge => {
+                const unlocked = userBadges.some(ub => ub.badgeId === badge.id);
+                return (
+                  <div 
+                    key={badge.id} 
+                    className={`px-6 py-4 border transition-all ${
+                      unlocked ? 'border-black text-black bg-white' : 'border-neutral-200 text-neutral-400 opacity-40 bg-white'
+                    }`}
+                  >
+                    <div className="font-serif text-sm uppercase tracking-widest leading-none">{badge.name}</div>
+                  </div>
+                );
+              })}
+            </div>
+
+          <div className="mt-4">
+            <a href="#" className="text-[10px] uppercase tracking-widest text-zinc-500 hover:text-black border-b border-transparent hover:border-black transition-colors">
+              View Collection
+            </a>
+          </div>
           </div>
         </section>
       </div>
@@ -449,26 +457,26 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
       {/* SIGNATURE TRANSITION: Voucher Modal */}
       
         {selectedVoucher && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-studio-black/95 backdrop-blur-md p-6">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-md p-6">
             <div className="bg-[#F9F9F7] w-full max-w-lg relative overflow-hidden shadow-2xl">
               {/* Luxury Invitation Styling */}
-              <div className="p-12 flex flex-col items-center text-center bg-[url('https://www.transparenttextures.com/patterns/paper.png')] bg-repeat">
-                <div className="w-full border-t border-b border-studio-black py-8 mb-12">
-                  <span className="font-sans text-[10px] uppercase tracking-[0.4em] text-studio-slate block mb-4">Exclusive Invitation</span>
-                  <h2 className="font-display text-4xl uppercase tracking-tighter mb-2">The Studio</h2>
-                  <div className="h-px w-12 bg-studio-black mx-auto mt-6" />
+              <div className="p-12 flex flex-col items-center text-center bg-repeat">
+                <div className="w-full border-t border-b border-black py-8 mb-12">
+                  <span className="font-sans text-[10px] uppercase tracking-[0.4em] text-zinc-500 block mb-4">Exclusive Invitation</span>
+                  <h2 className="font-serif text-4xl uppercase tracking-tighter mb-2">The Studio</h2>
+                  <div className="h-px w-12 bg-black mx-auto mt-6" />
                 </div>
 
                 <div className="relative group mb-12">
                   {/* Physical Card Feel */}
-                  <div className="bg-neutral-50 border border-studio-black/20 p-10 flex flex-col items-center gap-8 w-72 shadow-sm">
+                  <div className="bg-neutral-50 border border-black/20 p-10 flex flex-col items-center gap-8 w-72 shadow-sm">
                     <div className="bg-black p-6 rounded-none">
                       <Award className="w-20 h-20 text-white" />
                     </div>
                     <div className="space-y-2">
-                      <div className="font-display text-lg uppercase tracking-tight leading-tight">{selectedVoucher.title}</div>
-                      <div className="font-mono text-[10px] text-studio-slate tracking-widest">
-                        COST: {selectedVoucher.pointsCost} PTS
+                      <div className="font-serif text-lg uppercase tracking-tight leading-tight">{selectedVoucher.title}</div>
+                      <div className="font-mono text-[10px] text-zinc-500 tracking-widest">
+                        COST: {selectedVoucher.pointsCost.toString()} {t('lounge.pts')}
                       </div>
                     </div>
                   </div>
@@ -484,17 +492,17 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
                       Insufficient Points or Stock
                     </div>
                   ) : (
-                    <button onClick={() => handleRedeem(selectedVoucher.id)}
+                    <button onClick={() => { void handleRedeem(selectedVoucher.id); }}
                       disabled={redemptionStatus === 'loading'}
-                      className="bg-studio-black text-white py-4 text-[10px] uppercase tracking-widest hover:bg-neutral-800 transition-colors disabled:opacity-50"
+                      className="bg-black text-white py-4 text-[10px] uppercase tracking-widest hover:bg-neutral-800 transition-colors disabled:opacity-50"
                     >
                       {redemptionStatus === 'loading' ? 'Processing...' : 'Redeem Asset'}
                     </button>
                   )}
                   
                   <button
-                    onClick={() => setSelectedVoucher(null)}
-                    className="text-[10px] uppercase tracking-widest text-studio-slate hover:text-studio-black transition-colors mt-2"
+                    onClick={() => { setSelectedVoucher(null); }}
+                    className="text-[10px] uppercase tracking-widest text-zinc-500 hover:text-black transition-colors mt-2"
                   >
                     Close Portfolio
                   </button>
@@ -502,20 +510,20 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
               </div>
 
               {/* Decorative Corner Elements */}
-              <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-studio-black/10" />
-              <div className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-studio-black/10" />
-              <div className="absolute bottom-0 left-0 w-12 h-12 border-b-2 border-l-2 border-studio-black/10" />
-              <div className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 border-studio-black/10" />
+              <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-black/10" />
+              <div className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-black/10" />
+              <div className="absolute bottom-0 left-0 w-12 h-12 border-b-2 border-l-2 border-black/10" />
+              <div className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 border-black/10" />
             </div>
           </div>
         )}
 
       {/* PDPA Privacy & Data Export Modal */}
       {showSettingsModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-studio-black/95 backdrop-blur-md p-6">
-          <div className="bg-studio-white w-full max-w-lg relative overflow-hidden shadow-2xl p-12">
-            <h2 className="font-display text-2xl uppercase tracking-tighter mb-6 text-studio-black">Profile & Privacy</h2>
-            <p className="font-sans text-xs text-studio-slate leading-relaxed mb-8">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-md p-6">
+          <div className="bg-white w-full max-w-lg relative overflow-hidden shadow-2xl p-12">
+            <h2 className="font-serif text-2xl uppercase tracking-tighter mb-6 text-black">Profile & Privacy</h2>
+            <p className="font-sans text-xs text-zinc-500 leading-relaxed mb-8">
               Manage your personal data under the Personal Data Protection Act (PDPA) 2010.
             </p>
             
@@ -533,7 +541,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
                 className="w-full text-left p-4 border border-zinc-200 hover:border-black hover:bg-neutral-50 transition-colors"
               >
                 <div className="text-[10px] uppercase tracking-widest font-bold mb-1">Export Data (JSON)</div>
-                <div className="text-xs text-studio-slate">Download a copy of your personal data.</div>
+                <div className="text-xs text-zinc-500">Download a copy of your personal data.</div>
               </button>
               
               <button 
@@ -551,8 +559,8 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
             </div>
 
             <button
-              onClick={() => setShowSettingsModal(false)}
-              className="w-full bg-studio-black text-white py-4 text-[10px] uppercase tracking-widest hover:bg-neutral-800 transition-colors"
+              onClick={() => { setShowSettingsModal(false); }}
+              className="w-full bg-black text-white py-4 text-[10px] uppercase tracking-widest hover:bg-neutral-800 transition-colors"
             >
               Close
             </button>

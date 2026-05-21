@@ -12,6 +12,7 @@ import {
 // Tab Views
 import { BookingsManager } from './components/atelier/BookingsManager';
 import { LoyaltyConfigurator } from './components/atelier/LoyaltyConfigurator';
+import { OverviewView } from './components/atelier/OverviewView';
 
 type View = 'booking-manager' | 'member-manager' | 'loyalty-configurator' | 'analytics';
 
@@ -46,25 +47,25 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
         <nav className="flex flex-row md:flex-col overflow-x-auto md:overflow-x-visible px-6 space-y-0 md:space-y-2">
           <NavItem
             active={currentView === 'booking-manager'}
-            onClick={() => handleNav('booking-manager')}
+            onClick={() => { handleNav('booking-manager'); }}
             icon={<CalendarDays size={18} />}
             label="Booking Manager"
           />
           <NavItem
             active={currentView === 'member-manager'}
-            onClick={() => handleNav('member-manager')}
+            onClick={() => { handleNav('member-manager'); }}
             icon={<Users size={18} />}
             label="Member Manager"
           />
           <NavItem
             active={currentView === 'loyalty-configurator'}
-            onClick={() => handleNav('loyalty-configurator')}
+            onClick={() => { handleNav('loyalty-configurator'); }}
             icon={<SlidersHorizontal size={18} />}
             label="Loyalty Config"
           />
           <NavItem
             active={currentView === 'analytics'}
-            onClick={() => handleNav('analytics')}
+            onClick={() => { handleNav('analytics'); }}
             icon={<BarChart3 size={18} />}
             label="Analytics"
           />
@@ -106,10 +107,10 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
             transition={springTransition}
             className="max-w-6xl mx-auto"
           >
-            {currentView === 'booking-manager' && <BookingsManager token={token || ''} />}
+            {currentView === 'booking-manager' && <BookingsManager token={token ?? ''} />}
             {currentView === 'member-manager' && <div className="p-10 border border-zinc-200"><h2 className="font-serif text-3xl">Member Manager</h2><p className="text-zinc-400 mt-4">Module under construction.</p></div>}
             {currentView === 'loyalty-configurator' && <LoyaltyConfigurator />}
-            {currentView === 'analytics' && <div className="p-10 border border-zinc-200"><h2 className="font-serif text-3xl">Analytics Overview</h2><p className="text-zinc-400 mt-4">Module under construction.</p></div>}
+            {currentView === 'analytics' && <OverviewView />}
           </motion.div>
         </AnimatePresence>
       </main>

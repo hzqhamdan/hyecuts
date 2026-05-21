@@ -18,17 +18,17 @@ export function EconomyControlCenter({ ratio, setRatio, multiplier, setMultiplie
 
   const handleAdjust = async () => {
     try {
-      const res = await fetch(`${API_BASE}/admin/points/adjust/${targetUser}?points=${adjustAmount}`, {
+      const res = await fetch(`${API_BASE}/admin/points/adjust/${targetUser}?points=${adjustAmount.toString()}`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { 'Authorization': `Bearer ${token ?? ''}` }
       });
       if (res.ok) {
         setAdjustStatus('Success');
-        setTimeout(() => setAdjustStatus(''), 2000);
+        setTimeout(() => { setAdjustStatus(''); }, 2000);
       } else {
         setAdjustStatus('Error');
       }
-    } catch(e) {
+    } catch {
       setAdjustStatus('Error');
     }
   };
@@ -44,13 +44,13 @@ export function EconomyControlCenter({ ratio, setRatio, multiplier, setMultiplie
         <div className="p-12 bg-white space-y-12">
           <div className="flex justify-between items-center">
             <label className="text-[10px] uppercase tracking-widest font-bold text-zinc-400">Point-per-Visit Ratio</label>
-            <span className="font-serif text-3xl">{ratio} pts</span>
+            <span className="font-serif text-3xl">{ratio.toString()} pts</span>
           </div>
           <input
             type="range"
             min="1" max="50"
             value={ratio}
-            onChange={(e) => setRatio(parseInt(e.target.value))}
+            onChange={(e) => { setRatio(parseInt(e.target.value)); }}
             className="w-full h-px bg-zinc-200 rounded-none appearance-none cursor-pointer accent-black"
           />
           <p className="text-xs text-zinc-400 leading-relaxed italic">
@@ -61,13 +61,13 @@ export function EconomyControlCenter({ ratio, setRatio, multiplier, setMultiplie
         <div className="p-12 bg-white space-y-12">
           <div className="flex justify-between items-center">
             <label className="text-[10px] uppercase tracking-widest font-bold text-zinc-400">Seasonal Multiplier</label>
-            <span className="font-serif text-3xl">{multiplier}x</span>
+            <span className="font-serif text-3xl">{multiplier.toString()}x</span>
           </div>
           <input
             type="range"
             min="1" max="3" step="0.1"
             value={multiplier}
-            onChange={(e) => setMultiplier(parseFloat(e.target.value))}
+            onChange={(e) => { setMultiplier(parseFloat(e.target.value)); }}
             className="w-full h-px bg-zinc-200 rounded-none appearance-none cursor-pointer accent-black"
           />
           <p className="text-xs text-zinc-400 leading-relaxed italic">
@@ -79,25 +79,25 @@ export function EconomyControlCenter({ ratio, setRatio, multiplier, setMultiplie
       <div className="bg-white p-12 border border-zinc-200 space-y-12">
           <div className="flex justify-between items-center">
             <label className="text-[10px] uppercase tracking-widest font-bold text-zinc-400">Manual Point Adjustment</label>
-            <span className="font-serif text-3xl">{adjustAmount > 0 ? '+' : ''}{adjustAmount}</span>
+            <span className="font-serif text-3xl">{adjustAmount > 0 ? '+' : ''}{adjustAmount.toString()}</span>
           </div>
           <div className="flex flex-col gap-4 max-w-md">
             <input 
               type="text" 
               value={targetUser} 
-              onChange={e => setTargetUser(e.target.value)} 
+              onChange={e => { setTargetUser(e.target.value); }} 
               placeholder="User ID" 
               className="p-3 border border-zinc-200 text-sm" 
             />
             <input 
               type="number" 
               value={adjustAmount} 
-              onChange={e => setAdjustAmount(parseInt(e.target.value) || 0)} 
+              onChange={e => { setAdjustAmount(parseInt(e.target.value) || 0); }} 
               placeholder="Amount (+ or -)" 
               className="p-3 border border-zinc-200 text-sm" 
             />
             <button 
-              onClick={handleAdjust} 
+              onClick={() => { void handleAdjust(); }} 
               className="w-full py-3 bg-black text-white text-[10px] uppercase tracking-widest font-bold"
             >
               Apply Adjustment {adjustStatus && `(${adjustStatus})`}

@@ -13,7 +13,13 @@ export const TEAM_MEMBERS = [
   { name: 'Naim', role: 'Senior Artisan' },
 ] as const;
 
-export const BUSINESS_HOURS = [
+export interface BusinessHour {
+  day: string;
+  hours: string;
+  open: boolean;
+}
+
+export const BUSINESS_HOURS: BusinessHour[] = [
   { day: 'Monday', hours: '12:00 PM - 10:00 PM', open: true },
   { day: 'Tuesday', hours: '12:00 PM - 10:00 PM', open: true },
   { day: 'Wednesday', hours: '12:00 PM - 10:00 PM', open: true },
@@ -21,9 +27,10 @@ export const BUSINESS_HOURS = [
   { day: 'Friday', hours: '2:30 PM - 10:00 PM', open: true },
   { day: 'Saturday', hours: '12:00 PM - 10:00 PM', open: true },
   { day: 'Sunday', hours: '12:00 PM - 10:00 PM', open: true },
-] as const;
+];
 
 export interface ServiceItem {
+  id: number;
   name: string;
   price: string;
   duration: string;
@@ -39,31 +46,31 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
   {
     category: 'Haircuts',
     services: [
-      { name: 'Adult Hair Cut', price: 'RM 25', duration: '30 mins', category: 'Haircuts' },
-      { name: 'Teenager Hair Cut', price: 'RM 20', duration: '30 mins', category: 'Haircuts' },
-      { name: 'Senior Citizen Hair Cut', price: 'RM 15', duration: '30 mins', category: 'Haircuts' },
-      { name: 'Kids Hair Cut', price: 'RM 15', duration: '30 mins', category: 'Haircuts' },
+      { id: 1, name: 'Adult Hair Cut', price: 'RM 25', duration: '30 mins', category: 'Haircuts' },
+      { id: 4, name: 'Teenager Hair Cut', price: 'RM 20', duration: '30 mins', category: 'Haircuts' },
+      { id: 5, name: 'Senior Citizen Hair Cut', price: 'RM 15', duration: '30 mins', category: 'Haircuts' },
+      { id: 7, name: 'Kids Hair Cut', price: 'RM 15', duration: '30 mins', category: 'Haircuts' },
     ],
   },
   {
     category: 'Beard',
     services: [
-      { name: 'Beard Trim/Shape', price: 'RM 10', duration: '10 mins', category: 'Beard' },
-      { name: 'Shave/Clean', price: 'RM 10', duration: '10 mins', category: 'Beard' },
+      { id: 8, name: 'Beard Trim/Shape', price: 'RM 10', duration: '10 mins', category: 'Beard' },
+      { id: 9, name: 'Shave/Clean', price: 'RM 10', duration: '10 mins', category: 'Beard' },
     ],
   },
   {
     category: 'Cut & Shave',
     services: [
-      { name: 'Adult Cut & Shave', price: 'RM 30', duration: '30 mins', category: 'Cut & Shave' },
-      { name: 'Senior Cut & Shave', price: 'RM 20', duration: '40 mins', category: 'Cut & Shave' },
+      { id: 2, name: 'Adult Cut & Shave', price: 'RM 30', duration: '30 mins', category: 'Cut & Shave' },
+      { id: 6, name: 'Senior Cut & Shave', price: 'RM 20', duration: '40 mins', category: 'Cut & Shave' },
     ],
   },
   {
     category: 'Treatment',
     services: [
-      { name: 'Keratin Treatment', price: 'RM 200', duration: '2 hrs', category: 'Treatment' },
-      { name: 'Hair Colour', price: 'RM 180', duration: '3 hrs', category: 'Treatment' },
+      { id: 3, name: 'Keratin Treatment', price: 'RM 200', duration: '2 hrs', category: 'Treatment' },
+      { id: 10, name: 'Hair Colour', price: 'RM 180', duration: '3 hrs', category: 'Treatment' },
     ],
   },
 ];

@@ -1,18 +1,34 @@
-import { useEffect, useState } from 'react';
-import LandingPage from './components/landing/LandingPage';
-import MemberLounge from './MemberLounge';
-import AtelierDashboard from './AtelierDashboard';
-import LoginScreen from './LoginScreen';
-import BookingFlow from './components/booking/BookingFlow';
-import UserBookings from './components/booking/UserBookings';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { useAuth } from './context/AuthContext';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Moon, Sun } from 'lucide-react';
 
+// Lazy load components
+const LandingPage = lazy(() => import('./components/landing/LandingPage'));
+const MemberLounge = lazy(() => import('./MemberLounge'));
+const AtelierDashboard = lazy(() => import('./AtelierDashboard'));
+const LoginScreen = lazy(() => import('./LoginScreen'));
+const BookingFlow = lazy(() => import('./components/booking/BookingFlow'));
+const UserBookings = lazy(() => import('./components/booking/UserBookings'));
+
 const THEME_STORAGE_KEY = 'hyecuts-theme-v2';
 
+const LoadingView = () => (
+  <div className="fixed inset-0 bg-white dark:bg-black flex items-center justify-center z-[100]">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="font-serif text-2xl italic tracking-tighter uppercase"
+    >
+      Hyecuts
+    </motion.div>
+  </div>
+);
+
+type ViewState = 'facade' | 'login' | 'booking' | 'my-bookings' | 'lounge' | 'admin';
+
 function App() {
-  const [view, setView] = useState<string>('facade');
+  const [view, setView] = useState<ViewState>('facade');
   const { token } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
@@ -27,11 +43,15 @@ function App() {
     window.localStorage.setItem(THEME_STORAGE_KEY, isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
 
+  const handleSetView = (newView: string) => {
+    setView(newView as ViewState);
+  };
+
   return (
     <>
       <motion.button
         type="button"
-        onClick={() => setIsDarkMode((prev) => !prev)}
+        onClick={() => { setIsDarkMode((prev) => !prev); }}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.95 }}
         aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
@@ -53,19 +73,21 @@ function App() {
       </motion.button>
 
       <AnimatePresence mode="wait">
-        {view === 'facade' ? (
-          <LandingPage key="facade" setView={setView as any} />
-        ) : view === 'login' ? (
-          <LoginScreen key="login" setView={setView as any} />
-        ) : view === 'booking' ? (
-          <BookingFlow key="booking" setView={setView as any} />
-        ) : view === 'my-bookings' ? (
-          token ? <UserBookings key="my-bookings" setView={setView as any} /> : <LoginScreen key="login" setView={setView as any} />
-        ) : view === 'lounge' ? (
-          token ? <MemberLounge key="lounge" setView={setView as any} /> : <LoginScreen key="login" setView={setView as any} />
-        ) : (
-          token ? <AtelierDashboard key="admin" setView={setView as any} /> : <LoginScreen key="login" setView={setView as any} />
-        )}
+        <Suspense fallback={<LoadingView />}>
+          {view === 'facade' ? (
+            <LandingPage key="facade" setView={handleSetView} />
+          ) : view === 'login' ? (
+            <LoginScreen key="login" setView={handleSetView} />
+          ) : view === 'booking' ? (
+            <BookingFlow key="booking" setView={handleSetView} />
+          ) : view === 'my-bookings' ? (
+            token ? <UserBookings key="my-bookings" setView={handleSetView} /> : <LoginScreen key="login" setView={handleSetView} />
+          ) : view === 'lounge' ? (
+            token ? <MemberLounge key="lounge" setView={handleSetView} /> : <LoginScreen key="login" setView={handleSetView} />
+          ) : (
+            token ? <AtelierDashboard key="admin" setView={handleSetView} /> : <LoginScreen key="login" setView={handleSetView} />
+          )}
+        </Suspense>
       </AnimatePresence>
     </>
   );
