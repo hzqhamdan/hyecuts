@@ -5,6 +5,7 @@ import {
 } from 'recharts';
 import { API_BASE } from '../../config';
 import type { Reward } from '../../types/loyalty';
+import { useTranslation } from 'react-i18next';
 
 interface Analytics {
   tierDistribution: Record<string, number>;
@@ -19,6 +20,7 @@ interface Analytics {
 const COLORS = ['#1A1A1A', '#B8A070', '#6B6B6B', '#FAFAFA', '#D4C4A8'];
 
 export function OverviewView() {
+  const { t } = useTranslation();
   const [stats, setStats] = useState({ redemptions: 0, activeRewards: 0 });
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [loading, setLoading] = useState(true);
@@ -54,24 +56,27 @@ export function OverviewView() {
   }
 
   const tierData = analytics ? Object.entries(analytics.tierDistribution).map(([name, value], index) => ({ 
-    name, 
+    name: t(`data.tiers.${name}`, { defaultValue: name }), 
     value,
     fill: COLORS[index % COLORS.length]
   })) : [];
-  const serviceData = analytics ? Object.entries(analytics.servicePopularity).map(([name, value]) => ({ name, value })) : [];
+  const serviceData = analytics ? Object.entries(analytics.servicePopularity).map(([name, value]) => ({ 
+    name: t(`data.services.${name}`, { defaultValue: name }), 
+    value 
+  })) : [];
 
   return (
     <div className="space-y-16">
       <header>
-        <h2 className="font-serif text-4xl md:text-5xl mb-4 font-light tracking-tight">Atelier Overview</h2>
-        <p className="text-zinc-400 font-sans max-w-md leading-relaxed">Welcome back, Curator. The ecosystem is balanced and the assets are primed.</p>
+        <h2 className="font-serif text-4xl md:text-5xl mb-4 font-light tracking-tight">{t('atelier.overview.title')}</h2>
+        <p className="text-zinc-400 font-sans max-w-md leading-relaxed">{t('atelier.overview.welcome')}</p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-zinc-200 border border-zinc-200">
         {[
-          { label: 'Total Redemptions', value: stats.redemptions.toString(), trend: '+12%' },
-          { label: 'Active Rewards', value: stats.activeRewards.toString(), trend: 'Stable' },
-          { label: 'Economy Velocity', value: '8.4x', trend: '+2.1%' },
+          { label: t('atelier.overview.total_redemptions'), value: stats.redemptions.toString(), trend: '+12%' },
+          { label: t('atelier.overview.active_rewards'), value: stats.activeRewards.toString(), trend: t('atelier.overview.stable') },
+          { label: t('atelier.overview.economy_velocity'), value: '8.4x', trend: '+2.1%' },
         ].map((stat, i) => (
           <div key={i} className="p-10 bg-white hover:bg-zinc-50 transition-colors">
             <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 mb-6">{stat.label}</p>
@@ -85,7 +90,7 @@ export function OverviewView() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
         <div className="bg-white border border-zinc-100 p-8 space-y-8">
-          <h4 className="text-[10px] uppercase tracking-[0.2em] text-zinc-400">Revenue & Volume (30D)</h4>
+          <h4 className="text-[10px] uppercase tracking-[0.2em] text-zinc-400">{t('atelier.overview.revenue_volume')}</h4>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={analytics?.dailyData}>
@@ -127,7 +132,7 @@ export function OverviewView() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-white border border-zinc-100 p-8 space-y-8">
-            <h4 className="text-[10px] uppercase tracking-[0.2em] text-zinc-400">Tier Distribution</h4>
+            <h4 className="text-[10px] uppercase tracking-[0.2em] text-zinc-400">{t('atelier.overview.tier_distribution')}</h4>
             <div className="h-[200px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -145,7 +150,7 @@ export function OverviewView() {
           </div>
 
           <div className="bg-white border border-zinc-100 p-8 space-y-8">
-            <h4 className="text-[10px] uppercase tracking-[0.2em] text-zinc-400">Service Popularity</h4>
+            <h4 className="text-[10px] uppercase tracking-[0.2em] text-zinc-400">{t('atelier.overview.service_popularity')}</h4>
             <div className="h-[200px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={serviceData} layout="vertical">

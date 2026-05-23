@@ -1,10 +1,12 @@
 import { User, Clock, Calendar, CheckCircle2 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Booking } from '../../types/loyalty';
+import { useTranslation } from 'react-i18next';
 
 import { API_BASE } from '../../config';
 
 export function BookingsManager({ token }: { token: string }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const { data: bookings = [], isLoading } = useQuery<Booking[]>({
@@ -34,15 +36,15 @@ export function BookingsManager({ token }: { token: string }) {
   return (
     <div className="space-y-16">
       <header>
-        <h2 className="font-serif text-5xl mb-4 font-light">Active Bookings</h2>
-        <p className="text-zinc-400 font-sans uppercase tracking-widest text-[11px]">Appointment Management</p>
+        <h2 className="font-serif text-5xl mb-4 font-light">{t('atelier.bookings.active_title')}</h2>
+        <p className="text-zinc-400 font-sans uppercase tracking-widest text-[11px]">{t('atelier.bookings.management_subtitle')}</p>
       </header>
 
       <div className="grid grid-cols-1 gap-px bg-zinc-200 border border-zinc-200">
         {isLoading ? (
-          <div className="p-20 bg-white text-center text-zinc-400 uppercase tracking-widest text-xs">Accessing Schedule...</div>
+          <div className="p-20 bg-white text-center text-zinc-400 uppercase tracking-widest text-xs">{t('atelier.bookings.accessing')}</div>
         ) : bookings.filter(b => b.status === 'PENDING').length === 0 ? (
-          <div className="p-20 bg-white text-center text-zinc-400 uppercase tracking-widest text-xs">No Pending Appointments</div>
+          <div className="p-20 bg-white text-center text-zinc-400 uppercase tracking-widest text-xs">{t('atelier.bookings.no_pending')}</div>
         ) : (
           bookings.filter(b => b.status === 'PENDING').map(booking => (
             <div key={booking.id} className="p-10 bg-white flex flex-col md:flex-row justify-between items-start md:items-center gap-8 group hover:bg-zinc-50 transition-all">
@@ -56,21 +58,21 @@ export function BookingsManager({ token }: { token: string }) {
                     <span className="flex items-center gap-1"><Clock size={12} /> {new Date(booking.appointmentTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     <span className="flex items-center gap-1"><Calendar size={12} /> {new Date(booking.appointmentTime).toLocaleDateString()}</span>
                   </div>
-                  <p className="text-xs text-black font-bold uppercase tracking-[0.2em] mt-2">{booking.service.name}</p>
+                  <p className="text-xs text-black font-bold uppercase tracking-[0.2em] mt-2">{t(`data.services.${booking.service.name}` as any, { defaultValue: booking.service.name })}</p>
                 </div>
               </div>
               
               <div className="flex flex-col items-end gap-4 w-full md:w-auto">
                 <div className="text-right">
-                  <span className="text-[10px] uppercase tracking-widest text-zinc-400 block mb-1">Total Fee</span>
-                  <span className="font-serif text-2xl">RM {booking.totalPriceMyr}</span>
+                  <span className="text-[10px] uppercase tracking-widest text-zinc-400 block mb-1">{t('atelier.bookings.total_fee')}</span>
+                  <span className="font-serif text-2xl">RM {booking.totalPriceMyr.toString()}</span>
                 </div>
                 <button
                   onClick={() => { completeMutation.mutate(booking.id); }}
                   disabled={completeMutation.isPending}
                   className="w-full md:w-auto px-10 py-4 bg-black text-white text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  <CheckCircle2 size={14} /> {completeMutation.isPending ? 'Completing...' : 'Complete & Award Points'}
+                  <CheckCircle2 size={14} /> {completeMutation.isPending ? t('atelier.bookings.completing') : t('atelier.bookings.complete_award')}
                 </button>
               </div>
             </div>
@@ -79,14 +81,14 @@ export function BookingsManager({ token }: { token: string }) {
       </div>
 
       <div className="mt-24">
-        <h3 className="font-serif text-2xl italic mb-8">Completed Today</h3>
+        <h3 className="font-serif text-2xl italic mb-8">{t('atelier.bookings.completed_today')}</h3>
         <div className="space-y-4">
            {bookings.filter(b => b.status === 'COMPLETED').slice(0, 5).map(b => (
              <div key={b.id} className="p-6 border border-zinc-100 flex justify-between items-center opacity-60">
                 <div className="flex items-center gap-4">
                   <CheckCircle2 size={16} className="text-green-600" />
                   <span className="text-xs font-bold uppercase tracking-widest">{b.user.email}</span>
-                  <span className="text-xs text-zinc-400">— {b.service.name}</span>
+                  <span className="text-xs text-zinc-400">— {t(`data.services.${b.service.name}` as any, { defaultValue: b.service.name })}</span>
                 </div>
                 <span className="font-mono text-[10px] text-zinc-400">{new Date(b.appointmentTime).toLocaleTimeString()}</span>
              </div>

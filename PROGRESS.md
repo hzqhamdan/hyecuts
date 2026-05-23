@@ -19,30 +19,24 @@
 - Added `i18n` usage for `handleConfirm` error messages in `BookingFlow.tsx`.
 - Translated all remaining hardcoded strings in `BookingFlow.tsx` (confirmation messages, notes header).
 - Translated all remaining hardcoded strings in `MemberLounge.tsx` (tier description, loading states, voucher modal, profile/privacy modal, redemption messages, badge/mission labels).
-- Verified changes via successful `npm run build`.
+- Language toggle now shows the **active** language (e.g., "EN" while in English) across all pages for a more standard user experience.
+- Localized all "API-style" dynamic data (Rewards, Badges, Missions, and Tiers) by mapping their hardcoded seeder values to translation keys in the frontend.
+- Localized time values in `BookingFlow.tsx` (e.g., "12:00 PM" -> "12:00 TGH").
+- Localized common UI elements like "The Studio" branding in modals.
 
 ## In Progress
 - (none)
 
 ## Next Steps / Unresolved
-- The language toggle shows what you're switching **to** (e.g., "MY" while viewing English) rather than what's currently active. This may confuse users. Consider changing to always show the current language instead.
-- Some remaining hardcoded strings that are harder to translate without changing data structures:
-  - Time values in `BookingFlow.tsx` (`'12:00 PM'`, `'2:30 PM'`, etc.) — these are display-only and may be acceptable in English
-  - Staff names (`'Haiqal'`, `'Naim'`) — proper nouns, no translation needed
-  - `HYECUTS.address`, `HYECUTS.phone`, `HYECUTS.email`, `HYECUTS.waze` — business data, no translation needed
-  - `HYECUTS.name` ("Hyecuts") — brand name, no translation needed
-  - `reward.title` and `reward.description` come from API — would need backend i18n support
-  - `badge.name` and `badge.description` come from API — would need backend i18n support
-  - `mission.title` and `mission.description` come from API — would need backend i18n support
-  - `mission.targetAction` comes from API — would need backend i18n support
-  - Tier names (`'Rookie'`, `'Regular'`, `'Legend'`, `'Master'`, `'Icon'`) — come from API, would need backend i18n
-  - "The Studio" in voucher modal header — brand name, could stay as-is
-  - "The pinnacle of grooming..." tier description — now translated via `lounge.tier_description`
+- Staff names (`'Haiqal'`, `'Naim'`) — proper nouns, no translation needed.
+- `HYECUTS.address`, `HYECUTS.phone`, `HYECUTS.email`, `HYECUTS.waze` — business data, no translation needed.
+- `HYECUTS.name` ("Hyecuts") — brand name, no translation needed.
+- Ensure any future rewards/badges added to the database seeder have corresponding entries in `en.json` and `ms.json`.
 
 ## Key Decisions
 - Moved complex local state to Zustand and standard API effects to React Query to simplify component logic before adding i18n.
-- Retained hardcoded English data structures in `src/data/hyecuts.ts` and mapped them to translation keys at the component level (e.g., `t('data.days.' + item.day)`) to avoid breaking other references.
-- Language toggle icon: Globe when showing EN (Malay mode), Malaysian flag emoji when showing MY (English mode).
+- Standardized language toggle: Shows active language with icon (Globe for EN, Flag for MY).
+- Tier/Reward mapping: Instead of full backend i18n support, we use a mapping strategy where the hardcoded seeder strings are used as keys (e.g., `t('data.rewards.' + reward.title + '.title')`).
 
 ## Critical Context
 - Terminal is PowerShell; avoid Unix-only redirects, multiline heredocs, and operators like `&&`.

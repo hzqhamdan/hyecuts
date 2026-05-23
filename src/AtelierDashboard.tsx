@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from './context/AuthContext';
+import { useTranslation } from 'react-i18next';
 import {
   CalendarDays,
   Users,
@@ -21,6 +22,7 @@ interface AtelierDashboardProps {
 }
 
 export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
+  const { t } = useTranslation();
   const { logout, token } = useAuth();
   const [currentView, setCurrentView] = useState<View>('booking-manager');
 
@@ -40,7 +42,7 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
       <aside className="w-full md:w-72 border-b md:border-r border-zinc-100 flex flex-col h-auto md:h-screen sticky top-0 bg-white z-20">
         <div className="p-10 mb-8">
           <h1 className="font-serif text-3xl tracking-tighter font-light uppercase italic">
-            Hyecuts <span className="font-sans text-[10px] not-italic tracking-[0.3em] block text-zinc-400 uppercase mt-1">Atelier</span>
+            Hyecuts <span className="font-sans text-[10px] not-italic tracking-[0.3em] block text-zinc-400 uppercase mt-1">{t('atelier.title')}</span>
           </h1>
         </div>
 
@@ -49,25 +51,25 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
             active={currentView === 'booking-manager'}
             onClick={() => { handleNav('booking-manager'); }}
             icon={<CalendarDays size={18} />}
-            label="Booking Manager"
+            label={t('atelier.nav.booking_manager')}
           />
           <NavItem
             active={currentView === 'member-manager'}
             onClick={() => { handleNav('member-manager'); }}
             icon={<Users size={18} />}
-            label="Member Manager"
+            label={t('atelier.nav.member_manager')}
           />
           <NavItem
             active={currentView === 'loyalty-configurator'}
             onClick={() => { handleNav('loyalty-configurator'); }}
             icon={<SlidersHorizontal size={18} />}
-            label="Loyalty Config"
+            label={t('atelier.nav.loyalty_config')}
           />
           <NavItem
             active={currentView === 'analytics'}
             onClick={() => { handleNav('analytics'); }}
             icon={<BarChart3 size={18} />}
-            label="Analytics"
+            label={t('atelier.nav.analytics')}
           />
         </nav>
 
@@ -79,8 +81,8 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
                 <ShieldCheck size={14} className="text-zinc-400" />
               </div>
               <div className="text-[10px] uppercase tracking-widest">
-                <p className="font-bold text-black">Session Active</p>
-                <p className="text-zinc-400">Owner Access</p>
+                <p className="font-bold text-black">{t('atelier.session_active')}</p>
+                <p className="text-zinc-400">{t('atelier.owner_access')}</p>
               </div>
             </div>
             <button
@@ -90,7 +92,7 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
               }}
               className="w-full py-3 border border-black text-[10px] uppercase tracking-widest font-bold hover:bg-black hover:text-white transition-all text-center"
             >
-              Sign Out & Exit
+              {t('atelier.sign_out_exit')}
             </button>
           </div>
         </div>
@@ -108,7 +110,7 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
             className="max-w-6xl mx-auto"
           >
             {currentView === 'booking-manager' && <BookingsManager token={token ?? ''} />}
-            {currentView === 'member-manager' && <div className="p-10 border border-zinc-200"><h2 className="font-serif text-3xl">Member Manager</h2><p className="text-zinc-400 mt-4">Module under construction.</p></div>}
+            {currentView === 'member-manager' && <div className="p-10 border border-zinc-200"><h2 className="font-serif text-3xl">{t('atelier.nav.member_manager')}</h2><p className="text-zinc-400 mt-4">Module under construction.</p></div>}
             {currentView === 'loyalty-configurator' && <LoyaltyConfigurator />}
             {currentView === 'analytics' && <OverviewView />}
           </motion.div>

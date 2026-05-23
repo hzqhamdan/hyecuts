@@ -4,8 +4,10 @@ import { EconomyControlCenter } from './EconomyControlCenter';
 import { RewardsInventory } from './RewardsInventory';
 import type { Reward } from '../../types/loyalty';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 export function LoyaltyConfigurator() {
+  const { t } = useTranslation();
   const { token } = useAuth();
   const queryClient = useQueryClient();
 
@@ -56,7 +58,7 @@ export function LoyaltyConfigurator() {
   });
 
   if (isLoading || !data) {
-    return <div className="p-10">Loading configuration...</div>;
+    return <div className="p-10">{t('atelier.loyalty.loading')}</div>;
   }
 
   return (

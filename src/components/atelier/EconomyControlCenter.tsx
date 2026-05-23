@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 import { API_BASE } from '../../config';
 
@@ -11,6 +12,7 @@ interface EconomyProps {
 }
 
 export function EconomyControlCenter({ ratio, setRatio, multiplier, setMultiplier }: EconomyProps) {
+  const { t } = useTranslation();
   const { token } = useAuth();
   const [targetUser, setTargetUser] = useState('user-123');
   const [adjustAmount, setAdjustAmount] = useState(0);
@@ -23,28 +25,28 @@ export function EconomyControlCenter({ ratio, setRatio, multiplier, setMultiplie
         headers: { 'Authorization': `Bearer ${token ?? ''}` }
       });
       if (res.ok) {
-        setAdjustStatus('Success');
+        setAdjustStatus(t('atelier.loyalty.success'));
         setTimeout(() => { setAdjustStatus(''); }, 2000);
       } else {
-        setAdjustStatus('Error');
+        setAdjustStatus(t('atelier.loyalty.error'));
       }
     } catch {
-      setAdjustStatus('Error');
+      setAdjustStatus(t('atelier.loyalty.error'));
     }
   };
 
   return (
     <div className="space-y-16">
       <header>
-        <h2 className="font-serif text-4xl md:text-5xl mb-4 font-light">Economy Center</h2>
-        <p className="text-zinc-400 font-sans uppercase tracking-widest text-[11px]">Engine Calibration & Adjustments</p>
+        <h2 className="font-serif text-4xl md:text-5xl mb-4 font-light">{t('atelier.loyalty.economy_title')}</h2>
+        <p className="text-zinc-400 font-sans uppercase tracking-widest text-[11px]">{t('atelier.loyalty.economy_subtitle')}</p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-zinc-200 border border-zinc-200">
         <div className="p-12 bg-white space-y-12">
           <div className="flex justify-between items-center">
-            <label className="text-[10px] uppercase tracking-widest font-bold text-zinc-400">Point-per-Visit Ratio</label>
-            <span className="font-serif text-3xl">{ratio.toString()} pts</span>
+            <label className="text-[10px] uppercase tracking-widest font-bold text-zinc-400">{t('atelier.loyalty.ratio_label')}</label>
+            <span className="font-serif text-3xl">{ratio.toString()} {t('lounge.pts')}</span>
           </div>
           <input
             type="range"
@@ -54,13 +56,13 @@ export function EconomyControlCenter({ ratio, setRatio, multiplier, setMultiplie
             className="w-full h-px bg-zinc-200 rounded-none appearance-none cursor-pointer accent-black"
           />
           <p className="text-xs text-zinc-400 leading-relaxed italic">
-            Controls the baseline point accumulation for every completed visit.
+            {t('atelier.loyalty.ratio_desc')}
           </p>
         </div>
 
         <div className="p-12 bg-white space-y-12">
           <div className="flex justify-between items-center">
-            <label className="text-[10px] uppercase tracking-widest font-bold text-zinc-400">Seasonal Multiplier</label>
+            <label className="text-[10px] uppercase tracking-widest font-bold text-zinc-400">{t('atelier.loyalty.multiplier_label')}</label>
             <span className="font-serif text-3xl">{multiplier.toString()}x</span>
           </div>
           <input
@@ -71,14 +73,14 @@ export function EconomyControlCenter({ ratio, setRatio, multiplier, setMultiplie
             className="w-full h-px bg-zinc-200 rounded-none appearance-none cursor-pointer accent-black"
           />
           <p className="text-xs text-zinc-400 leading-relaxed italic">
-            Global multiplier applied to all point earnings.
+            {t('atelier.loyalty.multiplier_desc')}
           </p>
         </div>
       </div>
 
       <div className="bg-white p-12 border border-zinc-200 space-y-12">
           <div className="flex justify-between items-center">
-            <label className="text-[10px] uppercase tracking-widest font-bold text-zinc-400">Manual Point Adjustment</label>
+            <label className="text-[10px] uppercase tracking-widest font-bold text-zinc-400">{t('atelier.loyalty.manual_adj_label')}</label>
             <span className="font-serif text-3xl">{adjustAmount > 0 ? '+' : ''}{adjustAmount.toString()}</span>
           </div>
           <div className="flex flex-col gap-4 max-w-md">
@@ -86,7 +88,7 @@ export function EconomyControlCenter({ ratio, setRatio, multiplier, setMultiplie
               type="text" 
               value={targetUser} 
               onChange={e => { setTargetUser(e.target.value); }} 
-              placeholder="User ID" 
+              placeholder={t('login.identifier_label')} 
               className="p-3 border border-zinc-200 text-sm" 
             />
             <input 
@@ -100,7 +102,7 @@ export function EconomyControlCenter({ ratio, setRatio, multiplier, setMultiplie
               onClick={() => { void handleAdjust(); }} 
               className="w-full py-3 bg-black text-white text-[10px] uppercase tracking-widest font-bold"
             >
-              Apply Adjustment {adjustStatus && `(${adjustStatus})`}
+              {t('atelier.loyalty.apply_adj')} {adjustStatus && `(${adjustStatus})`}
             </button>
           </div>
       </div>

@@ -86,10 +86,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
               transition={navTapTransition}
               className="flex items-center gap-2 hover:text-zinc-400 transition-colors duration-300 uppercase border-l border-zinc-200 pl-10"
             >
-              {i18n.language === 'en' ? (
-                <img src="/flags/my.svg" alt="Malaysia" className="w-4 h-3 rounded-sm" />
-              ) : <Globe size={12} />}
-              {i18n.language === 'en' ? 'MY' : 'EN'}
+              {i18n.language === 'en' ? <Globe size={12} /> : <img src="/flags/my.svg" alt="Malaysia" className="w-4 h-3 rounded-sm" />}
+              {i18n.language === 'en' ? 'EN' : 'MY'}
             </motion.button>
           </div>
 

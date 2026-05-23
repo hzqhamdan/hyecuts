@@ -166,10 +166,8 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
             }}
             className={`flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-zinc-500 hover:text-black transition-colors ${step > 0 && step < 5 ? 'sm:border-l sm:border-zinc-200 sm:pl-4' : ''}`}
           >
-            {i18n.language === 'en' ? (
-              <img src="/flags/my.svg" alt="Malaysia" className="w-4 h-3 rounded-sm" />
-            ) : <Globe size={12} />}
-            {i18n.language === 'en' ? 'MY' : 'EN'}
+            {i18n.language === 'en' ? <Globe size={12} /> : <img src="/flags/my.svg" alt="Malaysia" className="w-4 h-3 rounded-sm" />}
+            {i18n.language === 'en' ? 'EN' : 'MY'}
           </button>
         </div>
       </nav>
@@ -393,7 +391,7 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
                     </div>
                     <div>
                       <div className="text-[10px] uppercase tracking-widest text-zinc-400 mb-1">{t('booking.time')}</div>
-                      <div className="text-sm">{selectedTime}</div>
+                      <div className="text-sm">{selectedTime ? t(`data.times.${selectedTime}`, { defaultValue: selectedTime }) : ''}</div>
                     </div>
                   </div>
 

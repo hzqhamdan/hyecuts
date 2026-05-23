@@ -20,6 +20,65 @@
     "cta_primary": "Tempah Temu Janji",
     "cta_secondary": "Lounge Ahli"
   },
+  "atelier": {
+    "title": "Atelier",
+    "nav": {
+      "booking_manager": "Pengurus Tempahan",
+      "member_manager": "Pengurus Ahli",
+      "loyalty_config": "Konfigurasi Kesetiaan",
+      "analytics": "Analitik"
+    },
+    "session_active": "Sesi Aktif",
+    "owner_access": "Akses Pemilik",
+    "sign_out_exit": "Log Keluar & Tutup",
+    "bookings": {
+      "active_title": "Tempahan Aktif",
+      "management_subtitle": "Pengurusan Temu Janji",
+      "accessing": "Mengakses Jadual...",
+      "no_pending": "Tiada Temu Janji Menunggu",
+      "total_fee": "Jumlah Yuran",
+      "complete_award": "Selesai & Beri Mata",
+      "completing": "Menyelesaikan...",
+      "completed_today": "Selesai Hari Ini"
+    },
+    "loyalty": {
+      "loading": "Memuatkan konfigurasi...",
+      "economy_title": "Pusat Ekonomi",
+      "economy_subtitle": "Kalibrasi & Penyelarasan Enjin",
+      "ratio_label": "Nisbah Mata-setiap-Kunjungan",
+      "ratio_desc": "Mengawal pengumpulan mata asas bagi setiap kunjungan yang selesai.",
+      "multiplier_label": "Pengganda Bermusim",
+      "multiplier_desc": "Pengganda global yang digunakan untuk semua perolehan mata.",
+      "manual_adj_label": "Penyelarasan Mata Manual",
+      "apply_adj": "Terap Penyelarasan",
+      "success": "Berjaya",
+      "error": "Ralat",
+      "inventory_title": "Koleksi Ganjaran",
+      "inventory_subtitle": "Pendaftaran Aset",
+      "add_reward": "Tambah Aset",
+      "cancel": "Batal",
+      "register_asset": "Daftar Aset Baru",
+      "save_asset": "Simpan Aset",
+      "asset_id": "ID Aset",
+      "reward_name": "Nama Ganjaran",
+      "valuation": "Penilaian",
+      "stock": "Stok",
+      "status": "Status",
+      "unlimited": "Tanpa Had",
+      "no_assets": "Tiada aset berdaftar."
+    },
+    "overview": {
+      "title": "Gambaran Keseluruhan Atelier",
+      "welcome": "Selamat kembali, Kurator. Ekosistem seimbang dan aset telah tersedia.",
+      "total_redemptions": "Jumlah Penebusan",
+      "active_rewards": "Ganjaran Aktif",
+      "economy_velocity": "Halaju Ekonomi",
+      "revenue_volume": "Hasil & Volum (30H)",
+      "tier_distribution": "Taburan Tahap",
+      "service_popularity": "Populariti Perkhidmatan",
+      "stable": "Stabil"
+    }
+  },
   "footer": {
     "location": "3361 Jalan Sungai Penchala, Kuala Lumpur"
   },
@@ -165,6 +224,64 @@
       "Senior Cut & Shave": "Gunting & Cukur Warga Emas",
       "Keratin Treatment": "Rawatan Keratin",
       "Hair Colour": "Warna Rambut"
+    },
+    "times": {
+      "12:00 PM": "12:00 TGH",
+      "2:30 PM": "2:30 PTG",
+      "4:00 PM": "4:00 PTG",
+      "6:00 PM": "6:00 PTG",
+      "8:00 PM": "8:00 MLM"
+    },
+    "common": {
+      "the_studio": "Studio"
+    },
+    "tiers": {
+      "Rookie": "Rookie",
+      "Regular": "Regular",
+      "Legend": "Legend",
+      "Master": "Master",
+      "Icon": "Icon"
+    },
+    "rewards": {
+      "Complimentary Hair Cut": {
+        "title": "Gunting Rambut Percuma",
+        "description": "Tebus mata untuk Gunting Rambut Dewasa percuma."
+      },
+      "The Executive Refresh": {
+        "title": "Kesegaran Eksekutif",
+        "description": "Tebus untuk sesi Gunting & Cukur percuma."
+      },
+      "Atelier Elite Session": {
+        "title": "Sesi Elit Atelier",
+        "description": "Sesi rawatan Keratin mewah sepenuhnya."
+      }
+    },
+    "badges": {
+      "First Blood": {
+        "name": "Darah Pertama",
+        "description": "Guntingan rambut tepat pertama anda di Hyecuts."
+      },
+      "The Regular": {
+        "name": "Pelanggan Tetap",
+        "description": "5 kunjungan dalam tempoh 3 bulan."
+      },
+      "Loyal Icon": {
+        "name": "Ikon Setia",
+        "description": "Mengekalkan status aktif selama lebih setahun."
+      }
+    },
+    "missions": {
+      "Weekly Grooming": {
+        "title": "Penjagaan Diri Mingguan",
+        "description": "Tempah mana-mana perkhidmatan minggu ini."
+      },
+      "Style Master": {
+        "title": "Pakar Gaya",
+        "description": "Lengkapkan 3 sesi 'Gunting & Cukur'."
+      },
+      "actions": {
+        "BOOKING": "tempahan"
+      }
     }
   },
   "login": {

@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Award } from 'lucide-react';
 import type { Reward } from '../../types/loyalty';
+import { useTranslation } from 'react-i18next';
 
 interface VoucherModalProps {
   selectedVoucher: Reward | null;
@@ -10,6 +11,8 @@ interface VoucherModalProps {
 }
 
 export const VoucherModal = ({ selectedVoucher, redemptionStatus, onRedeem, onClose }: VoucherModalProps) => {
+  const { t } = useTranslation();
+
   return (
     <AnimatePresence>
       {selectedVoucher && (
@@ -30,8 +33,8 @@ export const VoucherModal = ({ selectedVoucher, redemptionStatus, onRedeem, onCl
             {/* Luxury Invitation Styling */}
             <div className="p-12 flex flex-col items-center text-center bg-[url('https://www.transparenttextures.com/patterns/paper.png')] bg-repeat">
               <div className="w-full border-t border-b border-luxury-black py-8 mb-12">
-                <span className="font-sans text-[10px] uppercase tracking-[0.4em] text-luxury-slate block mb-4">Exclusive Invitation</span>
-                <h2 className="font-display text-4xl uppercase tracking-tighter mb-2">The Studio</h2>
+                <span className="font-sans text-[10px] uppercase tracking-[0.4em] text-luxury-slate block mb-4">{t('lounge.exclusive_invitation')}</span>
+                <h2 className="font-display text-4xl uppercase tracking-tighter mb-2">{t('common.the_studio')}</h2>
                 <div className="h-px w-12 bg-luxury-black mx-auto mt-6" />
               </div>
 
@@ -42,9 +45,11 @@ export const VoucherModal = ({ selectedVoucher, redemptionStatus, onRedeem, onCl
                     <Award className="w-20 h-20 text-white" />
                   </div>
                   <div className="space-y-2">
-                    <div className="font-display text-lg uppercase tracking-tight leading-tight">{selectedVoucher.title}</div>
+                    <div className="font-display text-lg uppercase tracking-tight leading-tight">
+                      {t(`data.rewards.${selectedVoucher.title}.title`, { defaultValue: selectedVoucher.title })}
+                    </div>
                     <div className="font-mono text-[10px] text-luxury-slate tracking-widest">
-                      COST: {selectedVoucher.pointsCost} PTS
+                      {t('lounge.cost')}: {selectedVoucher.pointsCost.toString()} {t('lounge.pts')}
                     </div>
                   </div>
                 </div>
@@ -53,11 +58,11 @@ export const VoucherModal = ({ selectedVoucher, redemptionStatus, onRedeem, onCl
               <div className="flex flex-col gap-4 w-full max-w-xs">
                 {redemptionStatus === 'success' ? (
                   <div className="py-4 text-[10px] uppercase tracking-widest text-green-700 font-bold border border-green-200 bg-green-50">
-                    Redemption Confirmed
+                    {t('lounge.redemption_confirmed')}
                   </div>
                 ) : redemptionStatus === 'error' ? (
                   <div className="py-4 text-[10px] uppercase tracking-widest text-red-700 font-bold border border-red-200 bg-red-50">
-                    Insufficient Points or Stock
+                    {t('lounge.insufficient_points')}
                   </div>
                 ) : (
                   <motion.button
@@ -66,7 +71,7 @@ export const VoucherModal = ({ selectedVoucher, redemptionStatus, onRedeem, onCl
                     disabled={redemptionStatus === 'loading'}
                     className="bg-luxury-black text-white py-4 text-[10px] uppercase tracking-widest hover:bg-neutral-800 transition-colors disabled:opacity-50"
                   >
-                    {redemptionStatus === 'loading' ? 'Processing...' : 'Redeem Asset'}
+                    {redemptionStatus === 'loading' ? t('login.processing') : t('lounge.redeem_asset')}
                   </motion.button>
                 )}
                 
@@ -74,7 +79,7 @@ export const VoucherModal = ({ selectedVoucher, redemptionStatus, onRedeem, onCl
                   onClick={onClose}
                   className="text-[10px] uppercase tracking-widest text-luxury-slate hover:text-luxury-black transition-colors mt-2"
                 >
-                  Close Portfolio
+                  {t('lounge.close_portfolio')}
                 </button>
               </div>
             </div>

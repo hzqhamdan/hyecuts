@@ -20,6 +20,65 @@
     "cta_primary": "Secure Appointment",
     "cta_secondary": "Member Lounge"
   },
+  "atelier": {
+    "title": "Atelier",
+    "nav": {
+      "booking_manager": "Booking Manager",
+      "member_manager": "Member Manager",
+      "loyalty_config": "Loyalty Config",
+      "analytics": "Analytics"
+    },
+    "session_active": "Session Active",
+    "owner_access": "Owner Access",
+    "sign_out_exit": "Sign Out & Exit",
+    "bookings": {
+      "active_title": "Active Bookings",
+      "management_subtitle": "Appointment Management",
+      "accessing": "Accessing Schedule...",
+      "no_pending": "No Pending Appointments",
+      "total_fee": "Total Fee",
+      "complete_award": "Complete & Award Points",
+      "completing": "Completing...",
+      "completed_today": "Completed Today"
+    },
+    "loyalty": {
+      "loading": "Loading configuration...",
+      "economy_title": "Economy Center",
+      "economy_subtitle": "Engine Calibration & Adjustments",
+      "ratio_label": "Point-per-Visit Ratio",
+      "ratio_desc": "Controls the baseline point accumulation for every completed visit.",
+      "multiplier_label": "Seasonal Multiplier",
+      "multiplier_desc": "Global multiplier applied to all point earnings.",
+      "manual_adj_label": "Manual Point Adjustment",
+      "apply_adj": "Apply Adjustment",
+      "success": "Success",
+      "error": "Error",
+      "inventory_title": "Rewards Collection",
+      "inventory_subtitle": "Asset Registry",
+      "add_reward": "Add Asset",
+      "cancel": "Cancel",
+      "register_asset": "Register New Asset",
+      "save_asset": "Save Asset",
+      "asset_id": "Asset ID",
+      "reward_name": "Reward Name",
+      "valuation": "Valuation",
+      "stock": "Stock",
+      "status": "Status",
+      "unlimited": "Unlimited",
+      "no_assets": "No assets registered."
+    },
+    "overview": {
+      "title": "Atelier Overview",
+      "welcome": "Welcome back, Curator. The ecosystem is balanced and the assets are primed.",
+      "total_redemptions": "Total Redemptions",
+      "active_rewards": "Active Rewards",
+      "economy_velocity": "Economy Velocity",
+      "revenue_volume": "Revenue & Volume (30D)",
+      "tier_distribution": "Tier Distribution",
+      "service_popularity": "Service Popularity",
+      "stable": "Stable"
+    }
+  },
   "footer": {
     "location": "3361 Jalan Sungai Penchala, Kuala Lumpur"
   },
@@ -165,6 +224,64 @@
       "Senior Cut & Shave": "Senior Cut & Shave",
       "Keratin Treatment": "Keratin Treatment",
       "Hair Colour": "Hair Colour"
+    },
+    "times": {
+      "12:00 PM": "12:00 PM",
+      "2:30 PM": "2:30 PM",
+      "4:00 PM": "4:00 PM",
+      "6:00 PM": "6:00 PM",
+      "8:00 PM": "8:00 PM"
+    },
+    "common": {
+      "the_studio": "The Studio"
+    },
+    "tiers": {
+      "Rookie": "Rookie",
+      "Regular": "Regular",
+      "Legend": "Legend",
+      "Master": "Master",
+      "Icon": "Icon"
+    },
+    "rewards": {
+      "Complimentary Hair Cut": {
+        "title": "Complimentary Hair Cut",
+        "description": "Redeem points for a free Adult Hair Cut."
+      },
+      "The Executive Refresh": {
+        "title": "The Executive Refresh",
+        "description": "Redeem for a complimentary Cut & Shave session."
+      },
+      "Atelier Elite Session": {
+        "title": "Atelier Elite Session",
+        "description": "A full luxury Keratin treatment session."
+      }
+    },
+    "badges": {
+      "First Blood": {
+        "name": "First Blood",
+        "description": "Your first precision cut at Hyecuts."
+      },
+      "The Regular": {
+        "name": "The Regular",
+        "description": "5 visits within 3 months."
+      },
+      "Loyal Icon": {
+        "name": "Loyal Icon",
+        "description": "Maintained active status for over a year."
+      }
+    },
+    "missions": {
+      "Weekly Grooming": {
+        "title": "Weekly Grooming",
+        "description": "Book any service this week."
+      },
+      "Style Master": {
+        "title": "Style Master",
+        "description": "Complete 3 'Cut & Shave' sessions."
+      },
+      "actions": {
+        "BOOKING": "booking"
+      }
     }
   },
   "login": {

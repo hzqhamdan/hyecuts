@@ -156,7 +156,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
     let nextTier = 'Regular';
     
     if (tier === 'Icon') {
-      return { percentage: 100, nextTier: 'Max Tier' };
+      return { percentage: 100, nextTier: t('lounge.max_tier', { defaultValue: 'Max Tier' }) };
     }
     
     if (tier === 'Master') { min = 5000; max = 10000; nextTier = 'Icon'; }
@@ -226,10 +226,8 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
               onClick={toggleLanguage}
               className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-zinc-400 hover:text-black transition-colors font-medium border-l border-zinc-200 pl-8 ml-2"
             >
-              {i18n.language === 'en' ? (
-                <img src="/flags/my.svg" alt="Malaysia" className="w-4 h-3 rounded-sm" />
-              ) : <Globe size={12} />}
-              {i18n.language === 'en' ? 'MY' : 'EN'}
+              {i18n.language === 'en' ? <Globe size={12} /> : <img src="/flags/my.svg" alt="Malaysia" className="w-4 h-3 rounded-sm" />}
+              {i18n.language === 'en' ? 'EN' : 'MY'}
             </button>
           </div>
       </nav>
@@ -241,7 +239,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
           <div className="w-80 flex flex-col items-center bg-white border border-black/10 px-8 py-16">
             <span className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 font-sans mb-4">{t('lounge.tier_label')}</span>
             <h2 className="font-serif text-[32px] text-black">
-              {isLoading ? '...' : profile?.currentTier ?? 'Rookie'}
+              {isLoading ? '...' : t('data.tiers.' + (profile?.currentTier ?? 'Rookie'))}
             </h2>
 
             {/* The Hairline Progress Arc */}
@@ -317,7 +315,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-black rounded-full" />
                       <span className="text-[9px] uppercase tracking-widest font-medium">
-                        {reward.minimumTierRequired ? `${reward.minimumTierRequired} ` : ''}{t('lounge.any_tier')} Tier
+                        {reward.minimumTierRequired ? `${t('data.tiers.' + reward.minimumTierRequired)} ` : ''}{t('lounge.any_tier')} Tier
                       </span>
                     </div>
                     <Sparkles className="w-4 h-4 opacity-20 group-hover:opacity-100 transition-opacity" />
@@ -332,13 +330,13 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
 
                   <div className="relative z-10">
                     <h4 className="font-serif text-xl uppercase tracking-tight mb-2 group-hover:translate-x-1 transition-transform duration-300">
-                      {reward.title}
+                      {t(`data.rewards.${reward.title}.title`, { defaultValue: reward.title })}
                     </h4>
                     <p className="text-xs text-zinc-500 font-sans leading-relaxed max-w-xs line-clamp-2 mb-3">
-                      {reward.description}
+                      {t(`data.rewards.${reward.title}.description`, { defaultValue: reward.description })}
                     </p>
                     <div className="font-mono text-[10px] tracking-widest text-zinc-500 uppercase">
-                      {reward.pointsCost.toString()} {t('lounge.pts')} {reward.stockAvailable !== null && `? ${reward.stockAvailable.toString()} ${t('lounge.left')}`}
+                      {reward.pointsCost.toString()} {t('lounge.pts')} {reward.stockAvailable !== null && `• ${reward.stockAvailable.toString()} ${t('lounge.left')}`}
                     </div>
                   </div>
                 </div>
@@ -465,7 +463,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
               <div className="p-12 flex flex-col items-center text-center bg-repeat">
                 <div className="w-full border-t border-b border-black py-8 mb-12">
                   <span className="font-sans text-[10px] uppercase tracking-[0.4em] text-zinc-500 block mb-4">{t('lounge.exclusive_invitation')}</span>
-                  <h2 className="font-serif text-4xl uppercase tracking-tighter mb-2">The Studio</h2>
+                  <h2 className="font-serif text-4xl uppercase tracking-tighter mb-2">{t('common.the_studio')}</h2>
                   <div className="h-px w-12 bg-black mx-auto mt-6" />
                 </div>
 
