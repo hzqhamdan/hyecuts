@@ -17,7 +17,7 @@ interface Analytics {
   }[];
 }
 
-const COLORS = ['#1A1A1A', '#B8A070', '#6B6B6B', '#FAFAFA', '#D4C4A8'];
+const COLORS = ['#B8A070', '#6B6B6B', '#D4C4A8', '#8A8A8A', '#4A4A4A'];
 
 export function OverviewView() {
   const { t } = useTranslation();
@@ -44,13 +44,13 @@ export function OverviewView() {
   if (loading) {
     return (
       <div className="space-y-16 animate-pulse">
-        <div className="h-20 bg-zinc-100 w-1/3"></div>
-        <div className="grid grid-cols-3 gap-px bg-zinc-200 border border-zinc-200">
-          <div className="h-40 bg-white"></div>
-          <div className="h-40 bg-white"></div>
-          <div className="h-40 bg-white"></div>
+        <div className="h-20 bg-zinc-100 dark:bg-zinc-800 w-1/3"></div>
+        <div className="grid grid-cols-3 gap-px bg-zinc-200 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800">
+          <div className="h-40 bg-white dark:bg-[#1A1A1A]"></div>
+          <div className="h-40 bg-white dark:bg-[#1A1A1A]"></div>
+          <div className="h-40 bg-white dark:bg-[#1A1A1A]"></div>
         </div>
-        <div className="h-96 bg-zinc-50"></div>
+        <div className="h-96 bg-zinc-50 dark:bg-zinc-900/50"></div>
       </div>
     );
   }
@@ -68,33 +68,33 @@ export function OverviewView() {
   return (
     <div className="space-y-16">
       <header>
-        <h2 className="font-serif text-4xl md:text-5xl mb-4 font-light tracking-tight">{t('atelier.overview.title')}</h2>
-        <p className="text-zinc-400 font-sans max-w-md leading-relaxed">{t('atelier.overview.welcome')}</p>
+        <h2 className="font-serif text-4xl md:text-5xl mb-4 font-light tracking-tight text-black dark:text-white">{t('atelier.overview.title')}</h2>
+        <p className="text-zinc-400 dark:text-zinc-500 font-sans max-w-md leading-relaxed">{t('atelier.overview.welcome')}</p>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-zinc-200 border border-zinc-200">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-zinc-200 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800">
         {[
           { label: t('atelier.overview.total_redemptions'), value: stats.redemptions.toString(), trend: '+12%' },
           { label: t('atelier.overview.active_rewards'), value: stats.activeRewards.toString(), trend: t('atelier.overview.stable') },
           { label: t('atelier.overview.economy_velocity'), value: '8.4x', trend: '+2.1%' },
         ].map((stat, i) => (
-          <div key={i} className="p-10 bg-white hover:bg-zinc-50 transition-colors">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 mb-6">{stat.label}</p>
+          <div key={i} className="p-10 bg-white dark:bg-[#1A1A1A] hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors group">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 mb-6 group-hover:text-[#B8A070] transition-colors">{stat.label}</p>
             <div className="flex justify-between items-end">
-              <h3 className="font-serif text-4xl font-light">{stat.value}</h3>
-              <span className="text-xs font-medium px-2 py-1 bg-black text-white rounded-none">{stat.trend}</span>
+              <h3 className="font-serif text-4xl font-light text-black dark:text-white">{stat.value}</h3>
+              <span className="text-xs font-medium px-2 py-1 bg-black dark:bg-white text-white dark:text-black rounded-none">{stat.trend}</span>
             </div>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-        <div className="bg-white border border-zinc-100 p-8 space-y-8">
-          <h4 className="text-[10px] uppercase tracking-[0.2em] text-zinc-400">{t('atelier.overview.revenue_volume')}</h4>
+        <div className="bg-white dark:bg-[#1A1A1A] border border-zinc-100 dark:border-zinc-800 p-8 space-y-8">
+          <h4 className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 font-bold">{t('atelier.overview.revenue_volume')}</h4>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={analytics?.dailyData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F0F0F0" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="text-zinc-100 dark:text-zinc-800" />
                 <XAxis 
                   dataKey="date" 
                   tick={{fontSize: 10, fill: '#6B6B6B'}} 
@@ -105,7 +105,8 @@ export function OverviewView() {
                 <YAxis yAxisId="left" tick={{fontSize: 10, fill: '#6B6B6B'}} axisLine={false} tickLine={false} />
                 <YAxis yAxisId="right" orientation="right" tick={{fontSize: 10, fill: '#6B6B6B'}} axisLine={false} tickLine={false} />
                 <Tooltip 
-                  contentStyle={{borderRadius: '0', border: '1px solid #E4E4E7', fontFamily: 'Inter'}}
+                  contentStyle={{borderRadius: '0', border: '1px solid #E4E4E7', backgroundColor: 'var(--tw-bg-opacity, #fff)', fontFamily: 'Inter'}}
+                  itemStyle={{fontSize: '12px', fontWeight: 'bold'}}
                 />
                 <Line 
                   yAxisId="left"
@@ -120,10 +121,11 @@ export function OverviewView() {
                   yAxisId="right"
                   type="monotone" 
                   dataKey="appointments" 
-                  stroke="#1A1A1A" 
+                  stroke="currentColor" 
+                  className="text-black dark:text-white"
                   strokeWidth={2} 
                   dot={false} 
-                  activeDot={{ r: 4, stroke: '#1A1A1A', strokeWidth: 2, fill: 'white' }}
+                  activeDot={{ r: 4, stroke: 'currentColor', strokeWidth: 2, fill: 'white' }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -131,8 +133,8 @@ export function OverviewView() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-white border border-zinc-100 p-8 space-y-8">
-            <h4 className="text-[10px] uppercase tracking-[0.2em] text-zinc-400">{t('atelier.overview.tier_distribution')}</h4>
+          <div className="bg-white dark:bg-[#1A1A1A] border border-zinc-100 dark:border-zinc-800 p-8 space-y-8">
+            <h4 className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 font-bold">{t('atelier.overview.tier_distribution')}</h4>
             <div className="h-[200px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -142,6 +144,7 @@ export function OverviewView() {
                     outerRadius={80}
                     paddingAngle={5}
                     dataKey="value"
+                    stroke="none"
                   />
                   <Tooltip contentStyle={{borderRadius: '0', border: '1px solid #E4E4E7'}} />
                 </PieChart>
@@ -149,8 +152,8 @@ export function OverviewView() {
             </div>
           </div>
 
-          <div className="bg-white border border-zinc-100 p-8 space-y-8">
-            <h4 className="text-[10px] uppercase tracking-[0.2em] text-zinc-400">{t('atelier.overview.service_popularity')}</h4>
+          <div className="bg-white dark:bg-[#1A1A1A] border border-zinc-100 dark:border-zinc-800 p-8 space-y-8">
+            <h4 className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 font-bold">{t('atelier.overview.service_popularity')}</h4>
             <div className="h-[200px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={serviceData} layout="vertical">
@@ -163,7 +166,7 @@ export function OverviewView() {
                     tickLine={false}
                     width={80}
                   />
-                  <Tooltip contentStyle={{borderRadius: '0', border: '1px solid #E4E4E7'}} cursor={{fill: '#F9F9F9'}} />
+                  <Tooltip contentStyle={{borderRadius: '0', border: '1px solid #E4E4E7'}} cursor={{fill: 'currentColor', className: 'text-zinc-50 dark:text-zinc-900'}} />
                   <Bar dataKey="value" fill="#B8A070" radius={[0, 2, 2, 0]} barSize={12} />
                 </BarChart>
               </ResponsiveContainer>

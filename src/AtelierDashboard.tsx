@@ -7,22 +7,28 @@ import {
   Users,
   SlidersHorizontal,
   BarChart3,
-  ShieldCheck
+  ShieldCheck,
+  Globe,
+  MessageSquareQuote,
+  Shield
 } from 'lucide-react';
 
 // Tab Views
 import { BookingsManager } from './components/atelier/BookingsManager';
 import { LoyaltyConfigurator } from './components/atelier/LoyaltyConfigurator';
 import { OverviewView } from './components/atelier/OverviewView';
+import { MemberManager } from './components/atelier/MemberManager';
+import { StaffManager } from './components/atelier/StaffManager';
+import { ReviewQueue } from './components/atelier/ReviewQueue';
 
-type View = 'booking-manager' | 'member-manager' | 'loyalty-configurator' | 'analytics';
+type View = 'booking-manager' | 'member-manager' | 'staff-manager' | 'loyalty-configurator' | 'analytics' | 'reviews';
 
 interface AtelierDashboardProps {
   setView?: (view: string) => void;
 }
 
 export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { logout, token } = useAuth();
   const [currentView, setCurrentView] = useState<View>('booking-manager');
 
@@ -37,12 +43,12 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
+    <div className="flex flex-col md:flex-row min-h-screen bg-white dark:bg-[#1A1A1A] text-black dark:text-[#FAFAFA] font-sans selection:bg-black selection:text-white transition-colors duration-500">
       {/* THE ATELIER SIDEBAR */}
-      <aside className="w-full md:w-72 border-b md:border-r border-zinc-100 flex flex-col h-auto md:h-screen sticky top-0 bg-white z-20">
+      <aside className="w-full md:w-72 border-b md:border-r border-zinc-100 dark:border-zinc-800 flex flex-col h-auto md:h-screen sticky top-0 bg-white dark:bg-[#1A1A1A] z-20 transition-colors">
         <div className="p-10 mb-8">
           <h1 className="font-serif text-3xl tracking-tighter font-light uppercase italic">
-            Hyecuts <span className="font-sans text-[10px] not-italic tracking-[0.3em] block text-zinc-400 uppercase mt-1">{t('atelier.title')}</span>
+            Hyecuts <span className="font-sans text-[10px] not-italic tracking-[0.3em] block text-zinc-400 dark:text-zinc-500 uppercase mt-1">{t('atelier.title')}</span>
           </h1>
         </div>
 
@@ -60,6 +66,18 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
             label={t('atelier.nav.member_manager')}
           />
           <NavItem
+            active={currentView === 'staff-manager'}
+            onClick={() => { handleNav('staff-manager'); }}
+            icon={<Shield size={18} />}
+            label={t('atelier.nav.staff_manager', { defaultValue: 'Staff Roster' })}
+          />
+          <NavItem
+            active={currentView === 'reviews'}
+            onClick={() => { handleNav('reviews'); }}
+            icon={<MessageSquareQuote size={18} />}
+            label={t('atelier.nav.reviews', { defaultValue: 'Review Queue' })}
+          />
+          <NavItem
             active={currentView === 'loyalty-configurator'}
             onClick={() => { handleNav('loyalty-configurator'); }}
             icon={<SlidersHorizontal size={18} />}
@@ -73,16 +91,29 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
           />
         </nav>
 
-        <div className="p-8 border-t border-zinc-100 mt-auto">
+        <div className="p-8 border-t border-zinc-100 dark:border-zinc-800 mt-auto">
           <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-4 p-4 rounded-none bg-zinc-50/50 border border-zinc-100">
+            <button
+              onClick={() => {
+                const newLang = i18n.language === 'en' ? 'ms' : 'en';
+                void i18n.changeLanguage(newLang);
+              }}
+              className="flex items-center gap-4 p-4 rounded-none bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all"
+            >
+              {i18n.language === 'en' ? <Globe size={14} className="text-zinc-400 dark:text-zinc-500" /> : <img src="/flags/my.svg" alt="Malaysia" className="w-4 h-3 rounded-sm" />}
+              <div className="flex justify-between items-center w-full">
+                <span>{i18n.language === 'en' ? 'English' : 'Bahasa Malaysia'}</span>
+                <span className="text-zinc-300 dark:text-zinc-600 ml-auto">{i18n.language === 'en' ? 'EN' : 'MY'}</span>
+              </div>
+            </button>
+            <div className="flex items-center gap-4 p-4 rounded-none bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800">
               <div className="relative">
-                <div className="w-1 h-1 bg-[#B8A070] rounded-full absolute -top-1 -right-1 border border-white" />
-                <ShieldCheck size={14} className="text-zinc-400" />
+                <div className="w-1 h-1 bg-[#B8A070] rounded-full absolute -top-1 -right-1 border border-white dark:border-black" />
+                <ShieldCheck size={14} className="text-zinc-400 dark:text-zinc-500" />
               </div>
               <div className="text-[10px] uppercase tracking-widest">
-                <p className="font-bold text-black">{t('atelier.session_active')}</p>
-                <p className="text-zinc-400">{t('atelier.owner_access')}</p>
+                <p className="font-bold text-black dark:text-white">{t('atelier.session_active')}</p>
+                <p className="text-zinc-400 dark:text-zinc-500">{t('atelier.owner_access')}</p>
               </div>
             </div>
             <button
@@ -90,7 +121,7 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
                 logout();
                 if (setView) setView('facade');
               }}
-              className="w-full py-3 border border-black text-[10px] uppercase tracking-widest font-bold hover:bg-black hover:text-white transition-all text-center"
+              className="w-full py-3 border border-black dark:border-white text-[10px] uppercase tracking-widest font-bold hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all text-center"
             >
               {t('atelier.sign_out_exit')}
             </button>
@@ -110,7 +141,9 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
             className="max-w-6xl mx-auto"
           >
             {currentView === 'booking-manager' && <BookingsManager token={token ?? ''} />}
-            {currentView === 'member-manager' && <div className="p-10 border border-zinc-200"><h2 className="font-serif text-3xl">{t('atelier.nav.member_manager')}</h2><p className="text-zinc-400 mt-4">Module under construction.</p></div>}
+            {currentView === 'member-manager' && <MemberManager token={token ?? ''} />}
+            {currentView === 'staff-manager' && <StaffManager token={token ?? ''} />}
+            {currentView === 'reviews' && <ReviewQueue token={token ?? ''} />}
             {currentView === 'loyalty-configurator' && <LoyaltyConfigurator />}
             {currentView === 'analytics' && <OverviewView />}
           </motion.div>
@@ -126,15 +159,15 @@ function NavItem({ active, onClick, icon, label }: { active: boolean, onClick: (
       onClick={onClick}
       className={`flex items-center justify-between px-4 py-3 transition-all duration-300 group whitespace-nowrap ${
         active
-        ? 'bg-black text-white'
-        : 'text-zinc-400 hover:text-black hover:bg-zinc-50'
+        ? 'bg-black dark:bg-white text-white dark:text-black'
+        : 'text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900'
       }`}
     >
       <div className="flex items-center gap-4">
-        <span className={`transition-colors ${active ? 'text-white' : 'group-hover:text-black'}`}>{icon}</span>
+        <span className={`transition-colors ${active ? 'text-white dark:text-black' : 'group-hover:text-black dark:group-hover:text-white'}`}>{icon}</span>
         <span className="text-xs font-medium tracking-wide uppercase">{label}</span>
       </div>
-      {active && <motion.div layoutId="nav-indicator" className="w-1 h-1 bg-white rounded-full" />}
+      {active && <motion.div layoutId="nav-indicator" className="w-1 h-1 bg-white dark:bg-black rounded-full" />}
     </button>
   );
 }

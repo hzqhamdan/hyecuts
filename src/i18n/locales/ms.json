@@ -25,12 +25,58 @@
     "nav": {
       "booking_manager": "Pengurus Tempahan",
       "member_manager": "Pengurus Ahli",
+      "staff_manager": "Roster Pasukan",
+      "reviews": "Ulasan",
       "loyalty_config": "Konfigurasi Kesetiaan",
       "analytics": "Analitik"
     },
     "session_active": "Sesi Aktif",
     "owner_access": "Akses Pemilik",
     "sign_out_exit": "Log Keluar & Tutup",
+    "members": {
+      "management_subtitle": "Pengawasan Pendaftaran & Portfolio",
+      "search_placeholder": "Cari mengikut nama atau e-mel...",
+      "name": "Ahli",
+      "tier": "Tahap",
+      "points": "Mata",
+      "lifetime_points": "Sepanjang Hayat",
+      "actions": "Tindakan",
+      "no_members": "Tiada ahli dijumpai.",
+      "adjust_points": "Penyelarasan Manual",
+      "adjustment_desc": "Tambah atau tolak mata daripada portfolio ini.",
+      "apply_adjustment": "Sahkan Penyelarasan",
+      "override_tier": "Atasi Tahap Keahlian",
+      "audit_note": "Semua penyelarasan manual direkodkan dalam arkib pemenuhan."
+    },
+    "staff": {
+      "subtitle": "Roster Pasukan & Ketersediaan",
+      "add_member": "Tambah Pakar",
+      "schedule": "Jadual",
+      "availability": "Jadual Ketersediaan",
+      "reset_default": "Set Semula ke Lalai Studio",
+      "save": "Simpan Profil"
+    },
+    "reviews": {
+      "subtitle": "Maklum Balas Selepas Perkhidmatan & Pengesahan Aset",
+      "pending_validation": "Menunggu Pengesahan",
+      "approve": "Sahkan (+25 mata)",
+      "reject": "Tolak",
+      "no_pending": "Tiada ulasan menunggu pengesahan."
+    },
+    "validator": {
+      "title": "Validator",
+      "subtitle": "Pemberian Kuasa Jujukan",
+      "execute": "Laksanakan Pengesahan",
+      "granted": "Akses Dibenarkan",
+      "denied": "Akses Disekat"
+    },
+    "history": {
+      "title": "Sejarah Pemenuhan",
+      "subtitle": "Log Audit",
+      "redeemed": "Ditebus",
+      "earned": "Diperoleh",
+      "no_logs": "Tiada log aktiviti dijumpai."
+    },
     "bookings": {
       "active_title": "Tempahan Aktif",
       "management_subtitle": "Pengurusan Temu Janji",

@@ -25,12 +25,58 @@
     "nav": {
       "booking_manager": "Booking Manager",
       "member_manager": "Member Manager",
+      "staff_manager": "Staff Roster",
+      "reviews": "Review Queue",
       "loyalty_config": "Loyalty Config",
       "analytics": "Analytics"
     },
     "session_active": "Session Active",
     "owner_access": "Owner Access",
     "sign_out_exit": "Sign Out & Exit",
+    "members": {
+      "management_subtitle": "Registry & Portfolio Oversight",
+      "search_placeholder": "Search by name or email...",
+      "name": "Member",
+      "tier": "Tier",
+      "points": "Points",
+      "lifetime_points": "Lifetime",
+      "actions": "Actions",
+      "no_members": "No members found.",
+      "adjust_points": "Manual Adjustment",
+      "adjustment_desc": "Add or deduct points from this portfolio.",
+      "apply_adjustment": "Confirm Adjustment",
+      "override_tier": "Override Membership Tier",
+      "audit_note": "All manual adjustments are logged in the fulfillment archive."
+    },
+    "staff": {
+      "subtitle": "Team & Availability Roster",
+      "add_member": "Add Specialist",
+      "schedule": "Schedule",
+      "availability": "Availability Schedule",
+      "reset_default": "Reset to Studio Default",
+      "save": "Save Profile"
+    },
+    "reviews": {
+      "subtitle": "Post-Service Feedback & Asset Validation",
+      "pending_validation": "Pending Validation",
+      "approve": "Approve (+25 pts)",
+      "reject": "Reject",
+      "no_pending": "No pending reviews for validation."
+    },
+    "validator": {
+      "title": "The Validator",
+      "subtitle": "Sequence Authorization",
+      "execute": "Execute Validation",
+      "granted": "Access Granted",
+      "denied": "Access Denied"
+    },
+    "history": {
+      "title": "Fulfillment History",
+      "subtitle": "Audit Log",
+      "redeemed": "Redeemed",
+      "earned": "Earned",
+      "no_logs": "No activity logs found."
+    },
     "bookings": {
       "active_title": "Active Bookings",
       "management_subtitle": "Appointment Management",
@@ -231,6 +277,13 @@
       "4:00 PM": "4:00 PM",
       "6:00 PM": "6:00 PM",
       "8:00 PM": "8:00 PM"
+    },
+    "status": {
+      "PENDING": "Pending",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected"
     },
     "common": {
       "the_studio": "The Studio"

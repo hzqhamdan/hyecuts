@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, XCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ValidatorProps {
   code: string;
@@ -10,11 +11,13 @@ interface ValidatorProps {
 }
 
 export function ValidatorFocusMode({ code, setCode, state, onValidate }: ValidatorProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] max-w-3xl mx-auto">
       <div className="w-full text-center mb-16">
-        <h2 className="font-serif text-5xl mb-4 font-light">The Validator</h2>
-        <p className="text-zinc-400 italic text-sm uppercase tracking-widest">Sequence Authorization</p>
+        <h2 className="font-serif text-5xl mb-4 font-light">{t('atelier.validator.title', { defaultValue: 'The Validator' })}</h2>
+        <p className="text-zinc-400 italic text-sm uppercase tracking-widest">{t('atelier.validator.subtitle', { defaultValue: 'Sequence Authorization' })}</p>
       </div>
 
       <motion.div
@@ -39,7 +42,7 @@ export function ValidatorFocusMode({ code, setCode, state, onValidate }: Validat
             type="submit"
             className="px-16 py-4 bg-black text-white uppercase tracking-[0.2em] text-[10px] font-bold hover:bg-zinc-800 transition-all"
           >
-            Execute Validation
+            {t('atelier.validator.execute', { defaultValue: 'Execute Validation' })}
           </button>
         </form>
 
@@ -52,7 +55,7 @@ export function ValidatorFocusMode({ code, setCode, state, onValidate }: Validat
                 exit={{ opacity: 0 }}
                 className="flex items-center gap-3 text-green-600 font-bold uppercase tracking-widest text-[11px]"
               >
-                <CheckCircle2 size={16} /> Access Granted
+                <CheckCircle2 size={16} /> {t('atelier.validator.granted', { defaultValue: 'Access Granted' })}
               </motion.div>
             )}
             {state === 'denied' && (
@@ -62,7 +65,7 @@ export function ValidatorFocusMode({ code, setCode, state, onValidate }: Validat
                 exit={{ opacity: 0 }}
                 className="flex items-center gap-3 text-red-600 font-bold uppercase tracking-widest text-[11px]"
               >
-                <XCircle size={16} /> Access Denied
+                <XCircle size={16} /> {t('atelier.validator.denied', { defaultValue: 'Access Denied' })}
               </motion.div>
             )}
           </AnimatePresence>

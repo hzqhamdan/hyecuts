@@ -28,14 +28,19 @@ const LoadingView = () => (
 type ViewState = 'facade' | 'login' | 'booking' | 'my-bookings' | 'lounge' | 'admin';
 
 function App() {
-  const [view, setView] = useState<ViewState>('facade');
-  const { token } = useAuth();
+  const [view, setView] = useState<ViewState>(() => {
+    const savedView = sessionStorage.getItem('hc_view');
+    return (savedView as ViewState) || 'facade';
+  });
+  const { token, user } = useAuth();
+  
+  useEffect(() => {
+    sessionStorage.setItem('hc_view', view);
+  }, [view]);
+
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
-    if (savedTheme === 'dark') return true;
-    
-    // Default to light mode (false) if nothing is saved, ignoring OS preference per requirements
-    return false;
+    return savedTheme === 'dark';
   });
 
   useEffect(() => {
@@ -46,6 +51,13 @@ function App() {
   const handleSetView = (newView: string) => {
     setView(newView as ViewState);
   };
+
+  // Auto-route admin users if they land on lounge
+  useEffect(() => {
+    if (token && user?.role === 'ROLE_ADMIN' && view === 'lounge') {
+      setView('admin');
+    }
+  }, [token, user, view]);
 
   return (
     <>

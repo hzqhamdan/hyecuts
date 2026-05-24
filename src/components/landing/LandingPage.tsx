@@ -45,9 +45,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.8 }}
-      className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white overflow-x-hidden"
+      className="min-h-screen bg-white dark:bg-[#1A1A1A] text-black dark:text-[#FAFAFA] font-sans selection:bg-black selection:text-white overflow-x-hidden transition-colors duration-500"
     >
-      <nav className="fixed top-0 left-0 w-full z-50 px-6 md:px-12 py-4 flex justify-between items-center backdrop-blur-md bg-white/80 border-b border-zinc-100">
+      <nav className="fixed top-0 left-0 w-full z-50 px-6 md:px-12 py-4 flex justify-between items-center backdrop-blur-md bg-white/80 dark:bg-[#1A1A1A]/80 border-b border-zinc-100 dark:border-zinc-800 transition-colors">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -67,7 +67,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
                 }}
                 whileTap={navTap}
                 transition={navTapTransition}
-                className="hover:text-zinc-400 transition-colors duration-300"
+                className="hover:text-zinc-400 dark:hover:text-zinc-500 transition-colors duration-300"
               >
                 {t(`nav.${item}`)}
               </motion.a>
@@ -76,7 +76,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
               onClick={() => { setView('lounge'); }}
               whileTap={navTap}
               transition={navTapTransition}
-              className="hover:text-zinc-400 transition-colors duration-300 uppercase"
+              className="hover:text-zinc-400 dark:hover:text-zinc-500 transition-colors duration-300 uppercase"
             >
               {t('nav.lounge')}
             </motion.button>
@@ -84,7 +84,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
               onClick={toggleLanguage}
               whileTap={navTap}
               transition={navTapTransition}
-              className="flex items-center gap-2 hover:text-zinc-400 transition-colors duration-300 uppercase border-l border-zinc-200 pl-10"
+              className="flex items-center gap-2 hover:text-zinc-400 dark:hover:text-zinc-500 transition-colors duration-300 uppercase border-l border-zinc-200 dark:border-zinc-800 pl-10"
             >
               {i18n.language === 'en' ? <Globe size={12} /> : <img src="/flags/my.svg" alt="Malaysia" className="w-4 h-3 rounded-sm" />}
               {i18n.language === 'en' ? 'EN' : 'MY'}
@@ -96,7 +96,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
               onClick={() => { setView('booking'); }}
               whileTap={navTap}
               transition={navTapTransition}
-              className="hidden md:block px-6 py-2 text-[10px] uppercase tracking-widest border border-black hover:bg-black hover:text-white transition-all duration-500 font-bold active:scale-95"
+              className="hidden md:block px-6 py-2 text-[10px] uppercase tracking-widest border border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all duration-500 font-bold active:scale-95"
             >
               {t('nav.book')}
             </motion.button>
@@ -115,7 +115,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="fixed inset-0 z-40 bg-white pt-24 px-10 flex flex-col gap-8 text-center"
+          className="fixed inset-0 z-40 bg-white dark:bg-[#1A1A1A] pt-24 px-10 flex flex-col gap-8 text-center"
         >
           {['services', 'hours', 'contact'].map((item) => (
             <motion.a
@@ -162,7 +162,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
               }}
               whileTap={navTap}
               transition={navTapTransition}
-              className="mt-4 px-8 py-4 bg-black text-white uppercase tracking-widest text-xs font-bold"
+              className="mt-4 px-8 py-4 bg-black dark:bg-white text-white dark:text-black uppercase tracking-widest text-xs font-bold"
             >
               {t('nav.book')}
             </motion.button>
@@ -172,41 +172,41 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
       <section className="relative min-h-screen flex items-center justify-center px-6 md:px-12 text-center pt-24">
         <div className="relative z-10 w-full max-w-6xl mx-auto">
           <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="flex flex-col items-center">
-            <motion.span variants={fadeUp} className="text-[10px] uppercase tracking-[0.4em] text-zinc-400 mb-6 block">
+            <motion.span variants={fadeUp} className="text-[10px] uppercase tracking-[0.4em] text-zinc-400 dark:text-zinc-500 mb-6 block">
               {HYECUTS.name}
             </motion.span>
             <motion.h1 variants={fadeUp} className="font-serif text-6xl md:text-9xl leading-tight font-light italic tracking-tighter mb-6">
-              {t('hero.title')}<span className="text-zinc-300">.</span>
+              {t('hero.title')}<span className="text-zinc-300 dark:text-zinc-700">.</span>
             </motion.h1>
-            <motion.p variants={fadeUp} className="max-w-2xl text-lg md:text-xl text-zinc-500 leading-relaxed mb-10 font-light italic">
+            <motion.p variants={fadeUp} className="max-w-2xl text-lg md:text-xl text-zinc-500 dark:text-zinc-400 leading-relaxed mb-10 font-light italic">
               {t('hero.subtitle')}
             </motion.p>
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4">
               <button
                 onClick={() => { setView('booking'); }}
-                className="group relative px-10 py-5 bg-black text-white overflow-hidden transition-all duration-500 hover:bg-zinc-800"
+                className="group relative px-10 py-5 bg-black dark:bg-white text-white dark:text-black overflow-hidden transition-all duration-500 hover:bg-zinc-800 dark:hover:bg-zinc-200"
               >
                 <span className="relative z-10 text-xs uppercase tracking-[0.2em] font-bold">{t('hero.cta_primary')}</span>
                 <ArrowRight className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-[-10px] group-hover:translate-x-0" size={16} />
               </button>
               <button
                 onClick={() => { setView('lounge'); }}
-                className="px-10 py-5 text-xs uppercase tracking-[0.2em] font-bold border border-black hover:bg-black hover:text-white transition-all duration-500"
+                className="px-10 py-5 text-xs uppercase tracking-[0.2em] font-bold border border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all duration-500"
               >
                 {t('hero.cta_secondary')}
               </button>
             </motion.div>
-            <motion.div variants={fadeUp} className="mt-12 text-[10px] uppercase tracking-[0.3em] text-zinc-400">
+            <motion.div variants={fadeUp} className="mt-12 text-[10px] uppercase tracking-[0.3em] text-zinc-400 dark:text-zinc-500">
               {t('footer.location')}
             </motion.div>
           </motion.div>
         </div>
       </section>
 
-      <section id="services" className="py-24 px-6 md:px-12 bg-zinc-50 border-y border-zinc-100">
+      <section id="services" className="py-24 px-6 md:px-12 bg-zinc-50 dark:bg-zinc-900/50 border-y border-zinc-100 dark:border-zinc-800 transition-colors">
         <div className="max-w-7xl mx-auto">
           <div className="mb-14">
-            <span className="text-[10px] uppercase tracking-widest text-zinc-400 mb-4 block">{t('landing.services_pricing')}</span>
+            <span className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4 block">{t('landing.services_pricing')}</span>
             <h2 className="font-serif text-5xl md:text-7xl font-light tracking-tighter">{t('landing.services')}</h2>
           </div>
 
@@ -216,10 +216,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
               {SERVICE_CATEGORIES.map((categoryGroup) => {
                 const isOpen = openCategory === categoryGroup.category;
                 return (
-                  <div key={categoryGroup.category} className="border border-zinc-200 bg-white">
+                  <div key={categoryGroup.category} className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1A1A1A] transition-colors">
                     <button
                       onClick={() => { setOpenCategory(isOpen ? null : categoryGroup.category); }}
-                      className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-zinc-50 transition-colors"
+                      className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
                     >
                       <span className="font-serif text-2xl italic">{t(`data.categories.${categoryGroup.category}` as any)}</span>
                       <ChevronDown
@@ -236,7 +236,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
                           transition={{ duration: 0.3, ease: "easeInOut" }}
                           className="overflow-hidden"
                         >
-                          <div className="px-6 pb-6 pt-2 space-y-3 border-t border-zinc-100">
+                          <div className="px-6 pb-6 pt-2 space-y-3 border-t border-zinc-100 dark:border-zinc-800">
                             {categoryGroup.services.map((service) => {
                               const isServiceOpen = selectedService === service.name;
                               return (
@@ -244,15 +244,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
                                   key={service.name} 
                                   onClick={() => { setSelectedService(isServiceOpen ? null : service.name); }}
                                   className={`p-4 border cursor-pointer transition-all duration-300 group ${
-                                    isServiceOpen ? 'border-black bg-neutral-50' : 'border-transparent hover:border-zinc-200'
+                                    isServiceOpen ? 'border-black dark:border-white bg-neutral-50 dark:bg-zinc-900' : 'border-transparent hover:border-zinc-200 dark:hover:border-zinc-700'
                                   }`}
                                 >
                                   <div className="flex items-center justify-between">
                                     <div>
                                       <h4 className="text-sm font-medium mb-1">{t(`data.services.${service.name}` as any)}</h4>
-                                      <div className="text-[10px] uppercase tracking-widest text-zinc-500">{service.duration}</div>
+                                      <div className="text-[10px] uppercase tracking-widest text-zinc-500 dark:text-zinc-400">{service.duration}</div>
                                     </div>
-                                    <div className="font-mono text-xs bg-zinc-50 px-3 py-1 group-hover:bg-zinc-100 transition-colors">
+                                    <div className="font-mono text-xs bg-zinc-50 dark:bg-zinc-800 px-3 py-1 group-hover:bg-zinc-100 dark:group-hover:bg-zinc-700 transition-colors">
                                       {service.price}
                                     </div>
                                   </div>
@@ -271,7 +271,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
                                             e.stopPropagation();
                                             setView('booking');
                                           }}
-                                          className="w-full py-3 bg-black text-white text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 transition-colors flex items-center justify-center gap-2"
+                                          className="w-full py-3 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2"
                                         >
                                           {t('landing.book_now')} <ArrowRight size={14} />
                                         </button>
@@ -293,34 +293,34 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
         </div>
       </section>
 
-      <section id="hours" className="py-24 px-6 md:px-12 bg-white">
+      <section id="hours" className="py-24 px-6 md:px-12 bg-white dark:bg-[#1A1A1A] transition-colors">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div>
-            <span className="text-[10px] uppercase tracking-widest text-zinc-400 mb-4 block">{t('landing.business_hours')}</span>
+            <span className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4 block">{t('landing.business_hours')}</span>
             <h2 className="font-serif text-5xl md:text-7xl font-light tracking-tighter mb-8">{t('landing.weekly_schedule')}</h2>
             <div className="space-y-4">
               {BUSINESS_HOURS.map((slot) => (
-                <div key={slot.day} className="flex items-center justify-between border-b border-zinc-100 pb-4">
+                <div key={slot.day} className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-4">
                   <span className="text-sm uppercase tracking-widest">{t(`data.days.${slot.day}` as any)}</span>
-                  <span className={`text-sm ${slot.open ? 'text-black' : 'text-zinc-400'}`}>{slot.hours}</span>
+                  <span className={`text-sm ${slot.open ? 'text-black dark:text-white' : 'text-zinc-400 dark:text-zinc-600'}`}>{slot.hours}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="bg-zinc-50 border border-zinc-100 p-8">
-            <span className="text-[10px] uppercase tracking-widest text-zinc-400 mb-4 block">{t('landing.booking_policies')}</span>
+          <div className="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 p-8 transition-colors">
+            <span className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4 block">{t('landing.booking_policies')}</span>
             <h3 className="font-serif text-3xl italic mb-6">{t('landing.arrive_prepared')}</h3>
             <div className="space-y-4">
               {BOOKING_POLICIES.map((policy, idx) => (
-                <p key={policy} className="text-sm text-zinc-600 leading-relaxed">
+                <p key={policy} className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
                   {t(`landing.policy_${idx + 1}` as any)}
                 </p>
               ))}
             </div>
             <button
               onClick={() => { setView('booking'); }}
-              className="mt-8 px-8 py-3 border border-black text-[10px] uppercase tracking-widest font-bold hover:bg-black hover:text-white transition-all"
+              className="mt-8 px-8 py-3 border border-black dark:border-white text-[10px] uppercase tracking-widest font-bold hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black transition-all"
             >
               {t('landing.reserve_slot')}
             </button>
@@ -328,24 +328,24 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
         </div>
       </section>
 
-      <section id="contact" className="py-24 px-6 md:px-12 bg-zinc-50 border-t border-zinc-100">
+      <section id="contact" className="py-24 px-6 md:px-12 bg-zinc-50 dark:bg-zinc-900/50 border-t border-zinc-100 dark:border-zinc-800 transition-colors">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
           <div>
-            <span className="text-[10px] uppercase tracking-widest text-zinc-400 mb-4 block">{t('landing.contact_details')}</span>
+            <span className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4 block">{t('landing.contact_details')}</span>
             <h2 className="font-serif text-5xl md:text-7xl font-light tracking-tighter mb-8">{t('landing.visit_hyecuts')}</h2>
-            <div className="space-y-6 text-sm text-zinc-600">
+            <div className="space-y-6 text-sm text-zinc-600 dark:text-zinc-400">
               <div>
-                <p className="text-black font-bold mb-1 uppercase tracking-widest text-[10px]">{t('landing.address')}</p>
+                <p className="text-black dark:text-white font-bold mb-1 uppercase tracking-widest text-[10px]">{t('landing.address')}</p>
                 <p>{HYECUTS.address}</p>
-                <p className="mt-2 text-[10px] uppercase tracking-widest text-zinc-400">{t('landing.waze')}: {HYECUTS.waze}</p>
+                <p className="mt-2 text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-600">{t('landing.waze')}: {HYECUTS.waze}</p>
               </div>
               <div>
-                <p className="text-black font-bold mb-1 uppercase tracking-widest text-[10px]">{t('landing.contact_details')}</p>
+                <p className="text-black dark:text-white font-bold mb-1 uppercase tracking-widest text-[10px]">{t('landing.contact_details')}</p>
                 <p>{HYECUTS.phone}</p>
                 <p>{HYECUTS.email}</p>
               </div>
               <div>
-                <p className="text-black font-bold mb-1 uppercase tracking-widest text-[10px]">{t('landing.team_members')}</p>
+                <p className="text-black dark:text-white font-bold mb-1 uppercase tracking-widest text-[10px]">{t('landing.team_members')}</p>
                 {TEAM_MEMBERS.map((member) => (
                   <p key={member.name}>
                     {member.name} — {t(`data.roles.${member.role}` as any)}
@@ -355,12 +355,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
             </div>
           </div>
 
-          <div className="bg-white border border-zinc-200 p-8">
-            <span className="text-[10px] uppercase tracking-widest text-zinc-400 mb-4 block">{t('landing.social')}</span>
+          <div className="bg-white dark:bg-[#1A1A1A] border border-zinc-200 dark:border-zinc-800 p-8 transition-colors">
+            <span className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4 block">{t('landing.social')}</span>
             <div className="flex items-center gap-4">
               <a
                 aria-label="Instagram"
-                className="inline-flex items-center justify-center w-10 h-10 border border-zinc-200 hover:bg-zinc-100 transition-colors"
+                className="inline-flex items-center justify-center w-10 h-10 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
                 href={HYECUTS.instagram}
                 target="_blank"
                 rel="noreferrer"
@@ -373,7 +373,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
               </a>
               <a
                 aria-label="Facebook"
-                className="inline-flex items-center justify-center w-10 h-10 border border-zinc-200 hover:bg-zinc-100 transition-colors"
+                className="inline-flex items-center justify-center w-10 h-10 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
                 href={HYECUTS.facebook}
                 target="_blank"
                 rel="noreferrer"
@@ -385,7 +385,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
             </div>
             <button
               onClick={() => { setView('booking'); }}
-              className="mt-8 px-8 py-4 bg-black text-white text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-zinc-800 transition-all duration-500"
+              className="mt-8 px-8 py-4 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all duration-500"
             >
               {t('landing.book_now')}
             </button>
@@ -393,12 +393,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
         </div>
       </section>
 
-      <footer className="py-16 px-6 md:px-12 border-t border-zinc-100 bg-white">
+      <footer className="py-16 px-6 md:px-12 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-[#1A1A1A] transition-colors">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
           <div className="font-serif text-4xl font-light tracking-tighter italic">
-            Hyecuts<span className="text-zinc-300">.</span>
+            Hyecuts<span className="text-zinc-300 dark:text-zinc-700">.</span>
           </div>
-          <div className="text-[10px] uppercase tracking-widest text-zinc-400">
+          <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
             {HYECUTS.address}
           </div>
         </div>
