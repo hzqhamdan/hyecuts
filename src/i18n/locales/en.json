@@ -337,6 +337,54 @@
       }
     }
   },
+  "profile_modal": {
+    "tabs": {
+      "general": "General Info",
+      "hair": "Hair Profile",
+      "security": "Security & Privacy"
+    },
+    "general": {
+      "username": "Username",
+      "name": "Full Name",
+      "dob": "Date of Birth",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "save": "Save Changes",
+      "success": "Profile updated successfully.",
+      "avatar_alt": "User Avatar"
+    },
+    "hair": {
+      "type": "Hair Type",
+      "length": "Hair Length",
+      "scalp": "Scalp Condition",
+      "type_options": {
+        "straight": "Straight",
+        "wavy": "Wavy",
+        "curly": "Curly",
+        "coily": "Coily"
+      },
+      "length_options": {
+        "short": "Short",
+        "medium": "Medium",
+        "long": "Long"
+      },
+      "scalp_options": {
+        "normal": "Normal",
+        "dry": "Dry",
+        "oily": "Oily",
+        "sensitive": "Sensitive"
+      },
+      "description": "Tell us about your hair so we can provide tailored recommendations."
+    },
+    "security": {
+      "change_password": "Change Password",
+      "pdpa_description": "Manage your personal data under the Personal Data Protection Act (PDPA) 2010.",
+      "export_data": "Export Data (JSON)",
+      "export_data_desc": "Download a copy of your personal data.",
+      "delete_account": "Delete Account",
+      "delete_account_desc": "Permanently erase your profile."
+    }
+  },
   "login": {
     "member_login": "Member Login",
     "welcome_back": "Welcome back. Authenticate to access your portfolio.",

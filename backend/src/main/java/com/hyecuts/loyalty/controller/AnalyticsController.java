@@ -71,6 +71,7 @@ public class AnalyticsController {
 
         // 3. Service Popularity
         Map<String, Long> servicePopularity = allBookings.stream()
+                .filter(b -> b.getService() != null)
                 .collect(Collectors.groupingBy(
                         b -> b.getService().getName(),
                         Collectors.counting()

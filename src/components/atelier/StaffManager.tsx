@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Clock, Calendar, Plus, X, Save, ShieldCheck } from 'lucide-react';
+import { User, Clock, Plus, X, Save, ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { TEAM_MEMBERS, BUSINESS_HOURS } from '../../data/hyecuts';
 
@@ -12,7 +12,7 @@ interface StaffProfile {
   isActive: boolean;
 }
 
-export function StaffManager({ token }: { token: string }) {
+export function StaffManager({ token: _token }: { token: string }) {
   const { t } = useTranslation();
   
   // Initial state derived from seeder data for prototype
@@ -30,7 +30,7 @@ export function StaffManager({ token }: { token: string }) {
   );
 
   const [selectedStaff, setSelectedStaff] = useState<StaffProfile | null>(null);
-  const [isAdding, setIsAdding] = useState(false);
+  const [_isAdding, setIsAdding] = useState(false);
 
   const handleSave = (updated: StaffProfile) => {
     setStaff(staff.map(s => s.id === updated.id ? updated : s));

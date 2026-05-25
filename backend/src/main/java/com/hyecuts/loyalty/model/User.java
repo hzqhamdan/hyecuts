@@ -40,8 +40,14 @@ public class User {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Column(nullable = false)
+    @Column(name = "role", nullable = false)
     private String role = "ROLE_USER";
+
+    @Column(name = "dob")
+    private String dob;
+
+    @Column(name = "phone")
+    private String phone;
 
     public User() {}
 
@@ -68,4 +74,8 @@ public class User {
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+    public String getDob() { return dob; }
+    public void setDob(String dob) { this.dob = dob; }
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
 }

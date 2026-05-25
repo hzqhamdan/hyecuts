@@ -15,7 +15,7 @@ interface Review {
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
 }
 
-export function ReviewQueue({ token }: { token: string }) {
+export function ReviewQueue({ token: _token }: { token: string }) {
   const { t } = useTranslation();
   
   // Mock data for prototype
@@ -38,7 +38,7 @@ export function ReviewQueue({ token }: { token: string }) {
     }
   ]);
 
-  const handleAction = (id: string, status: 'APPROVED' | 'REJECTED') => {
+  const handleAction = (id: string, _status: 'APPROVED' | 'REJECTED') => {
     setReviews(reviews.filter(r => r.id !== id));
     // In real app, call API to update status and award points
   };

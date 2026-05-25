@@ -57,6 +57,11 @@ export function BookingsManager({ token }: { token: string }) {
                   <div className="flex items-center gap-4 text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 font-bold">
                     <span className="flex items-center gap-1"><Clock size={12} /> {new Date(booking.appointmentTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     <span className="flex items-center gap-1"><Calendar size={12} /> {new Date(booking.appointmentTime).toLocaleDateString()}</span>
+                    {booking.createdAt && (
+                      <span className="ml-2 pl-4 border-l border-zinc-200 dark:border-zinc-800 text-zinc-300 dark:text-zinc-600">
+                        {t('atelier.bookings.booked_at', { defaultValue: 'Booked' })}: {new Date(booking.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    )}
                   </div>
                   <p className="text-xs text-black dark:text-white font-bold uppercase tracking-[0.2em] mt-2">{t(`data.services.${booking.service.name}` as any, { defaultValue: booking.service.name })}</p>
                 </div>

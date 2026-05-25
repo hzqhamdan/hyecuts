@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, type Variants, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Menu, X, ChevronDown, Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
 import { BOOKING_POLICIES, BUSINESS_HOURS, HYECUTS, SERVICE_CATEGORIES, TEAM_MEMBERS } from '../../data/hyecuts';
 
 interface LandingPageProps {
@@ -10,6 +11,7 @@ interface LandingPageProps {
 
 const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
   const { t, i18n } = useTranslation();
+  const { token, user: _user } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openCategory, setOpenCategory] = useState<string | null>('Haircuts');
   const [selectedService, setSelectedService] = useState<string | null>(null);
@@ -72,14 +74,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
                 {t(`nav.${item}`)}
               </motion.a>
             ))}
-            <motion.button
-              onClick={() => { setView('lounge'); }}
-              whileTap={navTap}
-              transition={navTapTransition}
-              className="hover:text-zinc-400 dark:hover:text-zinc-500 transition-colors duration-300 uppercase"
-            >
-              {t('nav.lounge')}
-            </motion.button>
+            {!token && (
+              <motion.button
+                onClick={() => { setView('lounge'); }}
+                whileTap={navTap}
+                transition={navTapTransition}
+                className="hover:text-zinc-400 dark:hover:text-zinc-500 transition-colors duration-300 uppercase"
+              >
+                {t('nav.login')}
+              </motion.button>
+            )}
             <motion.button
               onClick={toggleLanguage}
               whileTap={navTap}
@@ -133,17 +137,19 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
                 {t(`nav.${item}`)}
               </motion.a>
             ))}
-            <motion.button
-              onClick={() => {
-                setIsMenuOpen(false);
-                setView('lounge');
-              }}
-              whileTap={navTap}
-              transition={navTapTransition}
-              className="text-4xl font-serif italic tracking-tight capitalize"
-            >
-              {t('nav.lounge')}
-            </motion.button>
+            {!token && (
+              <motion.button
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  setView('lounge');
+                }}
+                whileTap={navTap}
+                transition={navTapTransition}
+                className="text-4xl font-serif italic tracking-tight capitalize"
+              >
+                {t('nav.login')}
+              </motion.button>
+            )}
             <motion.button
               onClick={() => {
                 setIsMenuOpen(false);
@@ -400,10 +406,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
           </div>
           <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
             {HYECUTS.address}
+            <div className="mt-2 text-[9px] text-zinc-300 dark:text-zinc-600">Developed By: Haziq Hamdan</div>
           </div>
         </div>
-      </footer>
-    </motion.div>
+      </footer>    </motion.div>
   );
 };
 

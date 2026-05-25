@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowLeft, Award, Sparkles, ChevronRight, Activity, Target, Globe } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, Award, Sparkles, ChevronRight, Activity, Target, Globe, Bell } from 'lucide-react';
 import { useAuth } from './context/AuthContext';
 import { API_BASE } from './config';
 import { useTranslation } from 'react-i18next';
+
+import UserProfileModal from './components/profile/UserProfileModal';
 
 interface LoyaltyProfile {
   userId: string;
@@ -61,7 +63,7 @@ interface UserMissionProgress {
 
 const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
   const { t, i18n } = useTranslation();
-  const { user, logout } = useAuth();
+  const { user, token, logout } = useAuth();
   
   const toggleLanguage = () => {
     const newLang = i18n.language === 'en' ? 'ms' : 'en';
@@ -84,6 +86,14 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
   const [selectedVoucher, setSelectedVoucher] = useState<Reward | null>(null);
   const [redemptionStatus, setRedemptionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  // Mock notifications for prototype
+  const notifications = [
+    { id: 1, title: 'Tier Upgraded', message: 'Welcome to Legend tier. Enjoy your new perks.', isRead: false, time: '2h ago' },
+    { id: 2, title: 'Reward Redeemed', message: 'Complimentary Hair Cut applied successfully.', isRead: true, time: '1d ago' },
+  ];
+  const unreadCount = notifications.filter(n => !n.isRead).length;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -201,21 +211,60 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
             >
               {t('nav.appointments')}
             </button>
-            <button
-              onClick={() => { setShowSettingsModal(true); }}
-              className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-medium"
-            >
-              {t('nav.profile')}
-            </button>
-            <button
-              onClick={() => { setView('login'); }}
-              className="text-[10px] uppercase tracking-widest text-zinc-300 dark:text-zinc-600 hover:text-black dark:hover:text-white transition-colors font-medium"
-            >
-              {t('nav.login')}
-            </button>
-            <button
-              onClick={() => {
-                logout();
+              <button
+                onClick={() => { setShowSettingsModal(true); }}
+                className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-medium"
+              >
+                {t('nav.profile')}
+              </button>
+
+              {/* Notification Bell */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  className="relative p-2 text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors"
+                >
+                  <Bell className="w-4 h-4" />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-[#1A1A1A]"></span>
+                  )}
+                </button>
+                
+                {/* Notification Dropdown */}
+                <AnimatePresence>
+                  {showNotifications && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      className="absolute right-0 mt-2 w-72 bg-white dark:bg-[#1A1A1A] border border-black/10 dark:border-white/10 shadow-2xl z-50 overflow-hidden"
+                    >
+                      <div className="p-4 border-b border-black/5 dark:border-white/5 bg-neutral-50 dark:bg-zinc-900/50">
+                        <h4 className="font-serif text-sm uppercase tracking-widest">Notifications</h4>
+                      </div>
+                      <div className="max-h-80 overflow-y-auto">
+                        {notifications.length === 0 ? (
+                          <div className="p-6 text-center text-[10px] uppercase tracking-widest text-zinc-500">No notifications</div>
+                        ) : (
+                          notifications.map((notif) => (
+                            <div key={notif.id} className={`p-4 border-b border-black/5 dark:border-white/5 last:border-0 hover:bg-neutral-50 dark:hover:bg-zinc-900/50 transition-colors ${!notif.isRead ? 'bg-black/5 dark:bg-white/5' : ''}`}>
+                              <div className="flex justify-between items-start mb-1">
+                                <h5 className="text-xs font-bold uppercase tracking-widest">{notif.title}</h5>
+                                <span className="text-[9px] text-zinc-500 uppercase">{notif.time}</span>
+                              </div>
+                              <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">{notif.message}</p>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <button
+                onClick={() => {
+                  logout();
                 setView('facade');
               }}
               className="text-[10px] uppercase tracking-widest text-red-400 dark:text-red-500 hover:text-red-600 transition-colors font-medium"
@@ -394,26 +443,32 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
                 const prog = missionProgress.find(p => p.missionId === mission.id) ?? { currentProgress: 0, completed: false };
 
                 return (
-                  <div key={mission.id} className="py-4 border-b border-black/5 dark:border-white/5 flex justify-between items-center group">
-                    <div className={`flex items-center gap-4 ${prog.completed ? 'opacity-30 line-through' : ''}`}>
-                      <div className="w-1.5 h-1.5 bg-black dark:bg-white rounded-full" />
-                      <div>
-                        <h4 className="font-sans text-sm uppercase tracking-widest font-medium text-black dark:text-white">
-                          {mission.title}
-                        </h4>
-                        {!prog.completed && (
-                          <div className="text-[10px] text-zinc-500 dark:text-zinc-500 uppercase tracking-widest mt-1">
-                            {(prog.currentProgress ?? 0).toString()} / {(mission.requiredCount ?? 0).toString()} {mission.targetAction}
-                          </div>
-                        )}
+                    <div key={mission.id} className="py-4 border-b border-black/5 dark:border-white/5 flex justify-between items-center group">
+                      <div className={`flex items-start gap-4 ${prog.completed ? 'opacity-30' : ''} w-full`}>
+                        <div className="w-1.5 h-1.5 bg-black dark:bg-white rounded-full mt-1.5 shrink-0" />
+                        <div className="flex-1 w-full max-w-xs">
+                          <h4 className={`font-sans text-sm uppercase tracking-widest font-medium text-black dark:text-white ${prog.completed ? 'line-through' : ''}`}>
+                            {mission.title}
+                          </h4>
+                          {!prog.completed && (
+                            <div className="mt-3">
+                              <div className="w-full h-1 bg-neutral-200 dark:bg-zinc-800 overflow-hidden relative">
+                                <motion.div
+                                  initial={{ width: 0 }}
+                                  animate={{ width: `${Math.min(100, ((prog.currentProgress ?? 0) / (mission.requiredCount || 1)) * 100)}%` }}
+                                  transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
+                                  className="absolute top-0 left-0 h-full bg-black dark:bg-[#B8A070]"
+                                />
+                              </div>
+                              <div className="text-[9px] text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mt-2 flex justify-between items-center">
+                                <span>{(prog.currentProgress ?? 0).toString()} / {(mission.requiredCount ?? 0).toString()} {mission.targetAction}</span>
+                                <span className="font-mono text-black dark:text-white">+{(mission.rewardPoints ?? 0).toString()} {t('lounge.pts')}</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    {!prog.completed && (
-                      <span className="text-[10px] font-mono tracking-widest text-zinc-500 dark:text-zinc-400">
-                        +{(mission.rewardPoints ?? 0).toString()} {t('lounge.pts')}
-                      </span>
-                    )}
-                  </div>
                 );
               })
             )}
@@ -521,65 +576,46 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
         )}
 
       {/* PDPA Privacy & Data Export Modal */}
-      {showSettingsModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 dark:bg-black/98 backdrop-blur-md p-6">
-          <div className="bg-white dark:bg-[#1A1A1A] w-full max-w-lg relative overflow-hidden shadow-2xl p-12">
-            <h2 className="font-serif text-2xl uppercase tracking-tighter mb-6 text-black dark:text-white">{t('lounge.profile_privacy')}</h2>
-            <p className="font-sans text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed mb-8">
-              {t('lounge.pdpa_description')}
-            </p>
-            
-            <div className="space-y-4 mb-10">
-              <button 
-                onClick={() => {
-                  if(profile) {
-                    const fullExport = {
-                      profile,
-                      activities,
-                      badges: badges.filter(b => userBadges.some(ub => ub.badgeId === b.id)),
-                      missions: missions.map(m => ({
-                        ...m,
-                        progress: missionProgress.find(p => p.missionId === m.id)
-                      })),
-                      exportedAt: new Date().toISOString(),
-                      studio: "The Studio by Hyecuts"
-                    };
-                    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(fullExport, null, 2));
-                    const dlAnchorElem = document.createElement('a');
-                    dlAnchorElem.setAttribute("href", dataStr);
-                    dlAnchorElem.setAttribute("download", `thestudio_export_${profile.userId.slice(0,8)}.json`);
-                    dlAnchorElem.click();
-                  }
-                }}
-                className="w-full text-left p-4 border border-zinc-200 dark:border-zinc-800 hover:border-black dark:hover:border-white hover:bg-neutral-50 dark:hover:bg-zinc-900 transition-colors"
-              >
-                <div className="text-[10px] uppercase tracking-widest font-bold mb-1 text-black dark:text-white">{t('lounge.export_data')}</div>
-                <div className="text-xs text-zinc-500 dark:text-zinc-400">{t('lounge.export_data_desc')}</div>
-              </button>
-              
-              <button 
-                onClick={() => {
-                  if(confirm(t('lounge.delete_confirm'))) {
-                    alert(t('lounge.delete_submitted'));
-                    setView('login');
-                  }
-                }}
-                className="w-full text-left p-4 border border-red-200 dark:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors group"
-              >
-                <div className="text-[10px] uppercase tracking-widest font-bold text-red-600 dark:text-red-500 mb-1">{t('lounge.delete_account')}</div>
-                <div className="text-xs text-red-500/80 dark:text-red-400/80 group-hover:text-red-500 dark:group-hover:text-red-400">{t('lounge.delete_account_desc')}</div>
-              </button>
-            </div>
-
-            <button
-              onClick={() => { setShowSettingsModal(false); }}
-              className="w-full bg-black dark:bg-white text-white dark:text-black py-4 text-[10px] uppercase tracking-widest hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors"
-            >
-              {t('lounge.close')}
-            </button>
-          </div>
-        </div>
-      )}
+      <UserProfileModal 
+        isOpen={showSettingsModal}
+        onClose={() => setShowSettingsModal(false)}
+        onExportData={() => {
+          if(profile) {
+            const fullExport = {
+              profile,
+              activities,
+              badges: badges.filter(b => userBadges.some(ub => ub.badgeId === b.id)),
+              missions: missions.map(m => ({
+                ...m,
+                progress: missionProgress.find(p => p.missionId === m.id)
+              })),
+              exportedAt: new Date().toISOString(),
+              studio: "The Studio by Hyecuts"
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(fullExport, null, 2));
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", `thestudio_export_${profile.userId.slice(0,8)}.json`);
+            dlAnchorElem.click();
+          }
+        }}
+        onDeleteAccount={async () => {
+          if(confirm(t('lounge.delete_confirm'))) {
+            try {
+              // Delete Account API Integration
+              await fetch(`${API_BASE}/admin/users/${user?.id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+              });
+              alert(t('lounge.delete_submitted'));
+              logout();
+              setView('facade');
+            } catch (error) {
+              console.error('Failed to delete account', error);
+            }
+          }
+        }}
+      />
       
     </motion.div>
   );

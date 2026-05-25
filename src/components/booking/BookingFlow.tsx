@@ -72,8 +72,8 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
           console.error("Error fetching services", e);
         }
 
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
+        const localDate = new Date();
+        localDate.setDate(localDate.getDate() + 1);
         let hours = 12, mins = 0;
         if (selectedTime) {
           const match = /(\d+):(\d+)\s*(AM|PM)/i.exec(selectedTime);
@@ -84,12 +84,16 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
             if (match[3].toUpperCase() === 'AM' && hours === 12) hours = 0;
           }
         }
-        tomorrow.setHours(hours, mins, 0, 0);
+        localDate.setHours(hours, mins, 0, 0);
+
+        // Format as YYYY-MM-DDTHH:mm:ss manually to keep local time
+        const pad = (n: number) => n.toString().padStart(2, '0');
+        const localIso = `${localDate.getFullYear()}-${pad(localDate.getMonth() + 1)}-${pad(localDate.getDate())}T${pad(localDate.getHours())}:${pad(localDate.getMinutes())}:${pad(localDate.getSeconds())}`;
 
         const bookingReq = {
           userId: user.id,
           serviceId: serviceId,
-          appointmentTime: tomorrow.toISOString().split('.')[0]
+          appointmentTime: localIso
         };
 
         const res = await fetch(`${API_BASE}/bookings`, {

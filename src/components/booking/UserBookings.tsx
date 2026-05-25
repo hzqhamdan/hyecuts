@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowLeft, Calendar, Clock, Scissors } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, Scissors, CalendarPlus, RefreshCw } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../context/AuthContext';
 import { API_BASE } from '../../config';
@@ -9,6 +9,7 @@ interface Booking {
   appointmentTime: string;
   status: string;
   totalPriceMyr: number;
+  createdAt?: string;
   service: {
     name: string;
     durationMinutes: number;
@@ -72,7 +73,38 @@ export default function UserBookings({ setView }: { setView: (view: string) => v
               const dateStr = dateObj.toLocaleDateString('en-MY', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
               const timeStr = dateObj.toLocaleTimeString('en-MY', { hour: '2-digit', minute: '2-digit' });
 
-              return (
+  const generateICS = (booking: Booking) => {
+    const startObj = new Date(booking.appointmentTime);
+    const endObj = new Date(startObj.getTime() + booking.service.durationMinutes * 60000);
+
+    const formatDate = (date: Date) => date.toISOString().replace(/-|:|\.\d+/g, '');
+
+    const icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Hyecuts Studio//Booking//EN',
+      'BEGIN:VEVENT',
+      `UID:${booking.id}@hyecuts.com`,
+      `DTSTAMP:${formatDate(new Date())}`,
+      `DTSTART:${formatDate(startObj)}`,
+      `DTEND:${formatDate(endObj)}`,
+      `SUMMARY:${booking.service.name} at Hyecuts`,
+      `DESCRIPTION:Your appointment for ${booking.service.name} (${booking.service.durationMinutes} mins) at The Studio by Hyecuts.`,
+      `LOCATION:3361 Jalan Sungai Penchala, Kuala Lumpur`,
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\r\n');
+
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.setAttribute('download', `hyecuts-appointment-${booking.id}.ics`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  return (
                 <div key={booking.id} className="border border-zinc-200 dark:border-zinc-800 p-6 bg-white dark:bg-[#1A1A1A] flex flex-col md:flex-row justify-between items-start md:items-center gap-6 hover:border-black dark:hover:border-white transition-all group">
                   <div>
                     <div className="flex items-center gap-2 mb-4">
@@ -95,11 +127,35 @@ export default function UserBookings({ setView }: { setView: (view: string) => v
                       <div className="flex items-center gap-2">
                         <Scissors className="w-4 h-4 text-[#B8A070]" /> {booking.service.durationMinutes} mins
                       </div>
+                      {booking.createdAt && (
+                        <div className="flex items-center gap-2 opacity-60">
+                          Booked: {new Date(booking.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                      )}
                     </div>
                   </div>
-                  <div className="text-left md:text-right w-full md:w-auto border-t md:border-t-0 border-zinc-100 dark:border-zinc-800 pt-6 md:pt-0">
-                    <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1 font-bold">Total</div>
-                    <div className="font-serif text-3xl text-black dark:text-white">RM {booking.totalPriceMyr.toFixed(2)}</div>
+                  <div className="text-left md:text-right w-full md:w-auto border-t md:border-t-0 border-zinc-100 dark:border-zinc-800 pt-6 md:pt-0 flex flex-col justify-between items-start md:items-end">
+                    <div>
+                      <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1 font-bold">Total</div>
+                      <div className="font-serif text-3xl text-black dark:text-white mb-6">RM {booking.totalPriceMyr.toFixed(2)}</div>
+                    </div>
+                    {booking.status === 'PENDING' && (
+                      <div className="flex gap-2 w-full md:w-auto justify-end">
+                        <button 
+                          onClick={() => generateICS(booking)}
+                          className="p-3 border border-zinc-200 dark:border-zinc-800 hover:border-black dark:hover:border-white transition-colors group/cal"
+                          title="Add to Calendar"
+                        >
+                          <CalendarPlus className="w-4 h-4 text-zinc-500 group-hover/cal:text-black dark:group-hover/cal:text-white" />
+                        </button>
+                        <button 
+                          className="flex items-center gap-2 px-4 py-3 border border-zinc-200 dark:border-zinc-800 text-[10px] uppercase tracking-widest font-bold hover:bg-neutral-50 dark:hover:bg-zinc-900 transition-colors text-black dark:text-white"
+                          title="Reschedule Appointment"
+                        >
+                          <RefreshCw className="w-3 h-3" /> Reschedule
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               );

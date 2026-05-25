@@ -22,6 +22,11 @@ public class LoyaltyController {
         return ResponseEntity.ok(loyaltyService.getUser(userId));
     }
 
+    @PutMapping("/profile/{userId}")
+    public ResponseEntity<User> updateProfile(@PathVariable UUID userId, @RequestBody User updatedProfile) {
+        return ResponseEntity.ok(loyaltyService.updateUser(userId, updatedProfile));
+    }
+
     @PostMapping("/earn/{userId}")
     public ResponseEntity<User> earnPoints(@PathVariable UUID userId, @RequestParam int points) {
         User updatedUser = loyaltyService.addPoints(userId, points);

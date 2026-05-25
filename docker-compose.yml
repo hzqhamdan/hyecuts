@@ -11,6 +11,7 @@ services:
       POSTGRES_DB: hyecuts
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: casillas1
+      TZ: Asia/Kuala_Lumpur
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
@@ -37,6 +38,7 @@ services:
       # Note: In production, inject these secrets via an .env file
       - JWT_SECRET=c2VjdXJlX2tleV90aGF0X211c3RfYmVfYXRfbGVhc3RfNTEyX2JpdHNfbG9uZ19mb3JfaG1hY19zaGE1MTI=
       - QR_SECRET=c3R1ZGlvX3FyX3NlY3JldF9rZXlfdGhhdF9zaG91bGRfYmVfbG9uZ19lbm91Z2g=
+      - TZ=Asia/Kuala_Lumpur
     depends_on:
       db:
         condition: service_healthy

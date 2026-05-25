@@ -74,4 +74,5 @@ export interface Booking {
   };
   status: 'PENDING' | 'COMPLETED' | 'CANCELLED';
   totalPriceMyr: number;
+  createdAt?: string;
 }

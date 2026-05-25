@@ -330,6 +330,54 @@
       }
     }
   },
+  "profile_modal": {
+    "tabs": {
+      "general": "Maklumat Umum",
+      "hair": "Profil Rambut",
+      "security": "Keselamatan & Privasi"
+    },
+    "general": {
+      "username": "Nama Pengguna",
+      "name": "Nama Penuh",
+      "dob": "Tarikh Lahir",
+      "email": "Alamat E-mel",
+      "phone": "Nombor Telefon",
+      "save": "Simpan Perubahan",
+      "success": "Profil berjaya dikemas kini.",
+      "avatar_alt": "Avatar Pengguna"
+    },
+    "hair": {
+      "type": "Jenis Rambut",
+      "length": "Panjang Rambut",
+      "scalp": "Keadaan Kulit Kepala",
+      "type_options": {
+        "straight": "Lurus",
+        "wavy": "Ikal",
+        "curly": "Keriting",
+        "coily": "Keriting Halus"
+      },
+      "length_options": {
+        "short": "Pendek",
+        "medium": "Sederhana",
+        "long": "Panjang"
+      },
+      "scalp_options": {
+        "normal": "Normal",
+        "dry": "Kering",
+        "oily": "Berminyak",
+        "sensitive": "Sensitif"
+      },
+      "description": "Beritahu kami tentang rambut anda untuk cadangan yang lebih baik."
+    },
+    "security": {
+      "change_password": "Tukar Kata Laluan",
+      "pdpa_description": "Urus data peribadi anda di bawah Akta Perlindungan Data Peribadi (PDPA) 2010.",
+      "export_data": "Eksport Data (JSON)",
+      "export_data_desc": "Muat turun salinan data peribadi anda.",
+      "delete_account": "Padam Akaun",
+      "delete_account_desc": "Padamkan profil anda secara kekal."
+    }
+  },
   "login": {
     "member_login": "Log Masuk Ahli",
     "welcome_back": "Selamat kembali. Sahkan untuk mengakses portfolio anda.",

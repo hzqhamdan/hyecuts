@@ -55,12 +55,12 @@ export function OverviewView() {
     );
   }
 
-  const tierData = analytics ? Object.entries(analytics.tierDistribution).map(([name, value], index) => ({ 
+  const tierData = analytics?.tierDistribution ? Object.entries(analytics.tierDistribution).map(([name, value], index) => ({ 
     name: t(`data.tiers.${name}`, { defaultValue: name }), 
     value,
     fill: COLORS[index % COLORS.length]
   })) : [];
-  const serviceData = analytics ? Object.entries(analytics.servicePopularity).map(([name, value]) => ({ 
+  const serviceData = analytics?.servicePopularity ? Object.entries(analytics.servicePopularity).map(([name, value]) => ({ 
     name: t(`data.services.${name}`, { defaultValue: name }), 
     value 
   })) : [];

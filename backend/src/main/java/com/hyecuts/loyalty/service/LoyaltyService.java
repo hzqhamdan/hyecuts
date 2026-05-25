@@ -27,6 +27,37 @@ public class LoyaltyService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    @Transactional
+    public User updateUser(UUID userId, User updatedProfile) {
+        User user = getUser(userId);
+        
+        if (updatedProfile.getFullName() != null) user.setFullName(updatedProfile.getFullName());
+        if (updatedProfile.getEmail() != null) user.setEmail(updatedProfile.getEmail());
+        if (updatedProfile.getDob() != null) user.setDob(updatedProfile.getDob());
+        if (updatedProfile.getPhone() != null) user.setPhone(updatedProfile.getPhone());
+        
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    public User overrideTier(UUID userId, String tierName) {
+        User user = getUser(userId);
+        Tier tier = tierRepository.findByName(tierName)
+                .orElseThrow(() -> new RuntimeException("Tier not found: " + tierName));
+        
+        user.setTier(tier);
+        // Ensure lifetime points match the new tier's minimum requirement if they're below it
+        if (user.getLifetimePoints() < tier.getPointsRequired()) {
+            user.setLifetimePoints(tier.getPointsRequired());
+        }
+        
+        return userRepository.save(user);
+    }
+
     @Transactional
     public User addPoints(UUID userId, int points) {
         User user = getUser(userId);

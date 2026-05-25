@@ -31,7 +31,8 @@
     - Final Dynamic Data i18n Audit completed.
 
 ## Next Steps / Unresolved
-- [ ] PDPA Delete Account backend integration.
+- [x] PDPA Delete Account backend integration.
+- [x] Revamp Profile Page: Create dedicated UserProfile full-screen overlay/modal, implement tabs (General, Hair Profile, Security) and framer-motion transitions.
 
 ## Key Decisions
 - Standardized language toggle: Shows active language with icon (Globe for EN, Flag for MY) across the entire application.
@@ -44,3 +45,23 @@
 - `src/components/atelier/*`: Admin modules.
 - `src/components/booking/*`: Booking flow components.
 - `src/MemberLounge.tsx`: Member-facing loyalty interface.
+
+## Backlog / Future Enhancements
+
+### 1. Functional & Backend Integrations
+- [x] Profile Save API: Connect "Save Changes" to backend.
+- [x] PDPA Delete Account: Actual backend API call.
+- [x] Avatar Uploads: File input for profile pictures.
+
+### 2. Booking Flow Enhancements
+- [x] Calendar Integration: Added "Add to Calendar" button in UserBookings generating an `.ics` file.
+- [x] Reschedule Flow: Added "Reschedule" UI placeholder button in UserBookings.
+- [ ] Deposits & Payments (Stripe integration).
+
+### 3. Member Lounge & Gamification
+- [x] Notification System: Added Bell icon with unread badge and dropdown/popover in Member Lounge.
+- [x] Animated Mission Progress bars: Replaced raw text progress in 'Directives' with framer-motion powered progress bars.
+
+### 4. Admin (Atelier) Upgrades
+- [ ] Data Visualization with interactive charts (recharts).
+- [ ] Role-Based Access Control (RBAC) enforcement on UI.

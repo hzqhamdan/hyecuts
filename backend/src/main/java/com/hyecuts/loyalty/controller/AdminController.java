@@ -44,8 +44,18 @@ public class AdminController {
         return ResponseEntity.ok(gamificationService.getAllActivityLogs());
     }
 
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(loyaltyService.getAllUsers());
+    }
+
     @PostMapping("/points/adjust/{userId}")
     public ResponseEntity<User> adjustPoints(@PathVariable UUID userId, @RequestParam int points) {
         return ResponseEntity.ok(loyaltyService.addPoints(userId, points));
+    }
+
+    @PostMapping("/tier/override/{userId}")
+    public ResponseEntity<User> overrideTier(@PathVariable UUID userId, @RequestParam String tier) {
+        return ResponseEntity.ok(loyaltyService.overrideTier(userId, tier));
     }
 }
