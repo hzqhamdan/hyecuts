@@ -12,7 +12,8 @@
       "Bash(git branch *)",
       "Bash(unzip *)",
       "Bash(grep \":$\")",
-      "Bash(Select-String -Pattern \"^[^backend]\")"
+      "Bash(Select-String -Pattern \"^[^backend]\")",
+      "Bash(openssl rand *)"
     ]
   },
   "enableAllProjectMcpServers": true,
