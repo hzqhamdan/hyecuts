@@ -1,23 +1,18 @@
 spring:
   datasource:
-    # Prioritize SPRING_DATASOURCE_URL, then try to construct it from Railway's PG variables, finally fallback to a hardcoded proxy (not recommended)
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://${PGHOST:zephyr.proxy.rlwy.net}:${PGPORT:41721}/${PGDATABASE:railway}?sslmode=require}
-    username: ${SPRING_DATASOURCE_USERNAME:${PGUSER:postgres}}
-    password: ${SPRING_DATASOURCE_PASSWORD:${PGPASSWORD:PEDNpEoPikzAHSoOXMQjTUnKVPxXgRVh}}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
-  flyway:
-    enabled: false
-    baseline-on-migrate: true
   jpa:
+    # Explicitly set the platform to prevent "Unable to determine Dialect"
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         format_sql: true
-        # Required for some cloud databases when using public connections
-        jdbc:
-          ssl: true
 
 server:
   port: ${PORT:8081}
