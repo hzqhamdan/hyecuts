@@ -1,9 +1,9 @@
 spring:
   datasource:
-    # Prioritize SPRING_DATASOURCE_URL, then construct from individual Railway PG variables
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://${PGHOST:postgres.railway.internal}:${PGPORT:5432}/${PGDATABASE:railway}?sslmode=require}
-    username: ${SPRING_DATASOURCE_USERNAME:${PGUSER:postgres}}
-    password: ${SPRING_DATASOURCE_PASSWORD:${PGPASSWORD}}
+    # Use the individual components if you are forced to manual configuration
+    url: jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}?sslmode=require
+    username: ${PGUSER}
+    password: ${PGPASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
