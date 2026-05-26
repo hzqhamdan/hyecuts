@@ -1,7 +1,7 @@
 spring:
   datasource:
     # Prioritize SPRING_DATASOURCE_URL, then construct from individual Railway PG variables
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://${PGHOST:zephyr.proxy.rlwy.net}:${PGPORT:41721}/${PGDATABASE:railway}?sslmode=require}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://${PGHOST:postgres.railway.internal}:${PGPORT:5432}/${PGDATABASE:railway}?sslmode=require}
     username: ${SPRING_DATASOURCE_USERNAME:${PGUSER:postgres}}
     password: ${SPRING_DATASOURCE_PASSWORD:${PGPASSWORD}}
     driver-class-name: org.postgresql.Driver
