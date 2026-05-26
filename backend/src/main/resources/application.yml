@@ -1,9 +1,9 @@
 spring:
   datasource:
-    # Use the full JDBC URL provided by Railway (Internal or Public)
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    # Prioritize SPRING_DATASOURCE_URL, then construct from individual Railway PG variables
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://${PGHOST:zephyr.proxy.rlwy.net}:${PGPORT:41721}/${PGDATABASE:railway}?sslmode=require}
+    username: ${SPRING_DATASOURCE_USERNAME:${PGUSER:postgres}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${PGPASSWORD}}
     driver-class-name: org.postgresql.Driver
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -13,6 +13,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          ssl: true
 
 server:
   port: ${PORT:8081}
