@@ -185,6 +185,15 @@
     "confirm_btn": "Confirm Appointment",
     "secured": "Secured",
     "ref_label": "REF",
+    "proceed_to_payment": "Proceed to Payment",
+    "payment": {
+      "title": "Secure Deposit",
+      "description": "A 50% deposit is required to secure your appointment. This will be deducted from your final bill.",
+      "initializing": "Securely initializing payment...",
+      "pay_deposit": "Pay Deposit & Confirm",
+      "secure_ssl": "Payments are secure and encrypted via Stripe SSL.",
+      "error_generic": "An unexpected error occurred."
+    },
     "continue_barber": "Continue to Barber",
     "continue_schedule": "Continue to Schedule",
     "review_booking": "Review Booking",

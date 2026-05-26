@@ -17,8 +17,12 @@ spring:
         format_sql: true
 
 server:
-  port: 8081
+  port: ${PORT:8081}
 
 jwt:
-  secret: Y2F0Y2hfbWVfaWZfeW91X2Nhbl9oYWNrZXJfYm95XzEyMw== # placeholder base64 secret
+  secret: ${JWT_SECRET:Y2F0Y2hfbWVfaWZfeW91X2Nhbl9oYWNrZXJfYm95XzEyMw==}
   expiration: 86400000 # 24 hours
+
+stripe:
+  secret:
+    key: ${STRIPE_SECRET_KEY:sk_test_placeholder}

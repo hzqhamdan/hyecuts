@@ -185,6 +185,15 @@
     "confirm_btn": "Sahkan Temu Janji",
     "secured": "Disahkan",
     "ref_label": "RUJ",
+    "proceed_to_payment": "Teruskan ke Pembayaran",
+    "payment": {
+      "title": "Deposit Selamat",
+      "description": "Deposit 50% diperlukan untuk mengesahkan tempahan anda. Ini akan ditolak daripada bil akhir anda.",
+      "initializing": "Memulakan pembayaran dengan selamat...",
+      "pay_deposit": "Bayar Deposit & Sahkan",
+      "secure_ssl": "Pembayaran adalah selamat dan disulitkan melalui Stripe SSL.",
+      "error_generic": "Ralat yang tidak dijangka telah berlaku."
+    },
     "continue_barber": "Teruskan ke Tukang Gunting",
     "continue_schedule": "Teruskan ke Jadual",
     "review_booking": "Semak Tempahan",

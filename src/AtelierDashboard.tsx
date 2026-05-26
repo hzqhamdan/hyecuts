@@ -29,7 +29,7 @@ interface AtelierDashboardProps {
 
 export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
   const { t, i18n } = useTranslation();
-  const { logout, token } = useAuth();
+  const { logout, token, user } = useAuth();
   const [currentView, setCurrentView] = useState<View>('booking-manager');
 
   const handleNav = (view: View) => {
@@ -42,6 +42,10 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
     damping: 20
   };
 
+  const isOwner = user?.role === 'owner';
+  const isMasterBarber = user?.role === 'master_barber' || isOwner;
+  const isStaff = user?.role === 'junior' || isMasterBarber;
+
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-white dark:bg-[#1A1A1A] text-black dark:text-[#FAFAFA] font-sans selection:bg-black selection:text-white transition-colors duration-500">
       {/* THE ATELIER SIDEBAR */}
@@ -53,42 +57,54 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
         </div>
 
         <nav className="flex flex-row md:flex-col overflow-x-auto md:overflow-x-visible px-6 space-y-0 md:space-y-2">
-          <NavItem
-            active={currentView === 'booking-manager'}
-            onClick={() => { handleNav('booking-manager'); }}
-            icon={<CalendarDays size={18} />}
-            label={t('atelier.nav.booking_manager')}
-          />
-          <NavItem
-            active={currentView === 'member-manager'}
-            onClick={() => { handleNav('member-manager'); }}
-            icon={<Users size={18} />}
-            label={t('atelier.nav.member_manager')}
-          />
-          <NavItem
-            active={currentView === 'staff-manager'}
-            onClick={() => { handleNav('staff-manager'); }}
-            icon={<Shield size={18} />}
-            label={t('atelier.nav.staff_manager', { defaultValue: 'Staff Roster' })}
-          />
-          <NavItem
-            active={currentView === 'reviews'}
-            onClick={() => { handleNav('reviews'); }}
-            icon={<MessageSquareQuote size={18} />}
-            label={t('atelier.nav.reviews', { defaultValue: 'Review Queue' })}
-          />
-          <NavItem
-            active={currentView === 'loyalty-configurator'}
-            onClick={() => { handleNav('loyalty-configurator'); }}
-            icon={<SlidersHorizontal size={18} />}
-            label={t('atelier.nav.loyalty_config')}
-          />
-          <NavItem
-            active={currentView === 'analytics'}
-            onClick={() => { handleNav('analytics'); }}
-            icon={<BarChart3 size={18} />}
-            label={t('atelier.nav.analytics')}
-          />
+          {isStaff && (
+            <NavItem
+              active={currentView === 'booking-manager'}
+              onClick={() => { handleNav('booking-manager'); }}
+              icon={<CalendarDays size={18} />}
+              label={t('atelier.nav.booking_manager')}
+            />
+          )}
+          {isStaff && (
+            <NavItem
+              active={currentView === 'member-manager'}
+              onClick={() => { handleNav('member-manager'); }}
+              icon={<Users size={18} />}
+              label={t('atelier.nav.member_manager')}
+            />
+          )}
+          {isMasterBarber && (
+            <NavItem
+              active={currentView === 'staff-manager'}
+              onClick={() => { handleNav('staff-manager'); }}
+              icon={<Shield size={18} />}
+              label={t('atelier.nav.staff_manager', { defaultValue: 'Staff Roster' })}
+            />
+          )}
+          {isMasterBarber && (
+            <NavItem
+              active={currentView === 'reviews'}
+              onClick={() => { handleNav('reviews'); }}
+              icon={<MessageSquareQuote size={18} />}
+              label={t('atelier.nav.reviews', { defaultValue: 'Review Queue' })}
+            />
+          )}
+          {isOwner && (
+            <NavItem
+              active={currentView === 'loyalty-configurator'}
+              onClick={() => { handleNav('loyalty-configurator'); }}
+              icon={<SlidersHorizontal size={18} />}
+              label={t('atelier.nav.loyalty_config')}
+            />
+          )}
+          {isOwner && (
+            <NavItem
+              active={currentView === 'analytics'}
+              onClick={() => { handleNav('analytics'); }}
+              icon={<BarChart3 size={18} />}
+              label={t('atelier.nav.analytics')}
+            />
+          )}
         </nav>
 
         <div className="p-8 border-t border-zinc-100 dark:border-zinc-800 mt-auto">
@@ -113,7 +129,9 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
               </div>
               <div className="text-[10px] uppercase tracking-widest">
                 <p className="font-bold text-black dark:text-white">{t('atelier.session_active')}</p>
-                <p className="text-zinc-400 dark:text-zinc-500">{t('atelier.owner_access')}</p>
+                <p className="text-zinc-400 dark:text-zinc-500">
+                  {user?.role === 'owner' ? t('atelier.owner_access') : user?.role?.replace('_', ' ') || 'Staff Access'}
+                </p>
               </div>
             </div>
             <button
@@ -140,12 +158,12 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
             transition={springTransition}
             className="max-w-6xl mx-auto"
           >
-            {currentView === 'booking-manager' && <BookingsManager token={token ?? ''} />}
-            {currentView === 'member-manager' && <MemberManager token={token ?? ''} />}
-            {currentView === 'staff-manager' && <StaffManager token={token ?? ''} />}
-            {currentView === 'reviews' && <ReviewQueue token={token ?? ''} />}
-            {currentView === 'loyalty-configurator' && <LoyaltyConfigurator />}
-            {currentView === 'analytics' && <OverviewView />}
+              {currentView === 'booking-manager' && isStaff && <BookingsManager token={token ?? ''} />}
+              {currentView === 'member-manager' && isStaff && <MemberManager token={token ?? ''} />}
+              {currentView === 'staff-manager' && isMasterBarber && <StaffManager token={token ?? ''} />}
+              {currentView === 'reviews' && isMasterBarber && <ReviewQueue token={token ?? ''} />}
+              {currentView === 'loyalty-configurator' && isOwner && <LoyaltyConfigurator />}
+              {currentView === 'analytics' && isOwner && <OverviewView />}
           </motion.div>
         </AnimatePresence>
       </main>

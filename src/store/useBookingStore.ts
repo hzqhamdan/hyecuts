@@ -9,6 +9,7 @@ interface BookingState {
   selectedTime: string | null;
   bookingRef: string;
   isConfirming: boolean;
+  clientSecret: string | null;
 
   setStep: (step: number) => void;
   nextStep: () => void;
@@ -20,6 +21,7 @@ interface BookingState {
   setSelectedTime: (time: string | null) => void;
   setBookingRef: (ref: string) => void;
   setIsConfirming: (isConfirming: boolean) => void;
+  setClientSecret: (secret: string | null) => void;
   reset: () => void;
 }
 
@@ -32,6 +34,7 @@ export const useBookingStore = create<BookingState>((set) => ({
   selectedTime: null,
   bookingRef: '',
   isConfirming: false,
+  clientSecret: null,
 
   setStep: (step) => { set({ step }); },
   nextStep: () => { set((state) => ({ step: state.step + 1 })); },
@@ -43,6 +46,7 @@ export const useBookingStore = create<BookingState>((set) => ({
   setSelectedTime: (selectedTime) => { set({ selectedTime }); },
   setBookingRef: (bookingRef) => { set({ bookingRef }); },
   setIsConfirming: (isConfirming) => { set({ isConfirming }); },
+  setClientSecret: (clientSecret) => { set({ clientSecret }); },
   reset: () => { 
     set({ 
       step: 0, 
@@ -52,7 +56,8 @@ export const useBookingStore = create<BookingState>((set) => ({
       selectedDate: null, 
       selectedTime: null, 
       bookingRef: '', 
-      isConfirming: false 
+      isConfirming: false,
+      clientSecret: null
     }); 
   },
 }));

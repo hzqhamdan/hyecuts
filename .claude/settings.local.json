@@ -10,11 +10,13 @@
       "Bash(git commit *)",
       "Bash(git push *)",
       "Bash(git branch *)",
-      "Bash(unzip *)"
+      "Bash(unzip *)",
+      "Bash(grep \":$\")",
+      "Bash(Select-String -Pattern \"^[^backend]\")"
     ]
   },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "shadcn"
-  ],
-  "enableAllProjectMcpServers": true
+  ]
 }

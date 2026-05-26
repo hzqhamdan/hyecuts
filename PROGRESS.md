@@ -56,12 +56,12 @@
 ### 2. Booking Flow Enhancements
 - [x] Calendar Integration: Added "Add to Calendar" button in UserBookings generating an `.ics` file.
 - [x] Reschedule Flow: Added "Reschedule" UI placeholder button in UserBookings.
-- [ ] Deposits & Payments (Stripe integration).
+- [x] Deposits & Payments (Stripe integration): Frontend UI and logic created for `PaymentStep`.
 
 ### 3. Member Lounge & Gamification
 - [x] Notification System: Added Bell icon with unread badge and dropdown/popover in Member Lounge.
 - [x] Animated Mission Progress bars: Replaced raw text progress in 'Directives' with framer-motion powered progress bars.
 
 ### 4. Admin (Atelier) Upgrades
-- [ ] Data Visualization with interactive charts (recharts).
-- [ ] Role-Based Access Control (RBAC) enforcement on UI.
+- [x] Data Visualization with interactive charts (recharts).
+- [x] Role-Based Access Control (RBAC) enforcement on UI.

@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { API_BASE } from '../../config';
 import { useBookingStore } from '../../store/useBookingStore';
 import { useTranslation } from 'react-i18next';
+import { PaymentStep } from './PaymentStep';
 
 interface BookingResponse {
   id: number;
@@ -121,7 +122,7 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
     }
 
     setIsConfirming(false);
-    setStep(5);
+    setStep(6);
   };
 
   const getService = () => ALL_SERVICES.find((service) => service.name === selectedService);
@@ -138,31 +139,31 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
       <nav className="grid grid-cols-3 items-center max-w-5xl mx-auto w-full mb-10">
         <div className="justify-self-start">
           <button
-            onClick={() => {
-              if (step === 0) setView('facade');
-              else if (step === 1 && !token) setStep(0);
-              else if (step === 1 || step === 5) setView(token ? 'lounge' : 'facade');
-              else prevStep();
-            }}
-            className="flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors"
-          >
-            <ArrowLeft className="w-3 h-3" />
-            <span className="hidden sm:inline">
-              {step === 0 ? t('nav.return_home') : step === 1 || step === 5 ? (token ? t('nav.return_lounge') : t('nav.return_home')) : t('nav.prev_step')}
-            </span>
-          </button>
+              onClick={() => {
+                if (step === 0) setView('facade');
+                else if (step === 1 && !token) setStep(0);
+                else if (step === 1 || step === 6) setView(token ? 'lounge' : 'facade');
+                else prevStep();
+              }}
+              className="flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors"
+            >
+              <ArrowLeft className="w-3 h-3" />
+              <span className="hidden sm:inline">
+                {step === 0 ? t('nav.return_home') : step === 1 || step === 6 ? (token ? t('nav.return_lounge') : t('nav.return_home')) : t('nav.prev_step')}
+              </span>
+            </button>
         </div>
         
         <div className="justify-self-center font-serif text-xl tracking-tighter uppercase font-medium italic text-center text-black dark:text-white">
           {t('booking.title')}
         </div>
         
-        <div className="justify-self-end flex items-center gap-4">
-          {step > 0 && step < 5 && (
-            <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-600 hidden sm:block font-bold">
-              {t('booking.step_label', { current: Math.min(step, 4), total: 4 }).replace('{{current}}', Math.min(step, 4).toString()).replace('{{total}}', '4')}
-            </div>
-          )}
+          <div className="justify-self-end flex items-center gap-4">
+            {step > 0 && step < 6 && (
+              <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-600 hidden sm:block font-bold">
+                {t('booking.step_label', { current: Math.min(step, 5), total: 5 }).replace('{{current}}', Math.min(step, 5).toString()).replace('{{total}}', '5')}
+              </div>
+            )}
           <button
             onClick={() => {
               const newLang = i18n.language === 'en' ? 'ms' : 'en';
@@ -412,18 +413,24 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
                   </div>
                 </div>
 
-                <button
-                  onClick={() => { void handleConfirm(); }}
-                  disabled={isConfirming}
-                  className="w-full py-5 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-50"
-                >
-                  {isConfirming ? t('booking.securing') : t('booking.confirm_btn')}
-                </button>
-              </motion.div>
-            )}
+                  <button
+                    onClick={() => { setStep(5); }}
+                    disabled={isConfirming}
+                    className="w-full py-5 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-50"
+                  >
+                    {t('booking.proceed_to_payment', { defaultValue: 'Proceed to Payment' })}
+                  </button>
+                </motion.div>
+              )}
 
-            {step === 5 && (
-              <motion.div key="step5" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-12">
+              {step === 5 && (
+                <motion.div key="step5" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+                  <PaymentStep onPaymentSuccess={() => { void handleConfirm(); }} />
+                </motion.div>
+              )}
+
+              {step === 6 && (
+                <motion.div key="step6" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-12">
                 <div className="w-20 h-20 bg-black dark:bg-white text-white dark:text-black rounded-full flex items-center justify-center mx-auto mb-8">
                   <CheckCircle className="w-8 h-8" />
                 </div>
