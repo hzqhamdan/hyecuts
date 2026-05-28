@@ -26,17 +26,21 @@ export default function LoginScreen({ setView }: { setView: (view: string) => vo
     setLoading(true);
     
     const endpoint = isRegistering ? '/api/auth/register' : '/api/auth/login';
+    const targetUrl = `${API_URL}${endpoint}`;
+    console.log("Attempting fetch to:", targetUrl);
     
     void (async () => {
       try {
-        const res = await fetch(`${API_URL}${endpoint}`, {
+        const res = await fetch(targetUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password })
         });
+        console.log("Response status:", res.status);
         
         if (res.ok) {
           const data = (await res.json()) as { token: string; userId: string; role: string };
+          console.log("Login successful, role:", data.role);
           login(data.token, data.userId, data.role, username);
           // Direct users based on role
           if (data.role === 'ROLE_ADMIN') {
@@ -46,9 +50,11 @@ export default function LoginScreen({ setView }: { setView: (view: string) => vo
           }
         } else {
           const errText = await res.text();
+          console.error("Login failed:", errText);
           setError(errText || 'Authentication failed');
         }
-      } catch {
+      } catch (err) {
+        console.error("Fetch error:", err);
         setError('Network error or server unreachable');
       } finally {
         setLoading(false);
