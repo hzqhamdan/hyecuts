@@ -50,13 +50,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
       className="min-h-screen bg-white dark:bg-[#1A1A1A] text-black dark:text-[#FAFAFA] font-sans selection:bg-black selection:text-white overflow-x-hidden transition-colors duration-500"
     >
       <nav className="fixed top-0 left-0 w-full z-50 px-6 md:px-12 py-4 flex justify-between items-center backdrop-blur-md bg-white/80 dark:bg-[#1A1A1A]/80 border-b border-zinc-100 dark:border-zinc-800 transition-colors">
-        <motion.div
+        <motion.button
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="font-serif text-xl tracking-tighter uppercase font-light italic"
+          onClick={() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setView('facade');
+          }}
+          className="font-serif text-xl tracking-tighter uppercase font-light italic hover:opacity-70 transition-opacity focus:outline-none"
         >
           Hyecuts
-        </motion.div>
+        </motion.button>
 
           <div className="hidden md:flex gap-10 text-[10px] uppercase tracking-widest font-medium items-center">
             {['services', 'hours', 'contact'].map((item) => (
@@ -401,9 +405,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
 
       <footer className="py-16 px-6 md:px-12 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-[#1A1A1A] transition-colors">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-          <div className="font-serif text-4xl font-light tracking-tighter italic">
+          <button 
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              setView('facade');
+            }}
+            className="font-serif text-4xl font-light tracking-tighter italic hover:opacity-70 transition-opacity focus:outline-none"
+          >
             Hyecuts<span className="text-zinc-300 dark:text-zinc-700">.</span>
-          </div>
+          </button>
           <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
             {HYECUTS.address}
             <div className="mt-2 text-[9px] text-zinc-300 dark:text-zinc-600">Developed By: Haziq Hamdan</div>
