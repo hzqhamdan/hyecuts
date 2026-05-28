@@ -49,15 +49,16 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
+        // Use allowedOriginPatterns for credentials support with wildcards
         configuration.setAllowedOriginPatterns(Arrays.asList(
-            "https://hyecuts.vercel.app",
-            "https://hyecuts-production.up.railway.app",
-            "http://localhost:3000",
-            "http://localhost:5173"
+            "https://*.vercel.app",
+            "https://*.railway.app",
+            "http://localhost:[*]"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"));
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
