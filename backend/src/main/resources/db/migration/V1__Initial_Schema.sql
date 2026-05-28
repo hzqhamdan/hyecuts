@@ -72,14 +72,14 @@ CREATE TABLE IF NOT EXISTS mission (
 
 CREATE TABLE IF NOT EXISTS user_badge (
     id BIGSERIAL PRIMARY KEY,
-    user_id VARCHAR(255),
+    user_id UUID,
     badge_id BIGINT,
     earned_at TIMESTAMP WITHOUT TIME ZONE
 );
 
 CREATE TABLE IF NOT EXISTS user_mission_progress (
     id BIGSERIAL PRIMARY KEY,
-    user_id VARCHAR(255),
+    user_id UUID,
     mission_id BIGINT,
     current_progress INT DEFAULT 0,
     is_completed BOOLEAN DEFAULT FALSE,
