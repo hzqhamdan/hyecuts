@@ -31,7 +31,8 @@ RUN addgroup -S spring && adduser -S spring -G spring
 USER spring:spring
 
 # Copy the built JAR from the builder stage
-COPY --from=builder /app/build/libs/*.jar app.jar
+# We use a pattern that matches the fat JAR but excludes the -plain.jar
+COPY --from=builder /app/build/libs/*[!plain].jar app.jar
 
 # Expose the default Spring Boot port
 EXPOSE 8080
