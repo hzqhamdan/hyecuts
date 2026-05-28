@@ -22,6 +22,9 @@ COPY src src
 # Build the executable JAR
 RUN ./gradlew bootJar --no-daemon
 
+# Find the executable jar and rename it to app.jar for the next stage
+RUN cp build/libs/$(ls build/libs | grep -v plain | head -n 1) app.jar
+
 # Stage 2: Create the minimal production runtime image
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
@@ -31,8 +34,7 @@ RUN addgroup -S spring && adduser -S spring -G spring
 USER spring:spring
 
 # Copy the built JAR from the builder stage
-# We use a pattern that matches the fat JAR but excludes the -plain.jar
-COPY --from=builder /app/build/libs/*[!plain].jar app.jar
+COPY --from=builder /app/app.jar .
 
 # Expose the default Spring Boot port
 EXPOSE 8080
