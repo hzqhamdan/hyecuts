@@ -55,9 +55,14 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
       {/* THE ATELIER SIDEBAR */}
       <aside className="w-full md:w-72 border-b md:border-r border-zinc-100 dark:border-zinc-800 flex flex-col h-auto md:h-screen sticky top-0 bg-white dark:bg-[#1A1A1A] z-20 transition-colors">
         <div className="p-10 mb-8">
-          <h1 className="font-serif text-3xl tracking-tighter font-light uppercase italic">
-            Hyecuts <span className="font-sans text-[10px] not-italic tracking-[0.3em] block text-zinc-400 dark:text-zinc-500 uppercase mt-1">{t('atelier.title')}</span>
-          </h1>
+          <button 
+            onClick={() => { if (setView) setView('facade'); }}
+            className="text-left hover:opacity-70 transition-opacity focus:outline-none group"
+          >
+            <h1 className="font-serif text-3xl tracking-tighter font-light uppercase italic group-hover:tracking-normal transition-all duration-500">
+              Hyecuts <span className="font-sans text-[10px] not-italic tracking-[0.3em] block text-zinc-400 dark:text-zinc-500 uppercase mt-1">{t('atelier.title')}</span>
+            </h1>
+          </button>
         </div>
 
         <nav className="flex flex-row md:flex-col overflow-x-auto md:overflow-x-visible px-6 space-y-0 md:space-y-2">
