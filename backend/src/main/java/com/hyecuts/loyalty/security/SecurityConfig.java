@@ -52,10 +52,10 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
         configuration.setAllowedOriginPatterns(Arrays.asList(
-            "https://hyecuts.vercel.app",
             "https://*.vercel.app",
-            "https://hyecuts-production.up.railway.app",
-            "http://localhost:[*]"
+            "https://*.railway.app",
+            "http://localhost:[*]",
+            "*"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
