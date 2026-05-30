@@ -253,23 +253,23 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
                                 <div 
                                   key={service.name} 
                                   onClick={() => { setSelectedService(isServiceOpen ? null : service.name); }}
-                                  className={`p-4 border-2 cursor-pointer transition-all duration-300 group ${
+                                  className={`p-4 border-4 cursor-pointer transition-all duration-300 group ${
                                     isServiceOpen 
-                                      ? 'border-black dark:border-[#B8A070] bg-neutral-50 dark:bg-[#B8A070]/10' 
+                                      ? 'border-studio-black !dark:border-studio-gold bg-neutral-50 dark:bg-studio-gold/10' 
                                       : 'border-transparent hover:border-zinc-200 dark:hover:border-zinc-700'
                                   }`}
                                 >
                                   <div className="flex items-center justify-between gap-4">
                                     <div>
-                                      <h4 className={`text-xs md:text-sm font-bold mb-1 transition-colors ${isServiceOpen ? 'text-black dark:text-[#B8A070]' : 'text-black dark:text-white'}`}>
+                                      <h4 className={`text-xs md:text-sm font-bold mb-1 transition-colors ${isServiceOpen ? 'text-studio-black !dark:text-studio-gold' : 'text-studio-black dark:text-studio-white'}`}>
                                         {t(`data.services.${service.name}` as any)}
                                       </h4>
                                       <div className="text-[9px] md:text-[10px] uppercase tracking-widest text-zinc-500 dark:text-zinc-400 font-bold">{service.duration}</div>
                                     </div>
                                     <div className={`font-mono text-[10px] md:text-xs px-3 py-1 transition-colors font-bold whitespace-nowrap ${
                                       isServiceOpen 
-                                        ? 'bg-black dark:bg-[#B8A070] text-white dark:text-black' 
-                                        : 'bg-zinc-50 dark:bg-zinc-800 text-black dark:text-white'
+                                        ? 'bg-studio-black !dark:bg-studio-gold text-studio-white !dark:text-studio-black' 
+                                        : 'bg-zinc-50 dark:bg-zinc-800 text-studio-black dark:text-studio-white'
                                     }`}>
                                       {service.price}
                                     </div>
