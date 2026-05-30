@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Award, Sparkles, ChevronRight, Activity, Target, Globe, Bell } from 'lucide-react';
+import { ArrowLeft, Award, Sparkles, ChevronRight, Activity, Target, Globe, Bell, Menu, X } from 'lucide-react';
 import { useAuth } from './context/AuthContext';
 import { API_BASE } from './config';
 import { useTranslation } from 'react-i18next';
