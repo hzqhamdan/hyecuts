@@ -87,6 +87,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
   const [redemptionStatus, setRedemptionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Mock notifications for prototype
   const notifications = [
@@ -200,13 +201,20 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
           <div className="md:hidden font-serif text-xl tracking-tighter uppercase font-medium italic">
             {t('lounge.title')}
           </div>
+
+          <button 
+            className="md:hidden p-2 text-zinc-500 dark:text-zinc-400 active:scale-90 transition-transform" 
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
 
         <div className="hidden md:block font-serif text-2xl tracking-tighter uppercase font-medium italic">
           {t('lounge.title')}
         </div>
 
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-4 md:gap-8">
+        <div className="hidden md:flex flex-wrap items-center gap-x-6 gap-y-4 md:gap-8">
           <button
             onClick={() => { setView('booking'); }}
             className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-bold"
@@ -289,6 +297,55 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
           </button>
         </div>
       </nav>
+
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed inset-0 z-40 bg-white dark:bg-[#1A1A1A] pt-32 px-10 flex flex-col gap-8 text-center md:hidden transition-colors"
+          >
+            <button
+              onClick={() => { setIsMenuOpen(false); setView('booking'); }}
+              className="text-4xl font-serif italic tracking-tight capitalize"
+            >
+              {t('nav.book')}
+            </button>
+            <button
+              onClick={() => { setIsMenuOpen(false); setView('my-bookings'); }}
+              className="text-4xl font-serif italic tracking-tight capitalize"
+            >
+              {t('nav.appointments')}
+            </button>
+            <button
+              onClick={() => { setIsMenuOpen(false); setShowSettingsModal(true); }}
+              className="text-4xl font-serif italic tracking-tight capitalize"
+            >
+              {t('nav.profile')}
+            </button>
+            <button
+              onClick={() => {
+                setIsMenuOpen(false);
+                toggleLanguage();
+              }}
+              className="text-4xl font-serif italic tracking-tight capitalize"
+            >
+              {i18n.language === 'en' ? 'Bahasa Malaysia' : 'English'}
+            </button>
+            <button
+              onClick={() => {
+                setIsMenuOpen(false);
+                logout();
+                setView('facade');
+              }}
+              className="mt-4 text-2xl font-serif italic tracking-tight capitalize text-red-500"
+            >
+              {t('nav.logout')}
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-20">
 
