@@ -249,15 +249,21 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
                                     <div
                                       key={service.name}
                                       onClick={() => { setSelectedService(service.name); }}
-                                      className={`p-4 border cursor-pointer transition-all duration-300 ${
-                                        selectedService === service.name ? 'border-black dark:border-[#B8A070] bg-neutral-50 dark:bg-[#B8A070]/5' : 'border-transparent dark:border-transparent hover:border-zinc-300 dark:hover:border-zinc-700'
+                                      className={`p-4 border-2 cursor-pointer transition-all duration-300 ${
+                                        selectedService === service.name 
+                                          ? 'border-black dark:border-[#B8A070] bg-neutral-50 dark:bg-[#B8A070]/10' 
+                                          : 'border-transparent dark:border-transparent hover:border-zinc-300 dark:hover:border-zinc-700'
                                       }`}
                                     >
                                       <div className="flex justify-between items-start mb-1 gap-4">
                                         <div>
-                                          <h4 className="font-serif text-base sm:text-lg uppercase tracking-tight text-black dark:text-white">{t(`data.services.${service.name}` as any)}</h4>
+                                          <h4 className={`font-serif text-base sm:text-lg uppercase tracking-tight transition-colors ${selectedService === service.name ? 'text-black dark:text-[#B8A070]' : 'text-black dark:text-white'}`}>
+                                            {t(`data.services.${service.name}` as any)}
+                                          </h4>
                                         </div>
-                                        <span className="font-mono text-[10px] sm:text-xs whitespace-nowrap text-black dark:text-[#B8A070] font-bold">{service.price}</span>
+                                        <span className={`font-mono text-[10px] sm:text-xs whitespace-nowrap font-bold transition-colors ${selectedService === service.name ? 'text-black dark:text-[#B8A070]' : 'text-black dark:text-white'}`}>
+                                          {service.price}
+                                        </span>
                                       </div>
                                       <div className="flex gap-4 text-[9px] sm:text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 font-bold">
                                         <span>{service.duration}</span>
