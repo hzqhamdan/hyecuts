@@ -186,113 +186,122 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className="min-h-screen bg-white dark:bg-[#1A1A1A] text-black dark:text-[#FAFAFA] px-12 py-16 font-sans overflow-x-hidden transition-colors duration-500"
+      className="min-h-screen bg-white dark:bg-[#1A1A1A] text-black dark:text-[#FAFAFA] px-6 md:px-12 py-10 md:py-16 font-sans overflow-x-hidden transition-colors duration-500"
     >
       {/* Navigation Header */}
-      <nav className="flex justify-between items-center max-w-7xl mx-auto mb-24">
-        <button onClick={() => { setView('facade'); }}
-          className="flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors"
-        >
-          <ArrowLeft className="w-3 h-3" /> {t('nav.return_facade')}
-        </button>
-        <div className="font-serif text-2xl tracking-tighter uppercase font-medium italic">
+      <nav className="max-w-7xl mx-auto mb-16 md:mb-24 flex flex-col gap-6 md:flex-row md:justify-between md:items-center">
+        <div className="flex justify-between items-center w-full md:w-auto">
+          <button onClick={() => { setView('facade'); }}
+            className="flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors"
+          >
+            <ArrowLeft className="w-3 h-3" /> {t('nav.return_facade')}
+          </button>
+          
+          <div className="md:hidden font-serif text-xl tracking-tighter uppercase font-medium italic">
+            {t('lounge.title')}
+          </div>
+        </div>
+
+        <div className="hidden md:block font-serif text-2xl tracking-tighter uppercase font-medium italic">
           {t('lounge.title')}
         </div>
-          <div className="flex items-center gap-8">
-            <button
-              onClick={() => { setView('booking'); }}
-              className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-medium"
-            >
-              {t('nav.book')}
-            </button>
-            <button
-              onClick={() => { setView('my-bookings'); }}
-              className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-medium"
-            >
-              {t('nav.appointments')}
-            </button>
-              <button
-                onClick={() => { setShowSettingsModal(true); }}
-                className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-medium"
-              >
-                {t('nav.profile')}
-              </button>
 
-              {/* Notification Bell */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowNotifications(!showNotifications)}
-                  className="relative p-2 text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors"
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-4 md:gap-8">
+          <button
+            onClick={() => { setView('booking'); }}
+            className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-bold"
+          >
+            {t('nav.book')}
+          </button>
+          <button
+            onClick={() => { setView('my-bookings'); }}
+            className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-bold"
+          >
+            {t('nav.appointments')}
+          </button>
+          <button
+            onClick={() => { setShowSettingsModal(true); }}
+            className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-bold"
+          >
+            {t('nav.profile')}
+          </button>
+
+          {/* Notification Bell */}
+          <div className="relative">
+            <button
+              onClick={() => setShowNotifications(!showNotifications)}
+              className="relative p-2 text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors"
+            >
+              <Bell className="w-4 h-4" />
+              {unreadCount > 0 && (
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-[#1A1A1A]"></span>
+              )}
+            </button>
+            
+            {/* Notification Dropdown */}
+            <AnimatePresence>
+              {showNotifications && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="absolute right-0 mt-4 w-72 bg-white dark:bg-[#1A1A1A] border border-black/10 dark:border-white/10 shadow-2xl z-50 overflow-hidden"
                 >
-                  <Bell className="w-4 h-4" />
-                  {unreadCount > 0 && (
-                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-[#1A1A1A]"></span>
-                  )}
-                </button>
-                
-                {/* Notification Dropdown */}
-                <AnimatePresence>
-                  {showNotifications && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      className="absolute right-0 mt-2 w-72 bg-white dark:bg-[#1A1A1A] border border-black/10 dark:border-white/10 shadow-2xl z-50 overflow-hidden"
-                    >
-                      <div className="p-4 border-b border-black/5 dark:border-white/5 bg-neutral-50 dark:bg-zinc-900/50">
-                        <h4 className="font-serif text-sm uppercase tracking-widest">Notifications</h4>
-                      </div>
-                      <div className="max-h-80 overflow-y-auto">
-                        {notifications.length === 0 ? (
-                          <div className="p-6 text-center text-[10px] uppercase tracking-widest text-zinc-500">No notifications</div>
-                        ) : (
-                          notifications.map((notif) => (
-                            <div key={notif.id} className={`p-4 border-b border-black/5 dark:border-white/5 last:border-0 hover:bg-neutral-50 dark:hover:bg-zinc-900/50 transition-colors ${!notif.isRead ? 'bg-black/5 dark:bg-white/5' : ''}`}>
-                              <div className="flex justify-between items-start mb-1">
-                                <h5 className="text-xs font-bold uppercase tracking-widest">{notif.title}</h5>
-                                <span className="text-[9px] text-zinc-500 uppercase">{notif.time}</span>
-                              </div>
-                              <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">{notif.message}</p>
-                            </div>
-                          ))
-                        )}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              <button
-                onClick={() => {
-                  logout();
-                setView('facade');
-              }}
-              className="text-[10px] uppercase tracking-widest text-red-400 dark:text-red-500 hover:text-red-600 transition-colors font-medium"
-            >
-              {t('nav.logout')}
-            </button>
-            <button
-              onClick={toggleLanguage}
-              className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-medium border-l border-zinc-200 dark:border-zinc-800 pl-8 ml-2"
-            >
-              {i18n.language === 'en' ? <Globe size={12} /> : <img src="/flags/my.svg" alt="Malaysia" className="w-4 h-3 rounded-sm" />}
-              {i18n.language === 'en' ? 'EN' : 'MY'}
-            </button>
+                  <div className="p-4 border-b border-black/5 dark:border-white/5 bg-neutral-50 dark:bg-zinc-900/50">
+                    <h4 className="font-serif text-sm uppercase tracking-widest">Notifications</h4>
+                  </div>
+                  <div className="max-h-80 overflow-y-auto">
+                    {notifications.length === 0 ? (
+                      <div className="p-6 text-center text-[10px] uppercase tracking-widest text-zinc-500">No notifications</div>
+                    ) : (
+                      notifications.map((notif) => (
+                        <div key={notif.id} className={`p-4 border-b border-black/5 dark:border-white/5 last:border-0 hover:bg-neutral-50 dark:hover:bg-zinc-900/50 transition-colors ${!notif.isRead ? 'bg-black/5 dark:bg-white/5' : ''}`}>
+                          <div className="flex justify-between items-start mb-1">
+                            <h5 className="text-xs font-bold uppercase tracking-widest">{notif.title}</h5>
+                            <span className="text-[9px] text-zinc-500 uppercase">{notif.time}</span>
+                          </div>
+                          <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">{notif.message}</p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
+
+          <button
+            onClick={() => {
+              logout();
+              setView('facade');
+            }}
+            className="text-[10px] uppercase tracking-widest text-red-400 dark:text-red-500 hover:text-red-600 transition-colors font-bold"
+          >
+            {t('nav.logout')}
+          </button>
+          
+          <button
+            onClick={toggleLanguage}
+            className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-bold border-l border-zinc-200 dark:border-zinc-800 pl-6 ml-auto md:ml-0"
+          >
+            {i18n.language === 'en' ? <Globe size={12} /> : <img src="/flags/my.svg" alt="Malaysia" className="w-4 h-3 rounded-sm" />}
+            {i18n.language === 'en' ? 'EN' : 'MY'}
+          </button>
+        </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-20">
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-20">
 
         {/* SECTION 1: STATUS CARD (The Centerpiece) */}
         <section className="lg:w-1/3 flex flex-col items-center">
-          <div className="w-80 flex flex-col items-center bg-white dark:bg-[#1A1A1A] border border-black/10 dark:border-white/10 px-8 py-16">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 font-sans mb-4">{t('lounge.tier_label')}</span>
-            <h2 className="font-serif text-[32px] text-black dark:text-white">
+          <div className="w-full max-w-sm flex flex-col items-center bg-white dark:bg-[#1A1A1A] border border-black/10 dark:border-white/10 px-8 py-12 md:py-16">
+            <span className="text-xs uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 font-sans mb-4">{t('lounge.tier_label')}</span>
+            <h2 className="font-serif text-[32px] md:text-[40px] text-black dark:text-white text-center">
               {isLoading ? '...' : t('data.tiers.' + (profile?.currentTier ?? 'Rookie'))}
             </h2>
 
             {/* The Hairline Progress Arc */}
-            <div className="mt-12 relative w-48 h-24 overflow-hidden flex justify-center">
+            <div className="mt-10 md:mt-12 relative w-48 h-24 overflow-hidden flex justify-center">
               <svg className="w-48 h-48 absolute top-0" viewBox="0 0 192 192">
                 <path
                   d="M 24 96 A 72 72 0 0 1 168 96"
@@ -316,7 +325,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
             </div>
             
             <div className="mt-8 text-center">
-              <p className="font-sans text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed max-w-[200px]">
+              <p className="font-sans text-zinc-500 dark:text-zinc-400 text-sm leading-relaxed max-w-[240px]">
                 {t('lounge.tier_description')}
               </p>
             </div>
@@ -325,26 +334,26 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
 
         {/* SECTION 2: REWARD PORTFOLIO */}
         <section className="lg:w-2/3">
-          <div className="flex items-end justify-between mb-12">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
             <div>
-              <h3 className="font-serif text-4xl uppercase tracking-tighter mb-2">{t('lounge.portfolio_title')}</h3>
+              <h3 className="font-serif text-3xl md:text-4xl uppercase tracking-tighter mb-2">{t('lounge.portfolio_title')}</h3>
               <p className="font-sans text-zinc-500 dark:text-zinc-400 text-sm tracking-wide">{t('lounge.portfolio_subtitle')}</p>
             </div>
-            <div className="text-right">
-              <span className="text-xs font-medium uppercase tracking-widest border-b border-black dark:border-white pb-1">
+            <div className="sm:text-right">
+              <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest border-b border-black dark:border-white pb-1">
                 {rewards.length} {t('lounge.available_assets')}
               </span>
             </div>
           </div>
 
           {/* Editorial Layout Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 md:gap-x-12 gap-y-10 md:gap-y-16">
             {isLoading ? (
-              <div className="col-span-2 text-center py-12 text-zinc-500 dark:text-zinc-400 text-[10px] uppercase tracking-widest">
+              <div className="col-span-full text-center py-12 text-zinc-500 dark:text-zinc-400 text-xs uppercase tracking-widest">
                 {t('lounge.retrieving_assets')}
               </div>
             ) : rewards.length === 0 ? (
-              <div className="col-span-2 text-center py-12 text-zinc-500 dark:text-zinc-400 text-[10px] uppercase tracking-widest">
+              <div className="col-span-full text-center py-12 text-zinc-500 dark:text-zinc-400 text-xs uppercase tracking-widest">
                 {t('lounge.no_rewards')}
               </div>
             ) : rewards.map((reward, idx) => (
@@ -352,20 +361,20 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
                 key={reward.id}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.2 }}
+                transition={{ delay: idx * 0.1 }}
                 className="relative group cursor-pointer"
                 onClick={() => {
                   setSelectedVoucher(reward);
                   setRedemptionStatus('idle');
                 }}
               >
-                <div className="relative overflow-hidden aspect-[1.6/1] bg-white dark:bg-[#1A1A1A] border border-black/10 dark:border-white/10 p-8 flex flex-col justify-between transition-all duration-500 group-hover:shadow-xl dark:group-hover:shadow-black/50 group-hover:border-black dark:group-hover:border-white">
+                <div className="relative overflow-hidden aspect-[1.6/1] bg-white dark:bg-[#1A1A1A] border border-black/10 dark:border-white/10 p-6 md:p-8 flex flex-col justify-between transition-all duration-500 group-hover:shadow-xl dark:group-hover:shadow-black/50 group-hover:border-black dark:group-hover:border-white">
 
                   {/* Top Row */}
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-black dark:bg-white rounded-full" />
-                      <span className="text-[9px] uppercase tracking-widest font-medium">
+                      <div className="w-1.5 h-1.5 bg-black dark:bg-white rounded-full" />
+                      <span className="text-[9px] md:text-[10px] uppercase tracking-widest font-bold">
                         {reward.minimumTierRequired ? `${t('data.tiers.' + reward.minimumTierRequired)} ` : ''}{t('lounge.any_tier')} Tier
                       </span>
                     </div>
@@ -374,19 +383,19 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
 
                   {/* Middle Content Overlay */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none">
-                    <div className="bg-black dark:bg-white text-white dark:text-black px-4 py-2 text-[10px] uppercase tracking-widest flex items-center gap-2 translate-y-2 group-hover:translate-y-0 transition-transform duration-700">
+                    <div className="bg-black dark:bg-white text-white dark:text-black px-4 py-2 text-[10px] uppercase tracking-widest flex items-center gap-2 translate-y-2 group-hover:translate-y-0 transition-transform duration-700 font-bold">
                       {t('lounge.reveal_invitation')} <ChevronRight className="w-3 h-3" />
                     </div>
                   </div>
 
                   <div className="relative z-10">
-                    <h4 className="font-serif text-xl uppercase tracking-tight mb-2 group-hover:translate-x-1 transition-transform duration-300">
+                    <h4 className="font-serif text-lg md:text-xl uppercase tracking-tight mb-2 group-hover:translate-x-1 transition-transform duration-300">
                       {t(`data.rewards.${reward.title}.title`, { defaultValue: reward.title })}
                     </h4>
                     <p className="text-xs text-zinc-500 dark:text-zinc-400 font-sans leading-relaxed max-w-xs line-clamp-2 mb-3">
                       {t(`data.rewards.${reward.title}.description`, { defaultValue: reward.description })}
                     </p>
-                    <div className="font-mono text-[10px] tracking-widest text-zinc-500 dark:text-zinc-500 uppercase">
+                    <div className="font-mono text-[9px] md:text-[10px] tracking-widest text-zinc-500 dark:text-zinc-500 uppercase font-bold">
                       {(reward.pointsCost ?? 0).toString()} {t('lounge.pts')} {reward.stockAvailable !== null && `• ${(reward.stockAvailable ?? 0).toString()} ${t('lounge.left')}`}
                     </div>
                   </div>
@@ -397,21 +406,21 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
           
           {/* Recent Activity Feed */}
           {activities.length > 0 && (
-            <div className="mt-24">
-              <h3 className="font-serif text-2xl uppercase tracking-tighter mb-8 border-b border-black/10 dark:border-white/10 pb-4">{t('lounge.activity_title')}</h3>
-              <div className="space-y-4">
+            <div className="mt-20 md:mt-24">
+              <h3 className="font-serif text-xl md:text-2xl uppercase tracking-tighter mb-8 border-b border-black/10 dark:border-white/10 pb-4">{t('lounge.activity_title')}</h3>
+              <div className="space-y-3">
                 {activities.slice(0, 3).map((act) => (
                   <div key={act.id} className="flex justify-between items-center p-4 bg-neutral-50 dark:bg-zinc-900 border border-neutral-100 dark:border-zinc-800 transition-colors">
                     <div className="flex items-center gap-4">
                       <Activity className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
                       <div>
-                        <p className="text-sm font-medium">{act.description}</p>
+                        <p className="text-xs md:text-sm font-bold">{act.description}</p>
                         <p className="text-[10px] text-zinc-500 dark:text-zinc-500 uppercase tracking-widest mt-1">
                           {new Date(act.timestamp).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
-                    <div className={`font-mono text-sm ${act.pointsEarned > 0 ? 'text-green-600' : 'text-zinc-500 dark:text-zinc-400'}`}>
+                    <div className={`font-mono text-xs md:text-sm font-bold ${act.pointsEarned > 0 ? 'text-green-600' : 'text-zinc-500 dark:text-zinc-400'}`}>
                       {act.pointsEarned > 0 ? '+' : ''}{act.pointsEarned.toString()} {t('lounge.pts')}
                     </div>
                   </div>
@@ -423,13 +432,13 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
       </div>
 
       {/* SECTION 3: MISSIONS & BADGES */}
-      <div className="max-w-7xl mx-auto mt-32 grid grid-cols-1 lg:grid-cols-2 gap-20 border-t border-black/10 dark:border-white/10 pt-24 pb-24">
+      <div className="max-w-7xl mx-auto mt-20 md:mt-32 grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 border-t border-black/10 dark:border-white/10 pt-16 md:pt-24 pb-16 md:pb-24">
         
         {/* Active Missions */}
         <section>
-          <div className="flex items-end justify-between mb-12">
+          <div className="flex items-end justify-between mb-10">
             <div>
-              <h3 className="font-serif text-4xl uppercase tracking-tighter mb-2">{t('lounge.directives_title')}</h3>
+              <h3 className="font-serif text-3xl md:text-4xl uppercase tracking-tighter mb-2">{t('lounge.directives_title')}</h3>
               <p className="font-sans text-zinc-500 dark:text-zinc-400 text-sm tracking-wide">{t('lounge.directives_subtitle')}</p>
             </div>
             <Target className="w-6 h-6 opacity-40 dark:opacity-60" />
@@ -437,7 +446,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
 
           <div className="space-y-4">
             {missions.length === 0 ? (
-              <div className="text-[10px] uppercase tracking-widest text-zinc-500 dark:text-zinc-500">{t('lounge.no_directives')}</div>
+              <div className="text-[10px] md:text-xs uppercase tracking-widest text-zinc-500 dark:text-zinc-500">{t('lounge.no_directives')}</div>
             ) : (
               missions.slice(0, 3).map(mission => {
                 const prog = missionProgress.find(p => p.missionId === mission.id) ?? { currentProgress: 0, completed: false };
@@ -447,7 +456,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
                       <div className={`flex items-start gap-4 ${prog.completed ? 'opacity-30' : ''} w-full`}>
                         <div className="w-1.5 h-1.5 bg-black dark:bg-white rounded-full mt-1.5 shrink-0" />
                         <div className="flex-1 w-full max-w-xs">
-                          <h4 className={`font-sans text-sm uppercase tracking-widest font-medium text-black dark:text-white ${prog.completed ? 'line-through' : ''}`}>
+                          <h4 className={`font-sans text-xs md:text-sm uppercase tracking-widest font-bold text-black dark:text-white ${prog.completed ? 'line-through' : ''}`}>
                             {mission.title}
                           </h4>
                           {!prog.completed && (
@@ -460,7 +469,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
                                   className="absolute top-0 left-0 h-full bg-black dark:bg-[#B8A070]"
                                 />
                               </div>
-                              <div className="text-[9px] text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mt-2 flex justify-between items-center">
+                              <div className="text-[9px] md:text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mt-2 flex justify-between items-center font-bold">
                                 <span>{(prog.currentProgress ?? 0).toString()} / {(mission.requiredCount ?? 0).toString()} {mission.targetAction}</span>
                                 <span className="font-mono text-black dark:text-white">+{(mission.rewardPoints ?? 0).toString()} {t('lounge.pts')}</span>
                               </div>
@@ -477,33 +486,33 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
 
         {/* Badge Showcase */}
         <section>
-          <div className="flex items-end justify-between mb-12">
+          <div className="flex items-end justify-between mb-10">
             <div>
-              <h3 className="font-serif text-4xl uppercase tracking-tighter mb-2">{t('lounge.archive_title')}</h3>
+              <h3 className="font-serif text-3xl md:text-4xl uppercase tracking-tighter mb-2">{t('lounge.archive_title')}</h3>
               <p className="font-sans text-zinc-500 dark:text-zinc-400 text-sm tracking-wide">{t('lounge.archive_subtitle')}</p>
             </div>
             <Award className="w-6 h-6 opacity-40 dark:opacity-60" />
           </div>
 
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-wrap gap-4">
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-wrap gap-3 md:gap-4">
               {badges.slice(0, 5).map(badge => {
                 const unlocked = userBadges.some(ub => ub.badgeId === badge.id);
                 return (
                   <div 
                     key={badge.id} 
-                    className={`px-6 py-4 border transition-all ${
+                    className={`px-4 md:px-6 py-3 md:py-4 border transition-all ${
                       unlocked ? 'border-black dark:border-white text-black dark:text-white bg-white dark:bg-[#1A1A1A]' : 'border-neutral-200 dark:border-zinc-800 text-neutral-400 dark:text-zinc-600 opacity-40 bg-white dark:bg-[#1A1A1A]'
                     }`}
                   >
-                    <div className="font-serif text-sm uppercase tracking-widest leading-none">{badge.name}</div>
+                    <div className="font-serif text-xs md:text-sm uppercase tracking-widest leading-none">{badge.name}</div>
                   </div>
                 );
               })}
             </div>
 
-          <div className="mt-4">
-            <a href="#" className="text-[10px] uppercase tracking-widest text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white border-b border-transparent hover:border-black dark:hover:border-white transition-colors">
+          <div className="mt-2">
+            <a href="#" className="text-[10px] md:text-xs uppercase tracking-widest text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white border-b border-transparent hover:border-black dark:hover:border-white transition-colors font-bold">
               {t('lounge.view_collection')}
             </a>
           </div>

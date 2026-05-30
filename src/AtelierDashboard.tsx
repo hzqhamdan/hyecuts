@@ -53,19 +53,19 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-white dark:bg-[#1A1A1A] text-black dark:text-[#FAFAFA] font-sans selection:bg-black selection:text-white transition-colors duration-500">
       {/* THE ATELIER SIDEBAR */}
-      <aside className="w-full md:w-72 border-b md:border-r border-zinc-100 dark:border-zinc-800 flex flex-col h-auto md:h-screen sticky top-0 bg-white dark:bg-[#1A1A1A] z-20 transition-colors">
-        <div className="p-10 mb-8">
+      <aside className="w-full md:w-72 border-b md:border-r border-zinc-100 dark:border-zinc-800 flex flex-col h-auto md:h-screen md:sticky top-0 bg-white dark:bg-[#1A1A1A] z-20 transition-colors">
+        <div className="p-6 sm:p-10 mb-2 md:mb-8">
           <button 
             onClick={() => { if (setView) setView('facade'); }}
             className="text-left hover:opacity-70 transition-opacity focus:outline-none group"
           >
-            <h1 className="font-serif text-3xl tracking-tighter font-light uppercase italic group-hover:tracking-normal transition-all duration-500">
-              Hyecuts <span className="font-sans text-[10px] not-italic tracking-[0.3em] block text-zinc-400 dark:text-zinc-500 uppercase mt-1">{t('atelier.title')}</span>
+            <h1 className="font-serif text-2xl sm:text-3xl tracking-tighter font-light uppercase italic group-hover:tracking-normal transition-all duration-500">
+              Hyecuts <span className="font-sans text-[9px] sm:text-[10px] not-italic tracking-[0.3em] block text-zinc-400 dark:text-zinc-500 uppercase mt-1 font-bold">{t('atelier.title')}</span>
             </h1>
           </button>
         </div>
 
-        <nav className="flex flex-row md:flex-col overflow-x-auto md:overflow-x-visible px-6 space-y-0 md:space-y-2">
+        <nav className="flex flex-row md:flex-col overflow-x-auto md:overflow-x-visible px-4 md:px-6 space-y-0 md:space-y-2 pb-4 md:pb-0 scrollbar-hide">
           {isStaff && (
             <NavItem
               active={currentView === 'booking-manager'}
@@ -116,7 +116,7 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
           )}
         </nav>
 
-        <div className="p-8 border-t border-zinc-100 dark:border-zinc-800 mt-auto">
+        <div className="hidden md:flex flex-col p-8 border-t border-zinc-100 dark:border-zinc-800 mt-auto">
           <div className="flex flex-col gap-4">
             <button
               onClick={() => {
@@ -138,7 +138,7 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
               </div>
               <div className="text-[10px] uppercase tracking-widest">
                 <p className="font-bold text-black dark:text-white">{t('atelier.session_active')}</p>
-                <p className="text-zinc-400 dark:text-zinc-500">
+                <p className="text-zinc-400 dark:text-zinc-500 font-bold">
                   {user?.role === 'owner' ? t('atelier.owner_access') : user?.role?.replace('_', ' ') || 'Staff Access'}
                 </p>
               </div>
@@ -154,10 +154,32 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
             </button>
           </div>
         </div>
+
+        {/* Mobile Sidebar Footer (Only visible on small screens) */}
+        <div className="md:hidden flex items-center justify-between p-4 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30">
+          <button 
+            onClick={() => {
+              const newLang = i18n.language === 'en' ? 'ms' : 'en';
+              void i18n.changeLanguage(newLang);
+            }}
+            className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold"
+          >
+            {i18n.language === 'en' ? 'EN' : 'MY'}
+          </button>
+          <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest text-zinc-400 font-bold">
+            <ShieldCheck size={12} /> {user?.role === 'owner' ? 'Owner' : 'Staff'}
+          </div>
+          <button 
+            onClick={() => { logout(); if (setView) setView('facade'); }}
+            className="text-[10px] uppercase tracking-widest text-red-500 font-bold"
+          >
+            {t('nav.logout')}
+          </button>
+        </div>
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 overflow-y-auto px-6 md:px-12 py-12 md:py-16 relative">
+      <main className="flex-1 overflow-y-auto px-4 sm:px-6 md:px-12 py-8 md:py-16 relative">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentView}
@@ -190,11 +212,11 @@ function NavItem({ active, onClick, icon, label }: { active: boolean, onClick: (
         : 'text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900'
       }`}
     >
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 sm:gap-4">
         <span className={`transition-colors ${active ? 'text-white dark:text-black' : 'group-hover:text-black dark:group-hover:text-white'}`}>{icon}</span>
-        <span className="text-xs font-medium tracking-wide uppercase">{label}</span>
+        <span className="text-[10px] sm:text-xs font-bold tracking-widest uppercase">{label}</span>
       </div>
-      {active && <motion.div layoutId="nav-indicator" className="w-1 h-1 bg-white dark:bg-black rounded-full" />}
+      {active && <motion.div layoutId="nav-indicator" className="w-1.5 h-1.5 bg-white dark:bg-black rounded-full ml-3 md:ml-0" />}
     </button>
   );
 }

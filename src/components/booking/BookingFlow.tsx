@@ -134,10 +134,10 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="min-h-screen bg-white dark:bg-[#1A1A1A] text-black dark:text-[#FAFAFA] font-sans flex flex-col p-6 md:p-12 transition-colors duration-500"
+      className="min-h-screen bg-white dark:bg-[#1A1A1A] text-black dark:text-[#FAFAFA] font-sans flex flex-col p-4 sm:p-6 md:p-12 transition-colors duration-500"
     >
-      <nav className="grid grid-cols-3 items-center max-w-5xl mx-auto w-full mb-10">
-        <div className="justify-self-start">
+      <nav className="flex flex-col sm:grid sm:grid-cols-3 items-center max-w-5xl mx-auto w-full mb-8 sm:mb-10 gap-4 sm:gap-0">
+        <div className="flex justify-between items-center w-full sm:w-auto sm:justify-self-start order-2 sm:order-1">
           <button
               onClick={() => {
                 if (step === 0) setView('facade');
@@ -145,22 +145,28 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
                 else if (step === 1 || step === 6) setView(token ? 'lounge' : 'facade');
                 else prevStep();
               }}
-              className="flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors"
+              className="flex items-center gap-2 sm:gap-3 text-[10px] uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-bold"
             >
               <ArrowLeft className="w-3 h-3" />
-              <span className="hidden sm:inline">
+              <span>
                 {step === 0 ? t('nav.return_home') : step === 1 || step === 6 ? (token ? t('nav.return_lounge') : t('nav.return_home')) : t('nav.prev_step')}
               </span>
             </button>
+            
+            {step > 0 && step < 6 && (
+              <div className="sm:hidden text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-600 font-bold">
+                {Math.min(step, 5)} / 5
+              </div>
+            )}
         </div>
         
-        <div className="justify-self-center font-serif text-xl tracking-tighter uppercase font-medium italic text-center text-black dark:text-white">
+        <div className="sm:justify-self-center font-serif text-xl sm:text-2xl tracking-tighter uppercase font-medium italic text-center text-black dark:text-white order-1 sm:order-2">
           {t('booking.title')}
         </div>
         
-          <div className="justify-self-end flex items-center gap-4">
+          <div className="hidden sm:flex sm:justify-self-end items-center gap-4 order-3">
             {step > 0 && step < 6 && (
-              <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-600 hidden sm:block font-bold">
+              <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-600 font-bold">
                 {t('booking.step_label', { current: Math.min(step, 5), total: 5 }).replace('{{current}}', Math.min(step, 5).toString()).replace('{{total}}', '5')}
               </div>
             )}
@@ -169,7 +175,7 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
               const newLang = i18n.language === 'en' ? 'ms' : 'en';
               void i18n.changeLanguage(newLang);
             }}
-            className={`flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors ${step > 0 && step < 5 ? 'sm:border-l sm:border-zinc-200 dark:sm:border-zinc-800 sm:pl-4' : ''}`}
+            className={`flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors ${step > 0 && step < 5 ? 'sm:border-l sm:border-zinc-200 dark:sm:border-zinc-800 sm:pl-4' : ''} font-bold`}
           >
             {i18n.language === 'en' ? <Globe size={12} /> : <img src="/flags/my.svg" alt="Malaysia" className="w-4 h-3 rounded-sm" />}
             {i18n.language === 'en' ? 'EN' : 'MY'}
@@ -177,20 +183,20 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
         </div>
       </nav>
 
-      <div className="max-w-5xl mx-auto w-full flex-1 grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-10">
+      <div className="max-w-5xl mx-auto w-full flex-1 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8 md:gap-10">
         <div className="w-full">
           <AnimatePresence mode="wait">
             {step === 0 && (
-              <motion.div key="step0" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="flex flex-col items-center justify-center py-12">
-                <h2 className="font-serif text-4xl uppercase tracking-tighter mb-4 text-center text-black dark:text-white">{t('booking.how_to_proceed')}</h2>
-                <p className="text-zinc-500 dark:text-zinc-400 mb-12 text-center max-w-md leading-relaxed font-light italic">
+              <motion.div key="step0" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="flex flex-col items-center justify-center py-6 md:py-12">
+                <h2 className="font-serif text-3xl sm:text-4xl uppercase tracking-tighter mb-4 text-center text-black dark:text-white">{t('booking.how_to_proceed')}</h2>
+                <p className="text-zinc-500 dark:text-zinc-400 mb-10 md:mb-12 text-center max-w-md leading-relaxed font-light italic text-sm md:text-base px-4">
                   {t('login.join_network')}
                 </p>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 w-full max-w-2xl px-4 sm:px-0">
                   <button
                     onClick={() => { setView('login'); }}
-                    className="p-8 border border-black dark:border-white bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-900 dark:hover:bg-zinc-100 transition-all flex flex-col items-center text-center group"
+                    className="p-6 md:p-8 border border-black dark:border-white bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-900 dark:hover:bg-zinc-100 transition-all flex flex-col items-center text-center group active:scale-[0.98]"
                   >
                     <UserCircle className="w-8 h-8 mb-4 opacity-80 group-hover:opacity-100 transition-opacity" />
                     <span className="text-[10px] uppercase tracking-widest font-bold mb-2">{t('booking.login_cta')}</span>
@@ -199,7 +205,7 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
 
                   <button
                     onClick={() => { setStep(1); }}
-                    className="p-8 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1A1A1A] hover:border-black dark:hover:border-white transition-all flex flex-col items-center text-center group"
+                    className="p-6 md:p-8 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1A1A1A] hover:border-black dark:hover:border-white transition-all flex flex-col items-center text-center group active:scale-[0.98]"
                   >
                     <UserPlus className="w-8 h-8 mb-4 text-zinc-400 dark:text-zinc-600 group-hover:text-black dark:group-hover:text-white transition-colors" />
                     <span className="text-[10px] uppercase tracking-widest font-bold mb-2 text-black dark:text-white">{t('booking.guest_cta')}</span>
@@ -210,9 +216,9 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
             )}
 
             {step === 1 && (
-              <motion.div key="step1" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-                <h2 className="font-serif text-3xl uppercase tracking-tighter mb-2 text-black dark:text-white">{t('booking.select_service')}</h2>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-8 font-light italic">{t('booking.service_note')}</p>
+              <motion.div key="step1" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="px-1 sm:px-0">
+                <h2 className="font-serif text-2xl sm:text-3xl uppercase tracking-tighter mb-2 text-black dark:text-white">{t('booking.select_service')}</h2>
+                <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mb-8 font-light italic">{t('booking.service_note')}</p>
 
                   <div className="space-y-4">
                     {SERVICE_CATEGORIES.map((categoryGroup) => {
@@ -221,9 +227,9 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
                         <div key={categoryGroup.category} className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1A1A1A] transition-colors">
                           <button
                             onClick={() => { setOpenCategory(isOpen ? null : categoryGroup.category); }}
-                            className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
+                            className="w-full px-5 py-4 md:px-6 md:py-5 flex items-center justify-between text-left hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
                           >
-                            <span className="font-serif text-2xl italic text-black dark:text-white">{t(`data.categories.${categoryGroup.category}` as any)}</span>
+                            <span className="font-serif text-xl md:text-2xl italic text-black dark:text-white">{t(`data.categories.${categoryGroup.category}` as any)}</span>
                             <ChevronDown
                               className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''} text-black dark:text-white`}
                               size={20}
@@ -238,7 +244,7 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
                                 transition={{ duration: 0.3, ease: "easeInOut" }}
                                 className="overflow-hidden"
                               >
-                                <div className="px-6 pb-6 pt-2 space-y-3 border-t border-zinc-100 dark:border-zinc-800">
+                                <div className="px-4 pb-4 pt-1 md:px-6 md:pb-6 space-y-3 border-t border-zinc-100 dark:border-zinc-800">
                                   {categoryGroup.services.map((service) => (
                                     <div
                                       key={service.name}
@@ -249,11 +255,11 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
                                     >
                                       <div className="flex justify-between items-start mb-1 gap-4">
                                         <div>
-                                          <h4 className="font-serif text-lg uppercase tracking-tight text-black dark:text-white">{t(`data.services.${service.name}` as any)}</h4>
+                                          <h4 className="font-serif text-base sm:text-lg uppercase tracking-tight text-black dark:text-white">{t(`data.services.${service.name}` as any)}</h4>
                                         </div>
-                                        <span className="font-mono text-xs whitespace-nowrap text-black dark:text-white">{service.price}</span>
+                                        <span className="font-mono text-[10px] sm:text-xs whitespace-nowrap text-black dark:text-white font-bold">{service.price}</span>
                                       </div>
-                                      <div className="flex gap-4 text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 font-bold">
+                                      <div className="flex gap-4 text-[9px] sm:text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 font-bold">
                                         <span>{service.duration}</span>
                                       </div>
                                     </div>
@@ -270,7 +276,7 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
                 <button
                   onClick={nextStep}
                   disabled={!selectedService}
-                  className="w-full mt-10 py-5 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-30 flex justify-center items-center gap-2"
+                  className="w-full mt-10 py-5 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-30 flex justify-center items-center gap-2 active:scale-[0.98]"
                 >
                   {t('booking.continue_barber')} <ChevronRight className="w-3 h-3" />
                 </button>
@@ -278,11 +284,11 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
             )}
 
             {step === 2 && (
-              <motion.div key="step2" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-                <h2 className="font-serif text-3xl uppercase tracking-tighter mb-2 text-black dark:text-white">{t('booking.select_barber')}</h2>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-8 font-light italic">{t('booking.barber_note')}</p>
+              <motion.div key="step2" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="px-1 sm:px-0">
+                <h2 className="font-serif text-2xl sm:text-3xl uppercase tracking-tighter mb-2 text-black dark:text-white">{t('booking.select_barber')}</h2>
+                <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mb-8 font-light italic">{t('booking.barber_note')}</p>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                   {STAFF.map((staff) => (
                     <div
                       key={staff.id}
@@ -291,10 +297,10 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
                         selectedStaff === staff.id ? 'border-black dark:border-white bg-neutral-50 dark:bg-zinc-900' : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600'
                       }`}
                     >
-                      <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 rounded-full mx-auto mb-4 flex items-center justify-center text-zinc-500 dark:text-zinc-500">
+                      <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 rounded-full mx-auto mb-4 flex items-center justify-center text-zinc-500 dark:text-zinc-500 font-bold">
                         {staff.id === 'any' ? '?' : staff.name.charAt(0)}
                       </div>
-                      <h3 className="font-serif text-lg uppercase tracking-tight mb-1 text-black dark:text-white">{staff.id === 'any' ? t('landing.no_preference') : staff.name}</h3>
+                      <h3 className="font-serif text-base sm:text-lg uppercase tracking-tight mb-1 text-black dark:text-white">{staff.id === 'any' ? t('landing.no_preference') : staff.name}</h3>
                       <p className="text-[10px] uppercase tracking-widest text-zinc-500 dark:text-zinc-500 font-bold">{staff.id === 'any' ? t('landing.first_available') : t(`data.roles.${staff.role}` as any)}</p>
                     </div>
                   ))}
@@ -303,7 +309,7 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
                 <button
                   onClick={nextStep}
                   disabled={!selectedStaff}
-                  className="w-full mt-10 py-5 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-30 flex justify-center items-center gap-2"
+                  className="w-full mt-10 py-5 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-30 flex justify-center items-center gap-2 active:scale-[0.98]"
                 >
                   {t('booking.continue_schedule')} <ChevronRight className="w-3 h-3" />
                 </button>
@@ -311,24 +317,24 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
             )}
 
             {step === 3 && (
-              <motion.div key="step3" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-                <h2 className="font-serif text-3xl uppercase tracking-tighter mb-2 text-black dark:text-white">{t('booking.select_schedule')}</h2>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-8 font-light italic">{t('booking.closed_note')}</p>
+              <motion.div key="step3" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="px-1 sm:px-0">
+                <h2 className="font-serif text-2xl sm:text-3xl uppercase tracking-tighter mb-2 text-black dark:text-white">{t('booking.select_schedule')}</h2>
+                <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mb-8 font-light italic">{t('booking.closed_note')}</p>
 
                 <div className="mb-8">
                   <h4 className="text-[10px] uppercase tracking-widest font-bold mb-4 flex items-center gap-2 text-zinc-400 dark:text-zinc-500">
                     <Calendar className="w-3 h-3" /> {t('booking.day')}
                   </h4>
-                  <div className="flex gap-3 overflow-x-auto pb-2">
+                  <div className="flex gap-3 overflow-x-auto pb-4 -mx-1 px-1 snap-x">
                     {DATES.map((date) => (
                       <div
                         key={date.id}
                         onClick={() => { setSelectedDate(date.id); }}
-                        className={`min-w-[120px] flex-shrink-0 p-4 border text-center cursor-pointer transition-all ${
+                        className={`min-w-[120px] snap-start flex-shrink-0 p-4 border text-center cursor-pointer transition-all ${
                           selectedDate === date.id ? 'border-black dark:border-white bg-black dark:bg-white text-white dark:text-black font-bold' : 'border-zinc-200 dark:border-zinc-800 text-black dark:text-white hover:border-black dark:hover:border-white'
                         }`}
                       >
-                        <div className="text-[10px] uppercase tracking-widest mb-1 opacity-60">{t(`data.days.${date.day}` as any)}</div>
+                        <div className="text-[10px] uppercase tracking-widest mb-1 opacity-60 font-bold">{t(`data.days.${date.day}` as any)}</div>
                         <div className={`font-serif text-lg ${selectedDate === date.id ? 'text-white dark:text-black' : 'text-zinc-500 dark:text-zinc-500'}`}>{date.hours}</div>
                       </div>
                     ))}
@@ -357,7 +363,7 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
                 <button
                   onClick={nextStep}
                   disabled={!selectedDate || !selectedTime}
-                  className="w-full mt-10 py-5 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-30 flex justify-center items-center gap-2"
+                  className="w-full mt-10 py-5 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-30 flex justify-center items-center gap-2 active:scale-[0.98]"
                 >
                   {t('booking.review_booking')} <ChevronRight className="w-3 h-3" />
                 </button>
@@ -365,48 +371,48 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
             )}
 
             {step === 4 && (
-              <motion.div key="step4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-                <h2 className="font-serif text-3xl uppercase tracking-tighter mb-2 text-black dark:text-white">{t('booking.final_review')}</h2>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-8 font-light italic">{t('booking.policy_note')}</p>
+              <motion.div key="step4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="px-1 sm:px-0">
+                <h2 className="font-serif text-2xl sm:text-3xl uppercase tracking-tighter mb-2 text-black dark:text-white">{t('booking.final_review')}</h2>
+                <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mb-8 font-light italic">{t('booking.policy_note')}</p>
 
-                <div className="bg-neutral-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-8 space-y-6 mb-10 transition-colors">
+                <div className="bg-neutral-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 sm:p-8 space-y-6 mb-10 transition-colors">
                   <div className="flex justify-between border-b border-zinc-200 dark:border-zinc-800 pb-6 gap-6">
                     <div>
-                      <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">{t('nav.services')}</div>
-                      <div className="font-serif text-xl uppercase tracking-tight text-black dark:text-white">{getService() ? t(`data.services.${getService()!.name}` as any) : ''}</div>
+                      <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1 font-bold">{t('nav.services')}</div>
+                      <div className="font-serif text-lg sm:text-xl uppercase tracking-tight text-black dark:text-white">{getService() ? t(`data.services.${getService()!.name}` as any) : ''}</div>
                     </div>
                     <div className="text-right">
-                      <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">{t('booking.total')}</div>
-                      <div className="font-mono text-black dark:text-white">{getService()?.price}</div>
+                      <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1 font-bold">{t('booking.total')}</div>
+                      <div className="font-mono text-black dark:text-white font-bold">{getService()?.price}</div>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-6">
+                  <div className="grid grid-cols-2 gap-y-6 gap-x-4">
                     <div>
-                      <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">{t('booking.select_barber').split(' ')[1] || 'Barber'}</div>
-                      <div className="text-sm text-black dark:text-white">{getStaff()?.id === 'any' ? t('landing.no_preference') : getStaff()?.name}</div>
+                      <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1 font-bold">{t('booking.select_barber').split(' ')[1] || 'Barber'}</div>
+                      <div className="text-xs sm:text-sm text-black dark:text-white font-medium">{getStaff()?.id === 'any' ? t('landing.no_preference') : getStaff()?.name}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">{t('booking.duration')}</div>
-                      <div className="text-sm text-black dark:text-white">{getService()?.duration}</div>
+                      <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1 font-bold">{t('booking.duration')}</div>
+                      <div className="text-xs sm:text-sm text-black dark:text-white font-medium">{getService()?.duration}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">{t('booking.day')}</div>
-                      <div className="text-sm text-black dark:text-white">{getDate() ? t(`data.days.${getDate()!.day}` as any) : ''}</div>
+                      <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1 font-bold">{t('booking.day')}</div>
+                      <div className="text-xs sm:text-sm text-black dark:text-white font-medium">{getDate() ? t(`data.days.${getDate()!.day}` as any) : ''}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">{t('booking.time')}</div>
-                      <div className="text-sm text-black dark:text-white">{selectedTime ? t(`data.times.${selectedTime}`, { defaultValue: selectedTime }) : ''}</div>
+                      <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1 font-bold">{t('booking.time')}</div>
+                      <div className="text-xs sm:text-sm text-black dark:text-white font-medium">{selectedTime ? t(`data.times.${selectedTime}`, { defaultValue: selectedTime }) : ''}</div>
                     </div>
                   </div>
 
                   <div className="pt-6 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
-                    <div className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 font-bold uppercase tracking-widest text-[9px]">
-                      <ShieldCheck className="w-4 h-4 text-zinc-400 dark:text-[#B8A070]" />
+                    <div className="flex items-center gap-2 text-black dark:text-white font-bold uppercase tracking-widest text-[9px] mb-2">
+                      <ShieldCheck className="w-4 h-4 text-black dark:text-[#B8A070]" />
                       {t('landing.policy_2')}
                     </div>
-                    {BOOKING_POLICIES.map((policy, idx) => (
-                      <p key={policy} className="text-sm text-zinc-500 dark:text-zinc-500 italic">
+                    {BOOKING_POLICIES.slice(0, 3).map((policy, idx) => (
+                      <p key={policy} className="text-xs text-zinc-500 dark:text-zinc-500 italic leading-relaxed">
                         {t(`landing.policy_${idx + 1}` as any)}
                       </p>
                     ))}
@@ -416,7 +422,7 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
                   <button
                     onClick={() => { setStep(5); }}
                     disabled={isConfirming}
-                    className="w-full py-5 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-50"
+                    className="w-full py-5 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-50 active:scale-[0.98]"
                   >
                     {t('booking.proceed_to_payment', { defaultValue: 'Proceed to Payment' })}
                   </button>

@@ -182,42 +182,42 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
       <section className="relative min-h-screen flex items-center justify-center px-6 md:px-12 text-center pt-24">
         <div className="relative z-10 w-full max-w-6xl mx-auto">
           <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="flex flex-col items-center">
-            <motion.span variants={fadeUp} className="text-[10px] uppercase tracking-[0.4em] text-zinc-400 dark:text-zinc-500 mb-6 block">
+            <motion.span variants={fadeUp} className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-zinc-400 dark:text-zinc-500 mb-6 block font-bold">
               {HYECUTS.name}
             </motion.span>
-            <motion.h1 variants={fadeUp} className="font-serif text-6xl md:text-9xl leading-tight font-light italic tracking-tighter mb-6">
+            <motion.h1 variants={fadeUp} className="font-serif text-5xl sm:text-7xl md:text-9xl leading-tight font-light italic tracking-tighter mb-6 text-balance">
               {t('hero.title')}<span className="text-zinc-300 dark:text-zinc-700">.</span>
             </motion.h1>
-            <motion.p variants={fadeUp} className="max-w-2xl text-lg md:text-xl text-zinc-500 dark:text-zinc-400 leading-relaxed mb-10 font-light italic">
+            <motion.p variants={fadeUp} className="max-w-2xl text-base md:text-xl text-zinc-500 dark:text-zinc-400 leading-relaxed mb-10 font-light italic px-4">
               {t('hero.subtitle')}
             </motion.p>
-            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4">
+            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-6 sm:px-0">
               <button
                 onClick={() => { setView('booking'); }}
                 className="group relative px-10 py-5 bg-black dark:bg-white text-white dark:text-black overflow-hidden transition-all duration-500 hover:bg-zinc-800 dark:hover:bg-zinc-200"
               >
-                <span className="relative z-10 text-xs uppercase tracking-[0.2em] font-bold">{t('hero.cta_primary')}</span>
+                <span className="relative z-10 text-[10px] md:text-xs uppercase tracking-[0.2em] font-bold">{t('hero.cta_primary')}</span>
                 <ArrowRight className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-[-10px] group-hover:translate-x-0" size={16} />
               </button>
               <button
                 onClick={() => { setView('lounge'); }}
-                className="px-10 py-5 text-xs uppercase tracking-[0.2em] font-bold border border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all duration-500"
+                className="px-10 py-5 text-[10px] md:text-xs uppercase tracking-[0.2em] font-bold border border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all duration-500"
               >
                 {t('hero.cta_secondary')}
               </button>
             </motion.div>
-            <motion.div variants={fadeUp} className="mt-12 text-[10px] uppercase tracking-[0.3em] text-zinc-400 dark:text-zinc-500">
+            <motion.div variants={fadeUp} className="mt-12 text-[10px] uppercase tracking-[0.3em] text-zinc-400 dark:text-zinc-500 font-bold">
               {t('footer.location')}
             </motion.div>
           </motion.div>
         </div>
       </section>
 
-      <section id="services" className="py-24 px-6 md:px-12 bg-zinc-50 dark:bg-zinc-900/50 border-y border-zinc-100 dark:border-zinc-800 transition-colors">
+      <section id="services" className="py-16 md:py-24 px-6 md:px-12 bg-zinc-50 dark:bg-zinc-900/50 border-y border-zinc-100 dark:border-zinc-800 transition-colors">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-14">
-            <span className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4 block">{t('landing.services_pricing')}</span>
-            <h2 className="font-serif text-5xl md:text-7xl font-light tracking-tighter">{t('landing.services')}</h2>
+          <div className="mb-10 md:mb-14">
+            <span className="text-[10px] md:text-xs uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4 block font-bold">{t('landing.services_pricing')}</span>
+            <h2 className="font-serif text-4xl sm:text-5xl md:text-7xl font-light tracking-tighter">{t('landing.services')}</h2>
           </div>
 
           <div className="max-w-3xl mx-auto">
@@ -229,9 +229,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
                   <div key={categoryGroup.category} className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1A1A1A] transition-colors">
                     <button
                       onClick={() => { setOpenCategory(isOpen ? null : categoryGroup.category); }}
-                      className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
+                      className="w-full px-5 py-4 md:px-6 md:py-5 flex items-center justify-between text-left hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
                     >
-                      <span className="font-serif text-2xl italic">{t(`data.categories.${categoryGroup.category}` as any)}</span>
+                      <span className="font-serif text-xl md:text-2xl italic">{t(`data.categories.${categoryGroup.category}` as any)}</span>
                       <ChevronDown
                         className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
                         size={20}
@@ -246,7 +246,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
                           transition={{ duration: 0.3, ease: "easeInOut" }}
                           className="overflow-hidden"
                         >
-                          <div className="px-6 pb-6 pt-2 space-y-3 border-t border-zinc-100 dark:border-zinc-800">
+                          <div className="px-5 pb-5 pt-2 md:px-6 md:pb-6 space-y-3 border-t border-zinc-100 dark:border-zinc-800">
                             {categoryGroup.services.map((service) => {
                               const isServiceOpen = selectedService === service.name;
                               return (
@@ -257,12 +257,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
                                     isServiceOpen ? 'border-black dark:border-white bg-neutral-50 dark:bg-zinc-900' : 'border-transparent hover:border-zinc-200 dark:hover:border-zinc-700'
                                   }`}
                                 >
-                                  <div className="flex items-center justify-between">
+                                  <div className="flex items-center justify-between gap-4">
                                     <div>
-                                      <h4 className="text-sm font-medium mb-1">{t(`data.services.${service.name}` as any)}</h4>
-                                      <div className="text-[10px] uppercase tracking-widest text-zinc-500 dark:text-zinc-400">{service.duration}</div>
+                                      <h4 className="text-xs md:text-sm font-bold mb-1">{t(`data.services.${service.name}` as any)}</h4>
+                                      <div className="text-[9px] md:text-[10px] uppercase tracking-widest text-zinc-500 dark:text-zinc-400 font-bold">{service.duration}</div>
                                     </div>
-                                    <div className="font-mono text-xs bg-zinc-50 dark:bg-zinc-800 px-3 py-1 group-hover:bg-zinc-100 dark:group-hover:bg-zinc-700 transition-colors">
+                                    <div className="font-mono text-[10px] md:text-xs bg-zinc-50 dark:bg-zinc-800 px-3 py-1 group-hover:bg-zinc-100 dark:group-hover:bg-zinc-700 transition-colors font-bold whitespace-nowrap">
                                       {service.price}
                                     </div>
                                   </div>
@@ -303,27 +303,27 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
         </div>
       </section>
 
-      <section id="hours" className="py-24 px-6 md:px-12 bg-white dark:bg-[#1A1A1A] transition-colors">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <section id="hours" className="py-16 md:py-24 px-6 md:px-12 bg-white dark:bg-[#1A1A1A] transition-colors">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
           <div>
-            <span className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4 block">{t('landing.business_hours')}</span>
-            <h2 className="font-serif text-5xl md:text-7xl font-light tracking-tighter mb-8">{t('landing.weekly_schedule')}</h2>
+            <span className="text-[10px] md:text-xs uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4 block font-bold">{t('landing.business_hours')}</span>
+            <h2 className="font-serif text-4xl sm:text-5xl md:text-7xl font-light tracking-tighter mb-8">{t('landing.weekly_schedule')}</h2>
             <div className="space-y-4">
               {BUSINESS_HOURS.map((slot) => (
                 <div key={slot.day} className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-4">
-                  <span className="text-sm uppercase tracking-widest">{t(`data.days.${slot.day}` as any)}</span>
-                  <span className={`text-sm ${slot.open ? 'text-black dark:text-white' : 'text-zinc-400 dark:text-zinc-600'}`}>{slot.hours}</span>
+                  <span className="text-xs md:text-sm uppercase tracking-widest font-bold">{t(`data.days.${slot.day}` as any)}</span>
+                  <span className={`text-xs md:text-sm font-medium ${slot.open ? 'text-black dark:text-white' : 'text-zinc-400 dark:text-zinc-600'}`}>{slot.hours}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 p-8 transition-colors">
-            <span className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4 block">{t('landing.booking_policies')}</span>
-            <h3 className="font-serif text-3xl italic mb-6">{t('landing.arrive_prepared')}</h3>
+          <div className="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 p-6 md:p-8 transition-colors">
+            <span className="text-[10px] md:text-xs uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4 block font-bold">{t('landing.booking_policies')}</span>
+            <h3 className="font-serif text-2xl md:text-3xl italic mb-6">{t('landing.arrive_prepared')}</h3>
             <div className="space-y-4">
               {BOOKING_POLICIES.map((policy, idx) => (
-                <p key={policy} className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                <p key={policy} className="text-xs md:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">
                   {t(`landing.policy_${idx + 1}` as any)}
                 </p>
               ))}
@@ -338,64 +338,68 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
         </div>
       </section>
 
-      <section id="contact" className="py-24 px-6 md:px-12 bg-zinc-50 dark:bg-zinc-900/50 border-t border-zinc-100 dark:border-zinc-800 transition-colors">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
+      <section id="contact" className="py-16 md:py-24 px-6 md:px-12 bg-zinc-50 dark:bg-zinc-900/50 border-t border-zinc-100 dark:border-zinc-800 transition-colors">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
           <div>
-            <span className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4 block">{t('landing.contact_details')}</span>
-            <h2 className="font-serif text-5xl md:text-7xl font-light tracking-tighter mb-8">{t('landing.visit_hyecuts')}</h2>
-            <div className="space-y-6 text-sm text-zinc-600 dark:text-zinc-400">
+            <span className="text-[10px] md:text-xs uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4 block font-bold">{t('landing.contact_details')}</span>
+            <h2 className="font-serif text-4xl sm:text-5xl md:text-7xl font-light tracking-tighter mb-8">{t('landing.visit_hyecuts')}</h2>
+            <div className="space-y-8 text-xs md:text-sm text-zinc-600 dark:text-zinc-400">
               <div>
-                <p className="text-black dark:text-white font-bold mb-1 uppercase tracking-widest text-[10px]">{t('landing.address')}</p>
-                <p>{HYECUTS.address}</p>
-                <p className="mt-2 text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-600">{t('landing.waze')}: {HYECUTS.waze}</p>
+                <p className="text-black dark:text-white font-bold mb-2 uppercase tracking-widest text-[10px]">{t('landing.address')}</p>
+                <p className="font-medium">{HYECUTS.address}</p>
+                <p className="mt-2 text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-600 font-bold">{t('landing.waze')}: {HYECUTS.waze}</p>
               </div>
               <div>
-                <p className="text-black dark:text-white font-bold mb-1 uppercase tracking-widest text-[10px]">{t('landing.contact_details')}</p>
-                <p>{HYECUTS.phone}</p>
-                <p>{HYECUTS.email}</p>
+                <p className="text-black dark:text-white font-bold mb-2 uppercase tracking-widest text-[10px]">{t('landing.contact_details')}</p>
+                <p className="font-medium">{HYECUTS.phone}</p>
+                <p className="font-medium">{HYECUTS.email}</p>
               </div>
               <div>
-                <p className="text-black dark:text-white font-bold mb-1 uppercase tracking-widest text-[10px]">{t('landing.team_members')}</p>
-                {TEAM_MEMBERS.map((member) => (
-                  <p key={member.name}>
-                    {member.name} — {t(`data.roles.${member.role}` as any)}
-                  </p>
-                ))}
+                <p className="text-black dark:text-white font-bold mb-2 uppercase tracking-widest text-[10px]">{t('landing.team_members')}</p>
+                <div className="space-y-1">
+                  {TEAM_MEMBERS.map((member) => (
+                    <p key={member.name} className="font-medium">
+                      {member.name} — <span className="text-zinc-400 dark:text-zinc-500">{t(`data.roles.${member.role}` as any)}</span>
+                    </p>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-[#1A1A1A] border border-zinc-200 dark:border-zinc-800 p-8 transition-colors">
-            <span className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4 block">{t('landing.social')}</span>
-            <div className="flex items-center gap-4">
-              <a
-                aria-label="Instagram"
-                className="inline-flex items-center justify-center w-10 h-10 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
-                href={HYECUTS.instagram}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <svg viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="1.8">
-                  <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
-                  <circle cx="12" cy="12" r="4" />
-                  <circle cx="17" cy="7" r="1" fill="currentColor" stroke="none" />
-                </svg>
-              </a>
-              <a
-                aria-label="Facebook"
-                className="inline-flex items-center justify-center w-10 h-10 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
-                href={HYECUTS.facebook}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <svg viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="currentColor">
-                  <path d="M14.5 8H16V5.2C15.74 5.16 14.86 5 13.83 5C11.66 5 10.17 6.36 10.17 8.86V11H8V14.2H10.17V22H13.54V14.2H16.17L16.59 11H13.54V9.17C13.54 8.24 13.79 8 14.5 8Z" />
-                </svg>
-              </a>
+          <div className="bg-white dark:bg-[#1A1A1A] border border-zinc-200 dark:border-zinc-800 p-6 md:p-8 transition-colors flex flex-col justify-between">
+            <div>
+              <span className="text-[10px] md:text-xs uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-6 block font-bold">{t('landing.social')}</span>
+              <div className="flex items-center gap-4">
+                <a
+                  aria-label="Instagram"
+                  className="inline-flex items-center justify-center w-12 h-12 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+                  href={HYECUTS.instagram}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="17" cy="7" r="1" fill="currentColor" stroke="none" />
+                  </svg>
+                </a>
+                <a
+                  aria-label="Facebook"
+                  className="inline-flex items-center justify-center w-12 h-12 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+                  href={HYECUTS.facebook}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
+                    <path d="M14.5 8H16V5.2C15.74 5.16 14.86 5 13.83 5C11.66 5 10.17 6.36 10.17 8.86V11H8V14.2H10.17V22H13.54V14.2H16.17L16.59 11H13.54V9.17C13.54 8.24 13.79 8 14.5 8Z" />
+                  </svg>
+                </a>
+              </div>
             </div>
             <button
               onClick={() => { setView('booking'); }}
-              className="mt-8 px-8 py-4 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all duration-500"
+              className="mt-12 px-8 py-5 bg-black dark:bg-white text-white dark:text-black text-[10px] md:text-xs uppercase tracking-[0.2em] font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all duration-500"
             >
               {t('landing.book_now')}
             </button>
@@ -403,8 +407,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
         </div>
       </section>
 
-      <footer className="py-16 px-6 md:px-12 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-[#1A1A1A] transition-colors">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+      <footer className="py-12 md:py-16 px-6 md:px-12 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-[#1A1A1A] transition-colors">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
           <button 
             onClick={() => {
               window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -414,9 +418,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
           >
             Hyecuts<span className="text-zinc-300 dark:text-zinc-700">.</span>
           </button>
-          <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+          <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 font-bold">
             {HYECUTS.address}
-            <div className="mt-2 text-[9px] text-zinc-300 dark:text-zinc-600">Developed By: Haziq Hamdan</div>
+            <div className="mt-2 text-[9px] text-zinc-300 dark:text-zinc-600 font-medium">Developed By: Haziq Hamdan</div>
           </div>
         </div>
       </footer>    </motion.div>
