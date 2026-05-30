@@ -254,15 +254,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
                                   key={service.name} 
                                   onClick={() => { setSelectedService(isServiceOpen ? null : service.name); }}
                                   className={`p-4 border cursor-pointer transition-all duration-300 group ${
-                                    isServiceOpen ? 'border-black dark:border-white bg-neutral-50 dark:bg-zinc-900' : 'border-transparent hover:border-zinc-200 dark:hover:border-zinc-700'
+                                    isServiceOpen ? 'border-black dark:border-[#B8A070] bg-neutral-50 dark:bg-[#B8A070]/5' : 'border-transparent hover:border-zinc-200 dark:hover:border-zinc-700'
                                   }`}
                                 >
                                   <div className="flex items-center justify-between gap-4">
                                     <div>
-                                      <h4 className="text-xs md:text-sm font-bold mb-1">{t(`data.services.${service.name}` as any)}</h4>
+                                      <h4 className="text-xs md:text-sm font-bold mb-1 text-black dark:text-white">{t(`data.services.${service.name}` as any)}</h4>
                                       <div className="text-[9px] md:text-[10px] uppercase tracking-widest text-zinc-500 dark:text-zinc-400 font-bold">{service.duration}</div>
                                     </div>
-                                    <div className="font-mono text-[10px] md:text-xs bg-zinc-50 dark:bg-zinc-800 px-3 py-1 group-hover:bg-zinc-100 dark:group-hover:bg-zinc-700 transition-colors font-bold whitespace-nowrap">
+                                    <div className="font-mono text-[10px] md:text-xs bg-zinc-50 dark:bg-[#B8A070]/10 px-3 py-1 group-hover:bg-zinc-100 dark:group-hover:bg-[#B8A070]/20 transition-colors font-bold whitespace-nowrap text-black dark:text-[#B8A070]">
                                       {service.price}
                                     </div>
                                   </div>

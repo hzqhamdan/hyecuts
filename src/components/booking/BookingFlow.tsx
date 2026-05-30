@@ -250,14 +250,14 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
                                       key={service.name}
                                       onClick={() => { setSelectedService(service.name); }}
                                       className={`p-4 border cursor-pointer transition-all duration-300 ${
-                                        selectedService === service.name ? 'border-black dark:border-white bg-neutral-50 dark:bg-zinc-900' : 'border-transparent dark:border-transparent hover:border-zinc-300 dark:hover:border-zinc-700'
+                                        selectedService === service.name ? 'border-black dark:border-[#B8A070] bg-neutral-50 dark:bg-[#B8A070]/5' : 'border-transparent dark:border-transparent hover:border-zinc-300 dark:hover:border-zinc-700'
                                       }`}
                                     >
                                       <div className="flex justify-between items-start mb-1 gap-4">
                                         <div>
                                           <h4 className="font-serif text-base sm:text-lg uppercase tracking-tight text-black dark:text-white">{t(`data.services.${service.name}` as any)}</h4>
                                         </div>
-                                        <span className="font-mono text-[10px] sm:text-xs whitespace-nowrap text-black dark:text-white font-bold">{service.price}</span>
+                                        <span className="font-mono text-[10px] sm:text-xs whitespace-nowrap text-black dark:text-[#B8A070] font-bold">{service.price}</span>
                                       </div>
                                       <div className="flex gap-4 text-[9px] sm:text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 font-bold">
                                         <span>{service.duration}</span>
@@ -294,10 +294,10 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
                       key={staff.id}
                       onClick={() => { setSelectedStaff(staff.id); }}
                       className={`p-6 border cursor-pointer text-center transition-all duration-300 ${
-                        selectedStaff === staff.id ? 'border-black dark:border-white bg-neutral-50 dark:bg-zinc-900' : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600'
+                        selectedStaff === staff.id ? 'border-black dark:border-[#B8A070] bg-neutral-50 dark:bg-[#B8A070]/5' : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600'
                       }`}
                     >
-                      <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 rounded-full mx-auto mb-4 flex items-center justify-center text-zinc-500 dark:text-zinc-500 font-bold">
+                      <div className={`w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center font-bold transition-colors ${selectedStaff === staff.id ? 'bg-black dark:bg-[#B8A070] text-white dark:text-black' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-500'}`}>
                         {staff.id === 'any' ? '?' : staff.name.charAt(0)}
                       </div>
                       <h3 className="font-serif text-base sm:text-lg uppercase tracking-tight mb-1 text-black dark:text-white">{staff.id === 'any' ? t('landing.no_preference') : staff.name}</h3>
@@ -331,7 +331,7 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
                         key={date.id}
                         onClick={() => { setSelectedDate(date.id); }}
                         className={`min-w-[120px] snap-start flex-shrink-0 p-4 border text-center cursor-pointer transition-all ${
-                          selectedDate === date.id ? 'border-black dark:border-white bg-black dark:bg-white text-white dark:text-black font-bold' : 'border-zinc-200 dark:border-zinc-800 text-black dark:text-white hover:border-black dark:hover:border-white'
+                          selectedDate === date.id ? 'border-black dark:border-[#B8A070] bg-black dark:bg-[#B8A070] text-white dark:text-black font-bold' : 'border-zinc-200 dark:border-zinc-800 text-black dark:text-white hover:border-black dark:hover:border-white'
                         }`}
                       >
                         <div className="text-[10px] uppercase tracking-widest mb-1 opacity-60 font-bold">{t(`data.days.${date.day}` as any)}</div>
@@ -351,7 +351,7 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
                         key={time}
                         onClick={() => { setSelectedTime(time); }}
                         className={`p-3 border text-center cursor-pointer text-xs font-mono transition-all ${
-                          selectedTime === time ? 'border-black dark:border-white bg-black dark:bg-white text-white dark:text-black font-bold' : 'border-zinc-200 dark:border-zinc-800 text-black dark:text-white hover:border-black dark:hover:border-white'
+                          selectedTime === time ? 'border-black dark:border-[#B8A070] bg-black dark:bg-[#B8A070] text-white dark:text-black font-bold' : 'border-zinc-200 dark:border-zinc-800 text-black dark:text-white hover:border-black dark:hover:border-white'
                         }`}
                       >
                         {time}
