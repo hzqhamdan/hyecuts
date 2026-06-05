@@ -19,7 +19,7 @@ export function RewardsInventory({ rewards, onRewardAdded }: { rewards: Reward[]
 
   const handleAddAsset = async () => {
     try {
-      await api.post('/rewards', { body: newReward, token });
+      await api.post('/rewards', { body: newReward, token: token ?? undefined });
       onRewardAdded();
       setIsAdding(false);
     } catch (err) {

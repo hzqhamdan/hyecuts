@@ -15,9 +15,9 @@ export function LoyaltyConfigurator() {
     queryKey: ['loyalty-config'],
     queryFn: async () => {
       const [rewards, ratio, multiplier] = await Promise.all([
-        api.get<Reward[]>('/rewards', { token }),
-        api.get<string>('/admin/settings/POINTS_PER_MYR', { token }),
-        api.get<string>('/admin/settings/SEASONAL_MULTIPLIER', { token })
+        api.get<Reward[]>('/rewards', { token: token ?? undefined }),
+        api.get<string>('/admin/settings/POINTS_PER_MYR', { token: token ?? undefined }),
+        api.get<string>('/admin/settings/SEASONAL_MULTIPLIER', { token: token ?? undefined })
       ]);
 
       return {
@@ -29,16 +29,18 @@ export function LoyaltyConfigurator() {
   });
 
   const ratioMutation = useMutation({
-    mutationFn: (newRatio: number) =>
-      api.post(`/admin/settings?key=POINTS_PER_MYR&value=${newRatio.toString()}`, { token }),
+    mutationFn: (newRatio: number) => 
+      api.post(`/admin/settings?key=POINTS_PER_MYR&value=${newRatio.toString()}`, { token: token ?? undefined }),
+
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['loyalty-config'] });
     }
   });
 
   const multiMutation = useMutation({
-    mutationFn: (newMulti: number) =>
-      api.post(`/admin/settings?key=SEASONAL_MULTIPLIER&value=${newMulti.toString()}`, { token }),
+    mutationFn: (newMulti: number) => 
+      api.post(`/admin/settings?key=SEASONAL_MULTIPLIER&value=${newMulti.toString()}`, { token: token ?? undefined }),
+
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['loyalty-config'] });
     }

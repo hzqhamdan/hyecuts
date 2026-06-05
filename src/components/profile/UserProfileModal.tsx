@@ -64,7 +64,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
           },
           avatar: avatarPreview
         },
-        token
+        token: token ?? undefined
       });
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 2000);

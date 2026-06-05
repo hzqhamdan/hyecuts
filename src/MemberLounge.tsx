@@ -657,7 +657,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
         onDeleteAccount={async () => {
           if(confirm(t('lounge.delete_confirm'))) {
             try {
-              await api.del(`/admin/users/${user?.id}`, { token });
+              await api.del(`/admin/users/${user?.id}`, { token: token ?? undefined });
               alert(t('lounge.delete_submitted'));
               logout();
               setView('facade');

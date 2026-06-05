@@ -20,7 +20,7 @@ export function EconomyControlCenter({ ratio, setRatio, multiplier, setMultiplie
 
   const handleAdjust = async () => {
     try {
-      await api.post(`/admin/points/adjust/${targetUser}?points=${adjustAmount.toString()}`, { token });
+      await api.post(`/admin/points/adjust/${targetUser}?points=${adjustAmount.toString()}`, { token: token ?? undefined });
       setAdjustStatus(t('atelier.loyalty.success'));
       setTimeout(() => { setAdjustStatus(''); }, 2000);
     } catch {
