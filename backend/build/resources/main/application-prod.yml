@@ -1,0 +1,11 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+logging:
+  level:
+    org.springframework.security: WARN
+    org.springframework.web: WARN
+    com.hyecuts.loyalty: INFO

@@ -58,7 +58,7 @@ public class GlobalExceptionHandler {
         // Log unexpected failures with the full stack trace so they're not lost,
         // but never leak internals to the client.
         log.error("Unhandled exception", ex);
-        return build(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "Unexpected error", null);
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", ex.getMessage() != null ? ex.getMessage() : "Unexpected error", null);
     }
 
     private ResponseEntity<ApiError> build(HttpStatus status, String error, String message, Map<String, String> fields) {
