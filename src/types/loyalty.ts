@@ -62,6 +62,12 @@ export interface UserMissionProgress {
   completed: boolean;
 }
 
+export interface LoyaltyProfile {
+  userId: string;
+  pointsBalance: number;
+  currentTier: string;
+}
+
 export interface Booking {
   id: string;
   user: {
