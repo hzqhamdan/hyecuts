@@ -79,7 +79,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
       await api.put(`/loyalty/profile/${user?.id}`, {
         body: {
           fullName: formData.fullName,
-          email: formData.email,
+          email: formData.email.trim(),
           dob: formData.dob,
           phone: formData.phone,
           hairProfile: {
