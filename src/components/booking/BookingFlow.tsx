@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ChevronRight, ChevronDown, Calendar, Clock, CheckCircle, ShieldCheck, UserCircle, UserPlus, Globe } from 'lucide-react';
-import { BOOKING_POLICIES, BUSINESS_HOURS, HYECUTS, ALL_SERVICES, SERVICE_CATEGORIES, TEAM_MEMBERS, type ServiceItem } from '../../data/hyecuts';
+import { BOOKING_POLICIES, BUSINESS_HOURS, HYECUTS, ALL_SERVICES, SERVICE_CATEGORIES, TEAM_MEMBERS, AVAILABLE_TIMES, type ServiceItem } from '../../data/hyecuts';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../api/client';
 import { useBookingStore } from '../../store/useBookingStore';
@@ -24,8 +24,6 @@ const DATES = BUSINESS_HOURS.map((slot, index) => ({
   day: slot.day,
   hours: slot.hours,
 }));
-
-const TIMES = ['12:00 PM', '2:30 PM', '4:00 PM', '6:00 PM', '8:00 PM'];
 
 export default function BookingFlow() {
   const navigate = useNavigate();
@@ -224,7 +222,7 @@ export default function BookingFlow() {
                             onClick={() => { setOpenCategory(isOpen ? null : categoryGroup.category); }}
                             className="w-full px-5 py-4 md:px-6 md:py-5 flex items-center justify-between text-left hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
                           >
-                            <span className="font-serif text-xl md:text-2xl italic text-black dark:text-white">{t(`data.categories.${categoryGroup.category}` as any)}</span>
+                            <span className="font-serif text-xl md:text-2xl italic text-black dark:text-white">{t(`data.categories.${categoryGroup.category}`)}</span>
                             <ChevronDown
                               className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''} text-black dark:text-white`}
                               size={20}
@@ -253,7 +251,7 @@ export default function BookingFlow() {
                                       <div className="flex justify-between items-start mb-1 gap-4">
                                         <div>
                                           <h4 className={`font-serif text-base sm:text-lg uppercase tracking-tight transition-colors ${selectedService === service.name ? '!text-[#B8A070]' : 'text-black dark:text-white'}`}>
-                                            {t(`data.services.${service.name}` as any)}
+                                            {t(`data.services.${service.name}`)}
                                           </h4>
                                         </div>
                                         <span className={`font-mono text-[10px] sm:text-xs whitespace-nowrap font-bold transition-colors ${selectedService === service.name ? '!text-[#B8A070]' : 'text-black dark:text-white'}`}>
@@ -306,7 +304,7 @@ export default function BookingFlow() {
                       <h3 className={`font-serif text-base sm:text-lg uppercase tracking-tight mb-1 transition-colors ${selectedStaff === staff.id ? 'text-studio-black dark:text-studio-gold' : 'text-studio-black dark:text-studio-white'}`}>
                         {staff.id === 'any' ? t('landing.no_preference') : staff.name}
                       </h3>
-                      <p className="text-[10px] uppercase tracking-widest text-zinc-500 dark:text-zinc-500 font-bold">{staff.id === 'any' ? t('landing.first_available') : t(`data.roles.${staff.role}` as any)}</p>
+                      <p className="text-[10px] uppercase tracking-widest text-zinc-500 dark:text-zinc-500 font-bold">{staff.id === 'any' ? t('landing.first_available') : t(`data.roles.${staff.role}`)}</p>
                     </div>
                   ))}
                 </div>
@@ -341,7 +339,7 @@ export default function BookingFlow() {
                             : 'border-zinc-200 dark:border-zinc-800 text-black dark:text-white hover:border-black dark:hover:border-white'
                         }`}
                       >
-                        <div className={`text-[10px] uppercase tracking-widest mb-1 font-bold ${selectedDate === date.id ? 'opacity-100' : 'opacity-60'}`}>{t(`data.days.${date.day}` as any)}</div>
+                        <div className={`text-[10px] uppercase tracking-widest mb-1 font-bold ${selectedDate === date.id ? 'opacity-100' : 'opacity-60'}`}>{t(`data.days.${date.day}`)}</div>
                         <div className={`font-serif text-lg ${selectedDate === date.id ? 'text-studio-white dark:text-studio-black' : 'text-zinc-500 dark:text-zinc-500'}`}>{date.hours}</div>
                       </div>
                     ))}
@@ -353,7 +351,7 @@ export default function BookingFlow() {
                     <Clock className="w-3 h-3" /> {t('booking.time')}
                   </h4>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {TIMES.map((time) => (
+                    {AVAILABLE_TIMES.map((time) => (
                       <div
                         key={time}
                         onClick={() => { setSelectedTime(time); }}
@@ -388,7 +386,7 @@ export default function BookingFlow() {
                   <div className="flex justify-between border-b border-zinc-200 dark:border-zinc-800 pb-6 gap-6">
                     <div>
                       <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1 font-bold">{t('nav.services')}</div>
-                      <div className="font-serif text-lg sm:text-xl uppercase tracking-tight text-black dark:text-white">{getService() ? t(`data.services.${getService()!.name}` as any) : ''}</div>
+                      <div className="font-serif text-lg sm:text-xl uppercase tracking-tight text-black dark:text-white">{getService() ? t(`data.services.${getService()!.name}`) : ''}</div>
                     </div>
                     <div className="text-right">
                       <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1 font-bold">{t('booking.total')}</div>
@@ -407,7 +405,7 @@ export default function BookingFlow() {
                     </div>
                     <div>
                       <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1 font-bold">{t('booking.day')}</div>
-                      <div className="text-xs sm:text-sm text-black dark:text-white font-medium">{getDate() ? t(`data.days.${getDate()!.day}` as any) : ''}</div>
+                      <div className="text-xs sm:text-sm text-black dark:text-white font-medium">{getDate() ? t(`data.days.${getDate()!.day}`) : ''}</div>
                     </div>
                     <div>
                       <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1 font-bold">{t('booking.time')}</div>
@@ -422,7 +420,7 @@ export default function BookingFlow() {
                     </div>
                     {BOOKING_POLICIES.slice(0, 3).map((policy, idx) => (
                       <p key={policy} className="text-xs text-zinc-500 dark:text-zinc-500 italic leading-relaxed">
-                        {t(`landing.policy_${idx + 1}` as any)}
+                        {t(`landing.policy_${idx + 1}`)}
                       </p>
                     ))}
                   </div>
@@ -495,7 +493,7 @@ export default function BookingFlow() {
               <p className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mb-1 font-bold">{t('landing.team_members')}</p>
               {TEAM_MEMBERS.map((member) => (
                 <p key={member.name}>
-                  {member.name} — {t(`data.roles.${member.role}` as any)}
+                  {member.name} — {t(`data.roles.${member.role}`)}
                 </p>
               ))}
             </div>
@@ -503,7 +501,7 @@ export default function BookingFlow() {
               <p className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mb-1 font-bold">{t('landing.booking_policies')}</p>
               {BOOKING_POLICIES.map((policy, idx) => (
                 <p key={policy} className="mb-2">
-                  {t(`landing.policy_${idx + 1}` as any)}
+                  {t(`landing.policy_${idx + 1}`)}
                 </p>
               ))}
             </div>

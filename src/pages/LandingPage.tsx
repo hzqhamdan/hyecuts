@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../../context/AuthContext';
-import Navbar from './Navbar';
-import MobileMenu from './MobileMenu';
-import HeroSection from './HeroSection';
-import ServicesSection from './ServicesSection';
-import HoursSection from './HoursSection';
-import ContactSection from './ContactSection';
-import Footer from './Footer';
+import { useAuth } from '../context/AuthContext';
+import Navbar from '../components/landing/Navbar';
+import MobileMenu from '../components/landing/MobileMenu';
+import HeroSection from '../components/landing/HeroSection';
+import ServicesSection from '../components/landing/ServicesSection';
+import HoursSection from '../components/landing/HoursSection';
+import ContactSection from '../components/landing/ContactSection';
+import Footer from '../components/landing/Footer';
 
 const LandingPage = () => {
   const { i18n } = useTranslation();

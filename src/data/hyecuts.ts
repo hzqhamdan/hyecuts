@@ -79,6 +79,8 @@ export const ALL_SERVICES: ServiceItem[] = [
   ...SERVICE_CATEGORIES.flatMap(c => c.services)
 ];
 
+export const AVAILABLE_TIMES = ['12:00 PM', '2:30 PM', '4:00 PM', '6:00 PM', '8:00 PM'];
+
 export const BOOKING_POLICIES = [
   'Arrive 10 minutes early so the schedule can stay on time.',
   'One slot is strictly for one person only.',

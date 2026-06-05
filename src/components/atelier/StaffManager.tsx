@@ -70,7 +70,7 @@ export function StaffManager() {
 
             <div className="space-y-2">
               <h3 className="font-serif text-2xl italic text-black dark:text-white">{member.name}</h3>
-              <p className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 font-bold">{t(`data.roles.${member.role}` as any, { defaultValue: member.role })}</p>
+              <p className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 font-bold">{t(`data.roles.${member.role}`, { defaultValue: member.role })}</p>
             </div>
 
             <div className="mt-8 pt-8 border-t border-zinc-50 dark:border-zinc-800 flex justify-between items-center text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
@@ -112,7 +112,7 @@ export function StaffManager() {
                       onChange={e => setSelectedStaff({...selectedStaff, name: e.target.value})}
                       className="font-serif text-4xl italic focus:outline-none w-full bg-transparent text-black dark:text-white border-b border-transparent focus:border-zinc-200"
                     />
-                    <p className="text-[10px] uppercase tracking-[0.3em] text-[#B8A070] font-bold">{t(`data.roles.${selectedStaff.role}` as any, { defaultValue: selectedStaff.role })}</p>
+                    <p className="text-[10px] uppercase tracking-[0.3em] text-[#B8A070] font-bold">{t(`data.roles.${selectedStaff.role}`, { defaultValue: selectedStaff.role })}</p>
                   </div>
                 </header>
 
@@ -125,7 +125,7 @@ export function StaffManager() {
                   <div className="grid grid-cols-1 gap-4">
                     {Object.entries(selectedStaff.schedule).map(([day, hours]) => (
                       <div key={day} className="flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 transition-colors">
-                        <span className="text-[10px] uppercase tracking-widest font-bold w-24 text-black dark:text-white">{t(`data.days.${day}` as any)}</span>
+                        <span className="text-[10px] uppercase tracking-widest font-bold w-24 text-black dark:text-white">{t(`data.days.${day}`)}</span>
                         <input 
                           type="text" 
                           value={hours} 

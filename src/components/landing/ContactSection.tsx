@@ -28,7 +28,7 @@ export default function ContactSection() {
               <div className="space-y-1">
                 {TEAM_MEMBERS.map((member) => (
                   <p key={member.name} className="font-medium">
-                    {member.name} — <span className="text-zinc-400 dark:text-zinc-500">{t(`data.roles.${member.role}` as any)}</span>
+                    {member.name} — <span className="text-zinc-400 dark:text-zinc-500">{t(`data.roles.${member.role}`)}</span>
                   </p>
                 ))}
               </div>

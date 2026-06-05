@@ -55,7 +55,7 @@ export function BookingsManager() {
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-black dark:text-white font-bold uppercase tracking-[0.2em] mt-2">{t(`data.services.${booking.service.name}` as any, { defaultValue: booking.service.name })}</p>
+                  <p className="text-xs text-black dark:text-white font-bold uppercase tracking-[0.2em] mt-2">{t(`data.services.${booking.service.name}`, { defaultValue: booking.service.name })}</p>
                 </div>
               </div>
               
@@ -85,7 +85,7 @@ export function BookingsManager() {
                 <div className="flex items-center gap-4">
                   <CheckCircle2 size={16} className="text-green-600" />
                   <span className="text-xs font-bold uppercase tracking-widest text-black dark:text-white">{b.user.email}</span>
-                  <span className="text-xs text-zinc-400 dark:text-zinc-500">— {t(`data.services.${b.service.name}` as any, { defaultValue: b.service.name })}</span>
+                  <span className="text-xs text-zinc-400 dark:text-zinc-500">— {t(`data.services.${b.service.name}`, { defaultValue: b.service.name })}</span>
                 </div>
                 <span className="font-mono text-[10px] text-zinc-400 dark:text-zinc-500">{new Date(b.appointmentTime).toLocaleTimeString()}</span>
              </div>

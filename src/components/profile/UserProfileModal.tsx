@@ -93,14 +93,16 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
       });
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 2000);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error updating profile", error);
       let msg = "Failed to update profile";
-      try {
-        const errorData = JSON.parse(error.message);
-        msg = errorData.message || msg;
-      } catch {
-        msg = error.message || msg;
+      if (error instanceof Error) {
+        try {
+          const errorData = JSON.parse(error.message);
+          msg = errorData.message || msg;
+        } catch {
+          msg = error.message || msg;
+        }
       }
       setErrorMessage(msg);
     }

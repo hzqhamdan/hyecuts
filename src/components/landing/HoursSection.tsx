@@ -15,7 +15,7 @@ export default function HoursSection() {
           <div className="space-y-4">
             {BUSINESS_HOURS.map((slot) => (
               <div key={slot.day} className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-4">
-                <span className="text-xs md:text-sm uppercase tracking-widest font-bold">{t(`data.days.${slot.day}` as any)}</span>
+                <span className="text-xs md:text-sm uppercase tracking-widest font-bold">{t(`data.days.${slot.day}`)}</span>
                 <span className={`text-xs md:text-sm font-medium ${slot.open ? 'text-black dark:text-white' : 'text-zinc-400 dark:text-zinc-600'}`}>{slot.hours}</span>
               </div>
             ))}
@@ -28,7 +28,7 @@ export default function HoursSection() {
           <div className="space-y-4">
             {BOOKING_POLICIES.map((policy, idx) => (
               <p key={policy} className="text-xs md:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">
-                {t(`landing.policy_${idx + 1}` as any)}
+                {t(`landing.policy_${idx + 1}`)}
               </p>
             ))}
           </div>

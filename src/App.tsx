@@ -5,7 +5,7 @@ import { Moon, Sun } from 'lucide-react';
 import ProtectedRoute from './components/guards/ProtectedRoute';
 import AdminRoute from './components/guards/AdminRoute';
 
-const LandingPage = lazy(() => import('./components/landing/LandingPage'));
+const LandingPage = lazy(() => import('./LandingPage'));
 const MemberLounge = lazy(() => import('./MemberLounge'));
 const AtelierDashboard = lazy(() => import('./AtelierDashboard'));
 const LoginScreen = lazy(() => import('./LoginScreen'));

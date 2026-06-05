@@ -29,7 +29,7 @@ export default function ServicesSection() {
                     onClick={() => { setOpenCategory(isOpen ? null : categoryGroup.category); }}
                     className="w-full px-5 py-4 md:px-6 md:py-5 flex items-center justify-between text-left hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
                   >
-                    <span className="font-serif text-xl md:text-2xl italic">{t(`data.categories.${categoryGroup.category}` as any)}</span>
+                    <span className="font-serif text-xl md:text-2xl italic">{t(`data.categories.${categoryGroup.category}`)}</span>
                     <ChevronDown
                       className={`transform transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
                       size={20}
@@ -60,7 +60,7 @@ export default function ServicesSection() {
                                 <div className="flex justify-between items-start mb-1 gap-4">
                                   <div>
                                     <h4 className={`font-serif text-base sm:text-lg uppercase tracking-tight transition-colors ${isServiceOpen ? '!text-[#B8A070]' : 'text-black dark:text-white'}`}>
-                                      {t(`data.services.${service.name}` as any)}
+                                      {t(`data.services.${service.name}`)}
                                     </h4>
                                   </div>
                                   <span className={`font-mono text-[10px] sm:text-xs whitespace-nowrap font-bold transition-colors ${isServiceOpen ? '!text-[#B8A070]' : 'text-black dark:text-white'}`}>
