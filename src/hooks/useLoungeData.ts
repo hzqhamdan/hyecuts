@@ -18,7 +18,7 @@ const mockNotifications: Notification[] = [
 ];
 
 export function useLoungeData(userId: string) {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
 
   const [profile, setProfile] = useState<LoyaltyProfile | null>(null);
   const [rewards, setRewards] = useState<Reward[]>([]);

@@ -5,7 +5,7 @@ import type { LoyaltyProfile } from '../../types/loyalty';
 interface StatusCardProps {
   profile: LoyaltyProfile | null;
   isLoading: boolean;
-  progressData: { percentage: number; nextTier: string };
+  progressData: { percentage: number; nextTier: string | null };
   tierLabel: string;
 }
 
