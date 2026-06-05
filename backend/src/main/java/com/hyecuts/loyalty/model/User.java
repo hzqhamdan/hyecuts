@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Entity
 @Table(name = "users")
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties(value = {"hibernateLazyInitializer", "handler", "referredBy"}, ignoreUnknown = true)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -82,6 +82,7 @@ public class User {
     public void setId(UUID id) { this.id = id; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+    @com.fasterxml.jackson.annotation.JsonIgnore
     public String getPasswordHash() { return passwordHash; }
     public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
     public String getFullName() { return fullName; }
