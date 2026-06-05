@@ -4,11 +4,13 @@ import com.hyecuts.loyalty.model.Tier;
 import com.hyecuts.loyalty.model.User;
 import com.hyecuts.loyalty.repository.TierRepository;
 import com.hyecuts.loyalty.repository.UserRepository;
+import com.hyecuts.loyalty.web.UpdateProfileRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -32,18 +34,22 @@ public class LoyaltyService {
     }
 
     @Transactional
-    public User updateUser(UUID userId, User updatedProfile) {
+    public User updateUser(UUID userId, UpdateProfileRequest req) {
         User user = getUser(userId);
-        
-        if (updatedProfile.getFullName() != null) user.setFullName(updatedProfile.getFullName());
-        if (updatedProfile.getEmail() != null) user.setEmail(updatedProfile.getEmail());
-        if (updatedProfile.getDob() != null) user.setDob(updatedProfile.getDob());
-        if (updatedProfile.getPhone() != null) user.setPhone(updatedProfile.getPhone());
-        if (updatedProfile.getHairType() != null) user.setHairType(updatedProfile.getHairType());
-        if (updatedProfile.getHairLength() != null) user.setHairLength(updatedProfile.getHairLength());
-        if (updatedProfile.getHairScalp() != null) user.setHairScalp(updatedProfile.getHairScalp());
-        if (updatedProfile.getAvatar() != null) user.setAvatar(updatedProfile.getAvatar());
-        
+
+        if (req.fullName() != null) user.setFullName(req.fullName());
+        if (req.email() != null) user.setEmail(req.email());
+        if (req.dob() != null) user.setDob(req.dob());
+        if (req.phone() != null) user.setPhone(req.phone());
+        if (req.avatar() != null) user.setAvatar(req.avatar());
+
+        Map<String, String> hp = req.hairProfile();
+        if (hp != null) {
+            if (hp.get("type") != null) user.setHairType(hp.get("type"));
+            if (hp.get("length") != null) user.setHairLength(hp.get("length"));
+            if (hp.get("scalp") != null) user.setHairScalp(hp.get("scalp"));
+        }
+
         return userRepository.save(user);
     }
 

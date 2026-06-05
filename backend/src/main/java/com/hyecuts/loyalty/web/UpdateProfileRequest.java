@@ -3,6 +3,8 @@ package com.hyecuts.loyalty.web;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 
+import java.util.Map;
+
 /**
  * Payload for {@code PUT /api/loyalty/profile/{userId}}.
  *
@@ -15,5 +17,7 @@ public record UpdateProfileRequest(
     @Size(max = 255) String fullName,
     @Email @Size(max = 255) String email,
     @Size(max = 32)  String dob,
-    @Size(max = 32)  String phone
+    @Size(max = 32)  String phone,
+    Map<String, String> hairProfile,
+    String avatar
 ) { }

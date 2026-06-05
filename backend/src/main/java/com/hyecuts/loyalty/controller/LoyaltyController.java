@@ -2,6 +2,7 @@ package com.hyecuts.loyalty.controller;
 
 import com.hyecuts.loyalty.model.User;
 import com.hyecuts.loyalty.service.LoyaltyService;
+import com.hyecuts.loyalty.web.UpdateProfileRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +24,8 @@ public class LoyaltyController {
     }
 
     @PutMapping("/profile/{userId}")
-    public ResponseEntity<User> updateProfile(@PathVariable UUID userId, @RequestBody User updatedProfile) {
-        return ResponseEntity.ok(loyaltyService.updateUser(userId, updatedProfile));
+    public ResponseEntity<User> updateProfile(@PathVariable UUID userId, @RequestBody UpdateProfileRequest request) {
+        return ResponseEntity.ok(loyaltyService.updateUser(userId, request));
     }
 
     @PostMapping("/earn/{userId}")
