@@ -25,31 +25,17 @@ public class LoyaltyController {
 
     @PutMapping("/profile/{userId}")
     public ResponseEntity<?> updateProfile(@PathVariable UUID userId, @RequestBody UpdateProfileRequest request) {
-        try {
-            User u = loyaltyService.updateUser(userId, request);
-            
-            // Return a flat map to avoid serialization issues with lazy relations
-            java.util.Map<String, Object> response = new java.util.HashMap<>();
-            response.put("id", u.getId());
-            response.put("email", u.getEmail());
-            response.put("fullName", u.getFullName());
-            response.put("points", u.getCurrentPoints());
-            response.put("tier", u.getTier() != null ? u.getTier().getName() : "Rookie");
-            
-            return ResponseEntity.ok(response);
-        } catch (Throwable t) {
-            System.err.println("[CRITICAL-PROFILE-ERROR] " + t.getMessage());
-            t.printStackTrace();
-            
-            java.util.Map<String, Object> error = new java.util.HashMap<>();
-            error.put("timestamp", java.time.Instant.now().toString());
-            error.put("status", 500);
-            error.put("error", "Internal Server Error");
-            error.put("message", "Update failed: " + t.getMessage());
-            error.put("cause", t.getCause() != null ? t.getCause().getMessage() : "Unknown");
-            
-            return ResponseEntity.status(500).body(error);
-        }
+        User u = loyaltyService.updateUser(userId, request);
+        
+        // Return a flat map to avoid serialization issues with lazy relations
+        java.util.Map<String, Object> response = new java.util.HashMap<>();
+        response.put("id", u.getId());
+        response.put("email", u.getEmail());
+        response.put("fullName", u.getFullName());
+        response.put("points", u.getCurrentPoints());
+        response.put("tier", u.getTier() != null ? u.getTier().getName() : "Rookie");
+        
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/earn/{userId}")

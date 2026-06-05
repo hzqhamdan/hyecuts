@@ -18,6 +18,7 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
     
+    @com.fasterxml.jackson.annotation.JsonIgnore
     @Column(nullable = false)
     private String passwordHash;
 
@@ -62,7 +63,7 @@ public class User {
     @Column(name = "hair_scalp")
     private String hairScalp;
 
-    @Column(name = "avatar", columnDefinition = "TEXT")
+    @Column(name = "avatar", length = 1000000)
     private String avatar;
 
     public User() {}
@@ -82,7 +83,6 @@ public class User {
     public void setId(UUID id) { this.id = id; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
-    @com.fasterxml.jackson.annotation.JsonIgnore
     public String getPasswordHash() { return passwordHash; }
     public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
     public String getFullName() { return fullName; }

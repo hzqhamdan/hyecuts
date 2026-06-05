@@ -36,29 +36,14 @@ public class LoyaltyService {
     @Transactional
     public User updateUser(UUID userId, UpdateProfileRequest req) {
         User user = getUser(userId);
-        
-        System.out.println("[DEBUG-PROFILE] Updating user ID: " + userId);
-        System.out.println("[DEBUG-PROFILE] Found user ID in DB: " + user.getId());
 
         if (req.fullName() != null) user.setFullName(req.fullName());
         
         if (req.email() != null) {
             String newEmail = req.email().trim();
-            String currentEmail = user.getEmail().trim();
-            
-            System.out.println("[DEBUG-PROFILE] Current email: " + currentEmail);
-            System.out.println("[DEBUG-PROFILE] New email from req: " + newEmail);
-            
-            if (!newEmail.equalsIgnoreCase(currentEmail)) {
-                // Check if new email is already taken by ANOTHER user
-                java.util.Optional<User> existingUser = userRepository.findByEmail(newEmail);
-                if (existingUser.isPresent()) {
-                    UUID existingId = existingUser.get().getId();
-                    System.out.println("[DEBUG-PROFILE] Collision! Email owned by: " + existingId);
-                    
-                    if (!existingId.equals(userId)) {
-                        throw new RuntimeException("Email '" + newEmail + "' is already in use by another account (ID: " + existingId + "). Your ID: " + userId);
-                    }
+            if (!newEmail.equalsIgnoreCase(user.getEmail())) {
+                if (userRepository.findByEmail(newEmail).isPresent()) {
+                    throw new RuntimeException("Email already taken");
                 }
                 user.setEmail(newEmail);
             }
@@ -68,8 +53,8 @@ public class LoyaltyService {
         if (req.phone() != null) user.setPhone(req.phone());
         if (req.avatar() != null) user.setAvatar(req.avatar());
 
-        Map<String, String> hp = req.hairProfile();
-        if (hp != null) {
+        if (req.hairProfile() != null) {
+            Map<String, String> hp = req.hairProfile();
             if (hp.get("type") != null) user.setHairType(hp.get("type"));
             if (hp.get("length") != null) user.setHairLength(hp.get("length"));
             if (hp.get("scalp") != null) user.setHairScalp(hp.get("scalp"));
