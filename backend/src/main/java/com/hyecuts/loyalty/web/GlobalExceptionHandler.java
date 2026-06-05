@@ -1,5 +1,7 @@
 package com.hyecuts.loyalty.web;
 
+import com.hyecuts.loyalty.exception.EmailAlreadyInUseException;
+import com.hyecuts.loyalty.exception.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
