@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Target } from 'lucide-react';
-import { Mission, UserMissionProgress } from '../../types/loyalty';
+import type { Mission, UserMissionProgress } from '../../types/loyalty';
 
 interface MissionsPanelProps {
   missions: Mission[];

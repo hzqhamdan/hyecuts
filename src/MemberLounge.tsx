@@ -6,7 +6,7 @@ import { api } from './api/client';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
-import { LoyaltyProfile, Reward, ActivityLog, Badge, UserBadge, Mission, UserMissionProgress } from './types/loyalty';
+import type { LoyaltyProfile, Reward, ActivityLog, Badge, UserBadge, Mission, UserMissionProgress } from './types/loyalty';
 import UserProfileModal from './components/profile/UserProfileModal';
 import LoungeHeader from './components/lounge/LoungeHeader';
 import MobileMenu from './components/lounge/MobileMenu';

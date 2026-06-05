@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Award } from 'lucide-react';
-import { Reward } from '../../types/loyalty';
+import type { Reward } from '../../types/loyalty';
 
 interface VoucherModalProps {
   voucher: Reward | null;

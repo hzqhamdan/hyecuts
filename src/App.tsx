@@ -11,12 +11,12 @@ const AtelierDashboard = lazy(() => import('./AtelierDashboard'));
 const LoginScreen = lazy(() => import('./LoginScreen'));
 const BookingFlow = lazy(() => import('./components/booking/BookingFlow'));
 const UserBookings = lazy(() => import('./components/booking/UserBookings'));
-const BookingsManager = lazy(() => import('./components/atelier/BookingsManager'));
-const MemberManager = lazy(() => import('./components/atelier/MemberManager'));
-const StaffManager = lazy(() => import('./components/atelier/StaffManager'));
-const ReviewQueue = lazy(() => import('./components/atelier/ReviewQueue'));
-const LoyaltyConfigurator = lazy(() => import('./components/atelier/LoyaltyConfigurator'));
-const OverviewView = lazy(() => import('./components/atelier/OverviewView'));
+const BookingsManager = lazy(() => import('./components/atelier/BookingsManager').then(m => ({ default: m.BookingsManager })));
+const MemberManager = lazy(() => import('./components/atelier/MemberManager').then(m => ({ default: m.MemberManager })));
+const StaffManager = lazy(() => import('./components/atelier/StaffManager').then(m => ({ default: m.StaffManager })));
+const ReviewQueue = lazy(() => import('./components/atelier/ReviewQueue').then(m => ({ default: m.ReviewQueue })));
+const LoyaltyConfigurator = lazy(() => import('./components/atelier/LoyaltyConfigurator').then(m => ({ default: m.LoyaltyConfigurator })));
+const OverviewView = lazy(() => import('./components/atelier/OverviewView').then(m => ({ default: m.OverviewView })));
 
 const THEME_STORAGE_KEY = 'hyecuts-theme-v2';
 

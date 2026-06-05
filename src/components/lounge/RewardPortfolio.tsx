@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Sparkles, ChevronRight } from 'lucide-react';
-import { Reward } from '../../types/loyalty';
+import type { Reward } from '../../types/loyalty';
 
 interface RewardPortfolioProps {
   rewards: Reward[];

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Activity } from 'lucide-react';
-import { ActivityLog } from '../../types/loyalty';
+import type { ActivityLog } from '../../types/loyalty';
 
 interface ActivityFeedProps {
   activities: ActivityLog[];

@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { LoyaltyProfile } from '../../types/loyalty';
+import type { LoyaltyProfile } from '../../types/loyalty';
 
 interface StatusCardProps {
   profile: LoyaltyProfile | null;

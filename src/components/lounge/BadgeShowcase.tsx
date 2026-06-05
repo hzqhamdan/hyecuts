@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Award } from 'lucide-react';
-import { Badge, UserBadge } from '../../types/loyalty';
+import type { Badge, UserBadge } from '../../types/loyalty';
 
 interface BadgeShowcaseProps {
   badges: Badge[];

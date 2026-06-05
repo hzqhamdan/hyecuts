@@ -1,10 +1,8 @@
-import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { HYECUTS } from '../../data/hyecuts';
 
 export default function Footer() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
 
   return (
     <footer className="py-12 md:py-16 px-6 md:px-12 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-[#1A1A1A] transition-colors">

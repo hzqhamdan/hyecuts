@@ -18,12 +18,12 @@ export function MemberManager() {
   const { data: members = [], isLoading } = useQuery<User[]>({
     queryKey: ['members', token],
     queryFn: () =>
-      api.get<User[]>('/admin/users', { token })
+      api.get<User[]>('/admin/users', { token: token ?? undefined })
   });
 
   const adjustMutation = useMutation({
     mutationFn: ({ userId, amount }: { userId: string, amount: number }) =>
-      api.post(`/admin/points/adjust/${userId}?points=${amount}`, { token }),
+      api.post(`/admin/points/adjust/${userId}?points=${amount}`, { token: token ?? undefined }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['members', token] });
       // Update selected member if open
@@ -38,7 +38,7 @@ export function MemberManager() {
 
   const tierMutation = useMutation({
     mutationFn: ({ userId, tierName }: { userId: string, tierName: string }) =>
-      api.post(`/admin/tier/override/${userId}?tier=${tierName}`, { token }),
+      api.post(`/admin/tier/override/${userId}?tier=${tierName}`, { token: token ?? undefined }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['members', token] });
       setIsOverridingTier(false);

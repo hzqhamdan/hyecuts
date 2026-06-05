@@ -14,12 +14,12 @@ export function BookingsManager() {
   const { data: bookings = [], isLoading } = useQuery<Booking[]>({
     queryKey: ['bookings', token],
     queryFn: () =>
-      api.get<Booking[]>('/bookings/all', { token })
+      api.get<Booking[]>('/bookings/all', { token: token ?? undefined })
   });
 
   const completeMutation = useMutation({
     mutationFn: (id: string) =>
-      api.put(`/bookings/${id}/complete`, { token }),
+      api.put(`/bookings/${id}/complete`, { token: token ?? undefined }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['bookings', token] });
     }

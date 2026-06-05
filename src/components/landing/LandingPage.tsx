@@ -1,10 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
-import { useBookingStore } from '../../store/useBookingStore';
-import { useNavigate } from 'react-router-dom';
-import { fadeUp } from '../../utils/animations';
 import Navbar from './Navbar';
 import MobileMenu from './MobileMenu';
 import HeroSection from './HeroSection';
@@ -14,11 +11,9 @@ import ContactSection from './ContactSection';
 import Footer from './Footer';
 
 const LandingPage = () => {
-  const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const { token } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { openCategory, setOpenCategory, selectedService, setSelectedService } = useBookingStore();
 
   const toggleLanguage = () => {
     const newLang = i18n.language === 'en' ? 'ms' : 'en';
