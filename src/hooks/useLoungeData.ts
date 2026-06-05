@@ -48,6 +48,7 @@ export function useLoungeData(userId: string) {
       setProfile({
         userId: profileData.id,
         email: profileData.email,
+        username: profileData.username || profileData.email,
         fullName: profileData.fullName || '',
         pointsBalance: profileData.currentPoints,
         currentTier: profileData.tier ? profileData.tier.name : 'Rookie',

@@ -15,6 +15,7 @@ import java.util.Map;
  */
 public record UpdateProfileRequest(
     @Size(max = 255) String fullName,
+    @Size(max = 255) String username,
     @Email @Size(max = 255) String email,
     @Size(max = 32)  String dob,
     @Size(max = 32)  String phone,

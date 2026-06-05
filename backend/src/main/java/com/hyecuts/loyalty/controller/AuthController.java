@@ -59,14 +59,16 @@ public class AuthController {
         }
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.username);
-        Optional<User> optUser = userRepository.findByEmail(authRequest.username);
+        Optional<User> optUser = userRepository.findByEmailOrUsername(authRequest.username, authRequest.username);
         
         if (optUser.isPresent()) {
-            final String jwt = jwtUtil.generateToken(userDetails.getUsername(), optUser.get().getId().toString());
+            User user = optUser.get();
+            final String jwt = jwtUtil.generateToken(userDetails.getUsername(), user.getId().toString());
             Map<String, Object> response = new HashMap<>();
             response.put("token", jwt);
-            response.put("userId", optUser.get().getId().toString());
-            response.put("role", optUser.get().getRole());
+            response.put("userId", user.getId().toString());
+            response.put("role", user.getRole());
+            response.put("username", user.getUsername() != null ? user.getUsername() : user.getEmail());
             return ResponseEntity.ok(response);
         }
         return ResponseEntity.status(404).body("User not found");
@@ -74,12 +76,14 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody AuthRequest authRequest) {
-        if (userRepository.findByEmail(authRequest.username).isPresent()) {
-            return ResponseEntity.badRequest().body("Email is already taken");
+        if (userRepository.findByEmailOrUsername(authRequest.username, authRequest.username).isPresent()) {
+            return ResponseEntity.badRequest().body("Email or Username is already taken");
         }
 
         User newUser = new User();
+        // Default both to the identifier provided
         newUser.setEmail(authRequest.username);
+        newUser.setUsername(authRequest.username);
         newUser.setPasswordHash(passwordEncoder.encode(authRequest.password));
         newUser.setRole("ROLE_USER");
         User savedUser = userRepository.save(newUser);
@@ -89,6 +93,7 @@ public class AuthController {
         response.put("token", jwt);
         response.put("userId", savedUser.getId().toString());
         response.put("role", savedUser.getRole());
+        response.put("username", savedUser.getUsername());
 
         return ResponseEntity.ok(response);
     }

@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS users (
     referred_by_id UUID REFERENCES users(id),
     created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     role VARCHAR(255) NOT NULL DEFAULT 'ROLE_USER',
+    username VARCHAR(255) UNIQUE,
     dob VARCHAR(255),
     phone VARCHAR(255),
     hair_type VARCHAR(255),

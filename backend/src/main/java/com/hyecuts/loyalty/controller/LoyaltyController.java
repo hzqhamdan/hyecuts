@@ -31,8 +31,10 @@ public class LoyaltyController {
         java.util.Map<String, Object> response = new java.util.HashMap<>();
         response.put("id", u.getId());
         response.put("email", u.getEmail());
+        response.put("username", u.getUsername());
         response.put("fullName", u.getFullName());
         response.put("points", u.getCurrentPoints());
+
         response.put("tier", u.getTier() != null ? u.getTier().getName() : "Rookie");
         
         return ResponseEntity.ok(response);

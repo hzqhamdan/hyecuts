@@ -57,14 +57,16 @@ public class DatabaseSeeder implements CommandLineRunner {
 
             // 1. Create Default Users
             User admin = new User();
-            admin.setEmail("admin");
+            admin.setEmail("admin@hyecuts.com");
+            admin.setUsername("admin");
             admin.setPasswordHash(passwordEncoder.encode("admin123"));
             admin.setRole("ROLE_ADMIN");
             admin.setFullName("Studio Curator");
             userRepository.save(admin);
 
             User user = new User();
-            user.setEmail("user");
+            user.setEmail("user@hyecuts.com");
+            user.setUsername("user");
             user.setPasswordHash(passwordEncoder.encode("password"));
             user.setRole("ROLE_USER");
             user.setFullName("Hyecuts Member");

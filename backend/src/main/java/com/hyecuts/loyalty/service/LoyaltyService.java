@@ -49,6 +49,16 @@ public class LoyaltyService {
             }
         }
 
+        if (req.username() != null) {
+            String newUsername = req.username().trim();
+            if (!newUsername.equalsIgnoreCase(user.getUsername())) {
+                if (userRepository.findByUsername(newUsername).isPresent()) {
+                    throw new RuntimeException("Username already taken");
+                }
+                user.setUsername(newUsername);
+            }
+        }
+
         if (req.dob() != null) user.setDob(req.dob());
         if (req.phone() != null) user.setPhone(req.phone());
         if (req.avatar() != null) user.setAvatar(req.avatar());

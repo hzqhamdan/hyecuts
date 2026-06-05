@@ -27,7 +27,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
 
   // Form states
   const [formData, setFormData] = useState({
-    username: profile?.email || user?.username || 'Client',
+    username: profile?.username || user?.username || 'Client',
     fullName: profile?.fullName || 'Client',
     dob: profile?.dob || '1990-01-01',
     email: profile?.email || user?.username || 'client@hyecuts.com',
@@ -41,7 +41,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
   useEffect(() => {
     if (profile) {
       setFormData({
-        username: profile.email,
+        username: profile.username || profile.email,
         fullName: profile.fullName || '',
         dob: profile.dob || '1990-01-01',
         email: profile.email,

@@ -48,6 +48,9 @@ public class User {
     @Column(name = "role", nullable = false)
     private String role = "ROLE_USER";
 
+    @Column(name = "username", unique = true)
+    private String username;
+
     @Column(name = "dob")
     private String dob;
 
@@ -101,6 +104,8 @@ public class User {
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
     public String getDob() { return dob; }
     public void setDob(String dob) { this.dob = dob; }
     public String getPhone() { return phone; }

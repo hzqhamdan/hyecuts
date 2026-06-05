@@ -1,6 +1,7 @@
 export interface User {
   id: string;
   email: string;
+  username?: string;
   fullName: string;
   currentPoints: number;
   lifetimePoints: number;
@@ -23,6 +24,7 @@ export interface User {
 export interface LoyaltyProfile {
   userId: string;
   email: string;
+  username: string;
   fullName: string;
   pointsBalance: number;
   currentTier: string;
