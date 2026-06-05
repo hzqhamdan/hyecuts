@@ -39,6 +39,10 @@ public class LoyaltyService {
         if (updatedProfile.getEmail() != null) user.setEmail(updatedProfile.getEmail());
         if (updatedProfile.getDob() != null) user.setDob(updatedProfile.getDob());
         if (updatedProfile.getPhone() != null) user.setPhone(updatedProfile.getPhone());
+        if (updatedProfile.getHairType() != null) user.setHairType(updatedProfile.getHairType());
+        if (updatedProfile.getHairLength() != null) user.setHairLength(updatedProfile.getHairLength());
+        if (updatedProfile.getHairScalp() != null) user.setHairScalp(updatedProfile.getHairScalp());
+        if (updatedProfile.getAvatar() != null) user.setAvatar(updatedProfile.getAvatar());
         
         return userRepository.save(user);
     }

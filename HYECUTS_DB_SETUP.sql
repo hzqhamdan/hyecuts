@@ -21,7 +21,13 @@ CREATE TABLE IF NOT EXISTS users (
     referral_code VARCHAR(255) UNIQUE,
     referred_by_id UUID REFERENCES users(id),
     created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-    role VARCHAR(255) NOT NULL DEFAULT 'ROLE_USER'
+    role VARCHAR(255) NOT NULL DEFAULT 'ROLE_USER',
+    dob VARCHAR(255),
+    phone VARCHAR(255),
+    hair_type VARCHAR(255),
+    hair_length VARCHAR(255),
+    hair_scalp VARCHAR(255),
+    avatar TEXT
 );
 
 CREATE TABLE IF NOT EXISTS point_transactions (
