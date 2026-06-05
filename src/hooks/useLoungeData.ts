@@ -42,24 +42,32 @@ export function useLoungeData(userId: string) {
     void i18n.changeLanguage(newLang);
   };
 
+  const fetchProfile = async () => {
+    try {
+      const profileData = await api.get<any>(`/loyalty/profile/${userId}`);
+      setProfile({
+        userId: profileData.id,
+        email: profileData.email,
+        fullName: profileData.fullName || '',
+        pointsBalance: profileData.currentPoints,
+        currentTier: profileData.tier ? profileData.tier.name : 'Rookie',
+        dob: profileData.dob || '1990-01-01',
+        phone: profileData.phone || '',
+        hairType: profileData.hairType || 'straight',
+        hairLength: profileData.hairLength || 'short',
+        hairScalp: profileData.hairScalp || 'normal',
+        avatar: profileData.avatar || null
+      });
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const profileData = await api.get<any>(`/loyalty/profile/${userId}`);
-        setProfile({
-          userId: profileData.id,
-          email: profileData.email,
-          fullName: profileData.fullName || '',
-          pointsBalance: profileData.currentPoints,
-          currentTier: profileData.tier ? profileData.tier.name : 'Rookie',
-          dob: profileData.dob || '1990-01-01',
-          phone: profileData.phone || '',
-          hairType: profileData.hairType || 'straight',
-          hairLength: profileData.hairLength || 'short',
-          hairScalp: profileData.hairScalp || 'normal',
-          avatar: profileData.avatar || null
-        });
+        await fetchProfile();
 
         const [rewardsData, activitiesData] = await Promise.all([
           api.get<Reward[]>('/rewards'),
@@ -134,5 +142,6 @@ export function useLoungeData(userId: string) {
     setIsMenuOpen,
     toggleLanguage,
     handleRedeem,
+    refreshProfile: fetchProfile
   };
 }

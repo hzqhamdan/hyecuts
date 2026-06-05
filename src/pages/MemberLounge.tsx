@@ -45,6 +45,7 @@ const MemberLounge = () => {
     setIsMenuOpen,
     toggleLanguage,
     handleRedeem,
+    refreshProfile
   } = useLoungeData(USER_ID);
 
   return (
@@ -123,6 +124,7 @@ const MemberLounge = () => {
       <UserProfileModal
         isOpen={showSettingsModal}
         onClose={() => setShowSettingsModal(false)}
+        onProfileUpdate={refreshProfile}
         onExportData={() => {
           if(profile) {
             const fullExport = {

@@ -12,11 +12,12 @@ interface UserProfileModalProps {
   onExportData: () => void;
   onDeleteAccount: () => void;
   profile?: LoyaltyProfile | null;
+  onProfileUpdate?: () => void;
 }
 
 type TabType = 'general' | 'hair' | 'security';
 
-export default function UserProfileModal({ isOpen, onClose, onExportData, onDeleteAccount, profile }: UserProfileModalProps) {
+export default function UserProfileModal({ isOpen, onClose, onExportData, onDeleteAccount, profile, onProfileUpdate }: UserProfileModalProps) {
   const { t } = useTranslation();
   const { user, token } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>('general');
@@ -92,6 +93,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
         token: token ?? undefined
       });
       setIsSaved(true);
+      onProfileUpdate?.();
       setTimeout(() => setIsSaved(false), 2000);
     } catch (error: unknown) {
       console.error("Error updating profile", error);
