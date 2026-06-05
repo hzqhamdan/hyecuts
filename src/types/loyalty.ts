@@ -34,6 +34,11 @@ export interface LoyaltyProfile {
   avatar: string | null;
 }
 
+export interface Reward {
+  id: number;
+  title: string;
+  description: string;
+  type: string;
   pointsCost: number;
   minimumTierRequired: string;
   stockAvailable: number | null;
@@ -75,12 +80,6 @@ export interface UserMissionProgress {
   missionId: number;
   currentProgress: number;
   completed: boolean;
-}
-
-export interface LoyaltyProfile {
-  userId: string;
-  pointsBalance: number;
-  currentTier: string;
 }
 
 export interface Booking {
