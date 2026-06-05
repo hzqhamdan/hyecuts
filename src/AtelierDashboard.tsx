@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useAuth } from './context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import {
@@ -12,29 +11,13 @@ import {
   MessageSquareQuote,
   Shield
 } from 'lucide-react';
+import { useNavigate, Outlet, useLocation, NavLink } from 'react-router-dom';
 
-// Tab Views
-import { BookingsManager } from './components/atelier/BookingsManager';
-import { LoyaltyConfigurator } from './components/atelier/LoyaltyConfigurator';
-import { OverviewView } from './components/atelier/OverviewView';
-import { MemberManager } from './components/atelier/MemberManager';
-import { StaffManager } from './components/atelier/StaffManager';
-import { ReviewQueue } from './components/atelier/ReviewQueue';
-
-type View = 'booking-manager' | 'member-manager' | 'staff-manager' | 'loyalty-configurator' | 'analytics' | 'reviews';
-
-interface AtelierDashboardProps {
-  setView?: (view: string) => void;
-}
-
-export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
+export default function AtelierDashboard() {
   const { t, i18n } = useTranslation();
-  const { logout, token, user } = useAuth();
-  const [currentView, setCurrentView] = useState<View>('booking-manager');
-
-  const handleNav = (view: View) => {
-    setCurrentView(view);
-  };
+  const { logout, user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const springTransition = {
     type: "spring" as const,
@@ -52,7 +35,7 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
       <aside className="w-full md:w-72 border-b md:border-r border-zinc-100 dark:border-zinc-800 flex flex-col h-auto md:h-screen md:sticky top-0 bg-white dark:bg-[#1A1A1A] z-20 transition-colors">
         <div className="p-6 sm:p-10 mb-2 md:mb-8">
           <button 
-            onClick={() => { if (setView) setView('facade'); }}
+            onClick={() => { navigate('/'); }}
             className="text-left hover:opacity-70 transition-opacity focus:outline-none group"
           >
             <h1 className="font-serif text-2xl sm:text-3xl tracking-tighter font-light uppercase italic group-hover:tracking-normal transition-all duration-500">
@@ -63,52 +46,136 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
 
         <nav className="flex flex-row md:flex-col overflow-x-auto md:overflow-x-visible px-4 md:px-6 space-y-0 md:space-y-2 pb-4 md:pb-0 scrollbar-hide">
           {isStaff && (
-            <NavItem
-              active={currentView === 'booking-manager'}
-              onClick={() => { handleNav('booking-manager'); }}
-              icon={<CalendarDays size={18} />}
-              label={t('atelier.nav.booking_manager')}
-            />
+            <NavLink
+              to="/admin/bookings"
+              className={({ isActive }) =>
+                `flex items-center justify-between px-4 py-3 transition-all duration-300 group whitespace-nowrap ${
+                  isActive
+                    ? 'bg-black dark:bg-white text-white dark:text-black'
+                    : 'text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <CalendarDays size={18} />
+                    <span className="text-[10px] sm:text-xs font-bold tracking-widest uppercase">{t('atelier.nav.booking_manager')}</span>
+                  </div>
+                  {isActive && <motion.div layoutId="nav-indicator" className="w-1.5 h-1.5 bg-white dark:bg-black rounded-full ml-3 md:ml-0" />}
+                </>
+              )}
+            </NavLink>
           )}
           {isStaff && (
-            <NavItem
-              active={currentView === 'member-manager'}
-              onClick={() => { handleNav('member-manager'); }}
-              icon={<Users size={18} />}
-              label={t('atelier.nav.member_manager')}
-            />
+            <NavLink
+              to="/admin/members"
+              className={({ isActive }) =>
+                `flex items-center justify-between px-4 py-3 transition-all duration-300 group whitespace-nowrap ${
+                  isActive
+                    ? 'bg-black dark:bg-white text-white dark:text-black'
+                    : 'text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <Users size={18} />
+                    <span className="text-[10px] sm:text-xs font-bold tracking-widest uppercase">{t('atelier.nav.member_manager')}</span>
+                  </div>
+                  {isActive && <motion.div layoutId="nav-indicator" className="w-1.5 h-1.5 bg-white dark:bg-black rounded-full ml-3 md:ml-0" />}
+                </>
+              )}
+            </NavLink>
           )}
           {isMasterBarber && (
-            <NavItem
-              active={currentView === 'staff-manager'}
-              onClick={() => { handleNav('staff-manager'); }}
-              icon={<Shield size={18} />}
-              label={t('atelier.nav.staff_manager', { defaultValue: 'Staff Roster' })}
-            />
+            <NavLink
+              to="/admin/staff"
+              className={({ isActive }) =>
+                `flex items-center justify-between px-4 py-3 transition-all duration-300 group whitespace-nowrap ${
+                  isActive
+                    ? 'bg-black dark:bg-white text-white dark:text-black'
+                    : 'text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <Shield size={18} />
+                    <span className="text-[10px] sm:text-xs font-bold tracking-widest uppercase">{t('atelier.nav.staff_manager', { defaultValue: 'Staff Roster' })}</span>
+                  </div>
+                  {isActive && <motion.div layoutId="nav-indicator" className="w-1.5 h-1.5 bg-white dark:bg-black rounded-full ml-3 md:ml-0" />}
+                </>
+              )}
+            </NavLink>
           )}
           {isMasterBarber && (
-            <NavItem
-              active={currentView === 'reviews'}
-              onClick={() => { handleNav('reviews'); }}
-              icon={<MessageSquareQuote size={18} />}
-              label={t('atelier.nav.reviews', { defaultValue: 'Review Queue' })}
-            />
+            <NavLink
+              to="/admin/reviews"
+              className={({ isActive }) =>
+                `flex items-center justify-between px-4 py-3 transition-all duration-300 group whitespace-nowrap ${
+                  isActive
+                    ? 'bg-black dark:bg-white text-white dark:text-black'
+                    : 'text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <MessageSquareQuote size={18} />
+                    <span className="text-[10px] sm:text-xs font-bold tracking-widest uppercase">{t('atelier.nav.reviews', { defaultValue: 'Review Queue' })}</span>
+                  </div>
+                  {isActive && <motion.div layoutId="nav-indicator" className="w-1.5 h-1.5 bg-white dark:bg-black rounded-full ml-3 md:ml-0" />}
+                </>
+              )}
+            </NavLink>
           )}
           {isOwner && (
-            <NavItem
-              active={currentView === 'loyalty-configurator'}
-              onClick={() => { handleNav('loyalty-configurator'); }}
-              icon={<SlidersHorizontal size={18} />}
-              label={t('atelier.nav.loyalty_config')}
-            />
+            <NavLink
+              to="/admin/loyalty"
+              className={({ isActive }) =>
+                `flex items-center justify-between px-4 py-3 transition-all duration-300 group whitespace-nowrap ${
+                  isActive
+                    ? 'bg-black dark:bg-white text-white dark:text-black'
+                    : 'text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <SlidersHorizontal size={18} />
+                    <span className="text-[10px] sm:text-xs font-bold tracking-widest uppercase">{t('atelier.nav.loyalty_config')}</span>
+                  </div>
+                  {isActive && <motion.div layoutId="nav-indicator" className="w-1.5 h-1.5 bg-white dark:bg-black rounded-full ml-3 md:ml-0" />}
+                </>
+              )}
+            </NavLink>
           )}
           {isOwner && (
-            <NavItem
-              active={currentView === 'analytics'}
-              onClick={() => { handleNav('analytics'); }}
-              icon={<BarChart3 size={18} />}
-              label={t('atelier.nav.analytics')}
-            />
+            <NavLink
+              to="/admin/analytics"
+              className={({ isActive }) =>
+                `flex items-center justify-between px-4 py-3 transition-all duration-300 group whitespace-nowrap ${
+                  isActive
+                    ? 'bg-black dark:bg-white text-white dark:text-black'
+                    : 'text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <BarChart3 size={18} />
+                    <span className="text-[10px] sm:text-xs font-bold tracking-widest uppercase">{t('atelier.nav.analytics')}</span>
+                  </div>
+                  {isActive && <motion.div layoutId="nav-indicator" className="w-1.5 h-1.5 bg-white dark:bg-black rounded-full ml-3 md:ml-0" />}
+                </>
+              )}
+            </NavLink>
           )}
         </nav>
 
@@ -142,7 +209,7 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
             <button
               onClick={() => {
                 logout();
-                if (setView) setView('facade');
+                navigate('/');
               }}
               className="w-full py-3 border border-black dark:border-white text-[10px] uppercase tracking-widest font-bold hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all text-center"
             >
@@ -166,7 +233,7 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
             <ShieldCheck size={12} /> {user?.role === 'owner' ? 'Owner' : 'Staff'}
           </div>
           <button 
-            onClick={() => { logout(); if (setView) setView('facade'); }}
+            onClick={() => { logout(); navigate('/'); }}
             className="text-[10px] uppercase tracking-widest text-red-500 font-bold"
           >
             {t('nav.logout')}
@@ -176,43 +243,18 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
 
       {/* MAIN CONTENT AREA */}
       <main className="flex-1 overflow-y-auto px-4 sm:px-6 md:px-12 py-8 md:py-16 relative">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentView}
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -15 }}
-            transition={springTransition}
-            className="max-w-6xl mx-auto"
-          >
-              {currentView === 'booking-manager' && isStaff && <BookingsManager token={token ?? ''} />}
-              {currentView === 'member-manager' && isStaff && <MemberManager token={token ?? ''} />}
-              {currentView === 'staff-manager' && isMasterBarber && <StaffManager token={token ?? ''} />}
-              {currentView === 'reviews' && isMasterBarber && <ReviewQueue token={token ?? ''} />}
-              {currentView === 'loyalty-configurator' && isOwner && <LoyaltyConfigurator />}
-              {currentView === 'analytics' && isOwner && <OverviewView />}
-          </motion.div>
-        </AnimatePresence>
+        <motion.div
+          key={location.pathname}
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -15 }}
+          transition={springTransition}
+          className="max-w-6xl mx-auto"
+        >
+          <Outlet />
+        </motion.div>
       </main>
     </div>
   );
 }
 
-function NavItem({ active, onClick, icon, label }: { active: boolean, onClick: () => void, icon: React.ReactNode, label: string }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`flex items-center justify-between px-4 py-3 transition-all duration-300 group whitespace-nowrap ${
-        active
-        ? 'bg-black dark:bg-white text-white dark:text-black'
-        : 'text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900'
-      }`}
-    >
-      <div className="flex items-center gap-3 sm:gap-4">
-        <span className={`transition-colors ${active ? 'text-white dark:text-black' : 'group-hover:text-black dark:group-hover:text-white'}`}>{icon}</span>
-        <span className="text-[10px] sm:text-xs font-bold tracking-widest uppercase">{label}</span>
-      </div>
-      {active && <motion.div layoutId="nav-indicator" className="w-1.5 h-1.5 bg-white dark:bg-black rounded-full ml-3 md:ml-0" />}
-    </button>
-  );
-}

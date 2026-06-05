@@ -5,9 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '../../api/client';
 import type { User } from '../../types/loyalty';
+import { useAuth } from '../../context/AuthContext';
 
-export function MemberManager({ token }: { token: string }) {
+export function MemberManager() {
   const { t } = useTranslation();
+  const { token } = useAuth();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMember, setSelectedMember] = useState<User | null>(null);

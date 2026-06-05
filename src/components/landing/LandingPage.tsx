@@ -5,12 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { BOOKING_POLICIES, BUSINESS_HOURS, HYECUTS, SERVICE_CATEGORIES, TEAM_MEMBERS } from '../../data/hyecuts';
 import { useBookingStore } from '../../store/useBookingStore';
+import { useNavigate } from 'react-router-dom';
 
-interface LandingPageProps {
-  setView: (view: string) => void;
-}
-
-const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
+const LandingPage = () => {
+  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { token, user: _user } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -58,7 +56,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
           animate={{ opacity: 1, x: 0 }}
           onClick={() => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            setView('facade');
+            navigate('/');
           }}
           className="font-serif text-xl tracking-tighter uppercase font-light italic hover:opacity-70 transition-opacity focus:outline-none"
         >
@@ -83,7 +81,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
             ))}
             {!token && (
               <motion.button
-                onClick={() => { setView('lounge'); }}
+                onClick={() => { navigate('/lounge'); }}
                 whileTap={navTap}
                 transition={navTapTransition}
                 className="hover:text-zinc-400 dark:hover:text-zinc-500 transition-colors duration-300 uppercase"
@@ -104,7 +102,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
 
           <div className="flex items-center gap-4">
             <motion.button
-              onClick={() => { setView('booking'); }}
+              onClick={() => { navigate('/booking'); }}
               whileTap={navTap}
               transition={navTapTransition}
               className="hidden md:block px-6 py-2 text-[10px] uppercase tracking-widest border border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all duration-500 font-bold active:scale-95"
@@ -148,7 +146,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
               <motion.button
                 onClick={() => {
                   setIsMenuOpen(false);
-                  setView('lounge');
+                  navigate('/lounge');
                 }}
                 whileTap={navTap}
                 transition={navTapTransition}
@@ -171,7 +169,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
             <motion.button
               onClick={() => {
                 setIsMenuOpen(false);
-                setView('booking');
+                navigate('/booking');
               }}
               whileTap={navTap}
               transition={navTapTransition}
@@ -196,14 +194,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
             </motion.p>
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-6 sm:px-0">
               <button
-                onClick={() => { setView('booking'); }}
+                onClick={() => { navigate('/booking'); }}
                 className="group relative px-10 py-5 bg-black dark:bg-white text-white dark:text-black overflow-hidden transition-all duration-500 hover:bg-zinc-800 dark:hover:bg-zinc-800 hover:text-white dark:hover:text-white"
               >
                 <span className="relative z-10 text-[10px] md:text-xs uppercase tracking-[0.2em] font-bold">{t('hero.cta_primary')}</span>
                 <ArrowRight className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-[-10px] group-hover:translate-x-0" size={16} />
               </button>
               <button
-                onClick={() => { setView('lounge'); }}
+                onClick={() => { navigate('/lounge'); }}
                 className="px-10 py-5 text-[10px] md:text-xs uppercase tracking-[0.2em] font-bold border border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all duration-500"
               >
                 {t('hero.cta_secondary')}
@@ -288,7 +286,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
                                         <button
                                           onClick={(e) => {
                                             e.stopPropagation();
-                                            setView('booking');
+                                            navigate('/booking');
                                           }}
                                           className="w-full py-3 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-800 hover:text-white dark:hover:text-white transition-colors flex items-center justify-center gap-2"
                                         >
@@ -339,7 +337,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
               ))}
             </div>
             <button
-              onClick={() => { setView('booking'); }}
+              onClick={() => { navigate('/booking'); }}
               className="mt-8 px-8 py-3 border border-black dark:border-white text-[10px] uppercase tracking-widest font-bold hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black transition-all"
             >
               {t('landing.reserve_slot')}
@@ -408,7 +406,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
               </div>
             </div>
             <button
-              onClick={() => { setView('booking'); }}
+              onClick={() => { navigate('/booking'); }}
               className="mt-12 px-8 py-5 bg-black dark:bg-white text-white dark:text-black text-[10px] md:text-xs uppercase tracking-[0.2em] font-bold hover:bg-zinc-800 dark:hover:bg-zinc-800 hover:text-white dark:hover:text-white transition-all duration-500"
             >
               {t('landing.book_now')}
@@ -422,7 +420,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
           <button 
             onClick={() => {
               window.scrollTo({ top: 0, behavior: 'smooth' });
-              setView('facade');
+              navigate('/');
             }}
             className="font-serif text-4xl font-light tracking-tighter italic hover:opacity-70 transition-opacity focus:outline-none"
           >

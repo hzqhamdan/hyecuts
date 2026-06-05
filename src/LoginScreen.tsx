@@ -4,8 +4,10 @@ import { useAuth } from './context/AuthContext';
 import { ArrowLeft, ShieldCheck, Globe } from 'lucide-react';
 import { api } from './api/client';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
-export default function LoginScreen({ setView }: { setView: (view: string) => void }) {
+export default function LoginScreen() {
+  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const [username, setUsername] = useState('');
 
@@ -34,9 +36,9 @@ export default function LoginScreen({ setView }: { setView: (view: string) => vo
         });
         login(data.token, data.userId, data.role, username);
         if (data.role === 'ROLE_ADMIN') {
-          setView('atelier');
+          navigate('/admin');
         } else {
-          setView('lounge');
+          navigate('/lounge');
         }
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Authentication failed';
@@ -55,7 +57,7 @@ export default function LoginScreen({ setView }: { setView: (view: string) => vo
     >
       <div className="absolute top-8 sm:top-12 left-6 sm:left-12 flex items-center gap-3">
         <button 
-          onClick={() => { setView('facade'); }}
+          onClick={() => { navigate('/'); }}
           className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-bold"
         >
           <ArrowLeft className="w-3 h-3" /> {t('nav.return_facade')}

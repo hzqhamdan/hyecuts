@@ -12,7 +12,7 @@ interface StaffProfile {
   isActive: boolean;
 }
 
-export function StaffManager({ token: _token }: { token: string }) {
+export function StaffManager() {
   const { t } = useTranslation();
   
   // Initial state derived from seeder data for prototype

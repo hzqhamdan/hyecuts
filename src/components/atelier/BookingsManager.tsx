@@ -2,11 +2,13 @@ import { User, Clock, Calendar, CheckCircle2 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Booking } from '../../types/loyalty';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
 
 import { api } from '../../api/client';
 
-export function BookingsManager({ token }: { token: string }) {
+export function BookingsManager() {
   const { t } = useTranslation();
+  const { token } = useAuth();
   const queryClient = useQueryClient();
 
   const { data: bookings = [], isLoading } = useQuery<Booking[]>({

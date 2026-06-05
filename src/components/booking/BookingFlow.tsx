@@ -7,6 +7,7 @@ import { api } from '../../api/client';
 import { useBookingStore } from '../../store/useBookingStore';
 import { useTranslation } from 'react-i18next';
 import { PaymentStep } from './PaymentStep';
+import { useNavigate } from 'react-router-dom';
 
 interface BookingResponse {
   id: number;
@@ -26,7 +27,8 @@ const DATES = BUSINESS_HOURS.map((slot, index) => ({
 
 const TIMES = ['12:00 PM', '2:30 PM', '4:00 PM', '6:00 PM', '8:00 PM'];
 
-export default function BookingFlow({ setView }: { setView: (view: string) => void }) {
+export default function BookingFlow() {
+  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { token, user } = useAuth();
   
@@ -133,9 +135,9 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
         <div className="flex justify-between items-center w-full sm:w-auto sm:justify-self-start order-2 sm:order-1">
           <button
               onClick={() => {
-                if (step === 0) setView('facade');
+                if (step === 0) navigate('/');
                 else if (step === 1 && !token) setStep(0);
-                else if (step === 1 || step === 6) setView(token ? 'lounge' : 'facade');
+                else if (step === 1 || step === 6) navigate(token ? '/lounge' : '/');
                 else prevStep();
               }}
               className="flex items-center gap-2 sm:gap-3 text-[10px] uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-bold"
@@ -188,7 +190,7 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 w-full max-w-2xl px-4 sm:px-0">
                   <button
-                    onClick={() => { setView('login'); }}
+                    onClick={() => { navigate('/login'); }}
                     className="p-6 md:p-8 border border-black dark:border-white bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-900 dark:hover:bg-zinc-800 hover:text-white dark:hover:text-white transition-all flex flex-col items-center text-center group active:scale-[0.98]"
                   >
                     <UserCircle className="w-8 h-8 mb-4 opacity-80 group-hover:opacity-100 transition-opacity" />
@@ -458,14 +460,14 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
                 <div className="flex flex-col gap-4">
                   {token && (
                     <button
-                      onClick={() => { setView('my-bookings'); }}
+                      onClick={() => { navigate('/my-bookings'); }}
                       className="w-full py-5 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors"
                     >
                       {t('booking.view_appointments')}
                     </button>
                   )}
                   <button
-                    onClick={() => { setView(token ? 'lounge' : 'facade'); }}
+                    onClick={() => { navigate(token ? '/lounge' : '/'); }}
                     className="w-full py-5 border border-black dark:border-white text-black dark:text-white text-[10px] uppercase tracking-widest font-bold hover:bg-neutral-50 dark:hover:bg-zinc-900 transition-colors"
                   >
                     {token ? t('nav.return_lounge') : t('nav.return_home')}

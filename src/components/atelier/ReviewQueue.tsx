@@ -15,7 +15,7 @@ interface Review {
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
 }
 
-export function ReviewQueue({ token: _token }: { token: string }) {
+export function ReviewQueue() {
   const { t } = useTranslation();
   
   // Mock data for prototype

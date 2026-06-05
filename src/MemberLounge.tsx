@@ -4,6 +4,7 @@ import { ArrowLeft, Award, Sparkles, ChevronRight, Activity, Target, Globe, Bell
 import { useAuth } from './context/AuthContext';
 import { api } from './api/client';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 import UserProfileModal from './components/profile/UserProfileModal';
 
@@ -61,7 +62,8 @@ interface UserMissionProgress {
   completed: boolean;
 }
 
-const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
+const MemberLounge = () => {
+  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { user, token, logout } = useAuth();
   
@@ -181,7 +183,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
       {/* Navigation Header */}
       <nav className="max-w-7xl mx-auto mb-16 md:mb-24 flex flex-col gap-6 md:flex-row md:justify-between md:items-center">
         <div className="flex justify-between items-center w-full md:w-auto">
-          <button onClick={() => { setView('facade'); }}
+          <button onClick={() => { navigate('/'); }}
             className="flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors"
           >
             <ArrowLeft className="w-3 h-3" /> {t('nav.return_facade')}
@@ -205,13 +207,13 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
 
         <div className="hidden md:flex flex-wrap items-center gap-x-6 gap-y-4 md:gap-8">
           <button
-            onClick={() => { setView('booking'); }}
+            onClick={() => { navigate('/booking'); }}
             className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-bold"
           >
             {t('nav.book')}
           </button>
           <button
-            onClick={() => { setView('my-bookings'); }}
+            onClick={() => { navigate('/my-bookings'); }}
             className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-bold"
           >
             {t('nav.appointments')}
@@ -270,7 +272,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
           <button
             onClick={() => {
               logout();
-              setView('facade');
+              navigate('/');
             }}
             className="text-[10px] uppercase tracking-widest text-red-400 dark:text-red-500 hover:text-red-600 transition-colors font-bold"
           >
@@ -296,13 +298,13 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
             className="fixed inset-0 z-40 bg-white dark:bg-[#1A1A1A] pt-32 px-10 flex flex-col gap-8 text-center md:hidden transition-colors"
           >
             <button
-              onClick={() => { setIsMenuOpen(false); setView('booking'); }}
+              onClick={() => { setIsMenuOpen(false); navigate('/booking'); }}
               className="text-4xl font-serif italic tracking-tight capitalize"
             >
               {t('nav.book')}
             </button>
             <button
-              onClick={() => { setIsMenuOpen(false); setView('my-bookings'); }}
+              onClick={() => { setIsMenuOpen(false); navigate('/my-bookings'); }}
               className="text-4xl font-serif italic tracking-tight capitalize"
             >
               {t('nav.appointments')}
@@ -326,7 +328,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
               onClick={() => {
                 setIsMenuOpen(false);
                 logout();
-                setView('facade');
+                navigate('/');
               }}
               className="mt-4 text-2xl font-serif italic tracking-tight capitalize text-red-500"
             >
@@ -660,7 +662,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
               await api.del(`/admin/users/${user?.id}`, { token: token ?? undefined });
               alert(t('lounge.delete_submitted'));
               logout();
-              setView('facade');
+              navigate('/');
             } catch (error) {
               console.error('Failed to delete account', error);
             }

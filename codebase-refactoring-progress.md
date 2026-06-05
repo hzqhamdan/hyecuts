@@ -30,7 +30,7 @@ All refactoring decisions should be evaluated through these 12 principles (see `
 
 ### Moderate
 
-- [ ] **No React Router** — View management is string-based (`view` state in `sessionStorage`). No URL bookmarks, no browser back/forward, no deep-linking. Violates Principle 3 (Design for Growth) and Principle 11 (Make Change Easy).
+- [x] **No React Router** — Resolved in Phase 3. React Router v7 with URL routes for all views, nested admin routes, deep-linking, browser nav support.
 - [ ] **`any` type usage** — Multiple places use `as any` type assertions (translation keys, service lookups) that bypass TypeScript safety. Violates Principle 5 (Optimize for Maintainability).
 - [x] **Console.log in production** — Resolved in Phase 1. Removed debug logs from `config.ts`, `LoginScreen.tsx`, `AtelierDashboard.tsx`; backend `System.out.println` replaced with SLF4J.
 - [x] **Dead dependency: Firebase** — Resolved in Phase 1. Removed from `package.json`.
@@ -61,10 +61,16 @@ All refactoring decisions should be evaluated through these 12 principles (see `
 - [x] Full type safety via generics on all API calls (no more `as Promise<T>` casts)
 - [x] Consistent error handling — `ApiError` with status + message thrown on non-ok responses
 
-### Phase 3: Routing & Navigation
-- [ ] Evaluate and adopt React Router for proper URL-based navigation
-- [ ] Replace string-based `view` state with route definitions
-- [ ] Enable deep-linking and browser back/forward support
+### Phase 3: Routing & Navigation ✅
+- [x] Installed `react-router-dom` v7.17.0
+- [x] Created guard components: `ProtectedRoute` (auth check → /login), `AdminRoute` (role check → /lounge)
+- [x] Rewrote `App.tsx` — replaced `useState<ViewState>` + `sessionStorage` with `<BrowserRouter>`, `<Routes>`, nested routes
+- [x] Updated `AtelierDashboard` — replaced `currentView` state + conditional rendering with `<NavLink>` sidebar + `<Outlet />`
+- [x] Migrated all `setView()` calls to `useNavigate()` across 5 components (LoginScreen, MemberLounge, LandingPage, BookingFlow, UserBookings)
+- [x] Updated admin sub-components (BookingsManager, MemberManager, StaffManager, ReviewQueue) to use `useAuth()` instead of `token` prop
+- [x] Route map: `/` (public), `/login`, `/booking`, `/my-bookings` (auth), `/lounge` (auth), `/admin/*` (admin with 6 nested routes)
+- [x] Preserved framer-motion page transitions via `<AnimatePresence>` keyed on `location.key`
+- [x] Verification: TypeScript ✅, Tests ✅ (12/12), no remaining `setView` references
 
 ### Phase 4: Component Decomposition
 - [ ] Break down `MemberLounge.tsx` into focused sub-components

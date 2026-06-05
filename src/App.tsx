@@ -1,15 +1,22 @@
 import { useEffect, useState, lazy, Suspense } from 'react';
-import { useAuth } from './context/AuthContext';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Moon, Sun } from 'lucide-react';
+import ProtectedRoute from './components/guards/ProtectedRoute';
+import AdminRoute from './components/guards/AdminRoute';
 
-// Lazy load components
 const LandingPage = lazy(() => import('./components/landing/LandingPage'));
 const MemberLounge = lazy(() => import('./MemberLounge'));
 const AtelierDashboard = lazy(() => import('./AtelierDashboard'));
 const LoginScreen = lazy(() => import('./LoginScreen'));
 const BookingFlow = lazy(() => import('./components/booking/BookingFlow'));
 const UserBookings = lazy(() => import('./components/booking/UserBookings'));
+const BookingsManager = lazy(() => import('./components/atelier/BookingsManager'));
+const MemberManager = lazy(() => import('./components/atelier/MemberManager'));
+const StaffManager = lazy(() => import('./components/atelier/StaffManager'));
+const ReviewQueue = lazy(() => import('./components/atelier/ReviewQueue'));
+const LoyaltyConfigurator = lazy(() => import('./components/atelier/LoyaltyConfigurator'));
+const OverviewView = lazy(() => import('./components/atelier/OverviewView'));
 
 const THEME_STORAGE_KEY = 'hyecuts-theme-v2';
 
@@ -25,19 +32,55 @@ const LoadingView = () => (
   </div>
 );
 
-type ViewState = 'facade' | 'login' | 'booking' | 'my-bookings' | 'lounge' | 'admin';
+function AnimatedRoutes() {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <Suspense fallback={<LoadingView />}>
+        <Routes location={location} key={location.key}>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginScreen />} />
+          <Route path="/booking" element={<BookingFlow />} />
+          <Route
+            path="/my-bookings"
+            element={
+              <ProtectedRoute>
+                <UserBookings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/lounge"
+            element={
+              <ProtectedRoute>
+                <MemberLounge />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AtelierDashboard />
+              </AdminRoute>
+            }
+          >
+            <Route index element={<Navigate to="/admin/bookings" replace />} />
+            <Route path="bookings" element={<BookingsManager />} />
+            <Route path="members" element={<MemberManager />} />
+            <Route path="staff" element={<StaffManager />} />
+            <Route path="reviews" element={<ReviewQueue />} />
+            <Route path="loyalty" element={<LoyaltyConfigurator />} />
+            <Route path="analytics" element={<OverviewView />} />
+          </Route>
+        </Routes>
+      </Suspense>
+    </AnimatePresence>
+  );
+}
 
 function App() {
-  const [view, setView] = useState<ViewState>(() => {
-    const savedView = sessionStorage.getItem('hc_view');
-    return (savedView as ViewState) || 'facade';
-  });
-  const { token, user } = useAuth();
-  
-  useEffect(() => {
-    sessionStorage.setItem('hc_view', view);
-  }, [view]);
-
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
     return savedTheme === 'dark';
@@ -48,19 +91,8 @@ function App() {
     window.localStorage.setItem(THEME_STORAGE_KEY, isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
 
-  const handleSetView = (newView: string) => {
-    setView(newView as ViewState);
-  };
-
-  // Auto-route admin users if they land on lounge
-  useEffect(() => {
-    if (token && user?.role === 'ROLE_ADMIN' && view === 'lounge') {
-      setView('admin');
-    }
-  }, [token, user, view]);
-
   return (
-    <>
+    <BrowserRouter>
       <motion.button
         type="button"
         onClick={() => { setIsDarkMode((prev) => !prev); }}
@@ -83,25 +115,8 @@ function App() {
           </motion.div>
         </AnimatePresence>
       </motion.button>
-
-      <AnimatePresence mode="wait">
-        <Suspense fallback={<LoadingView />}>
-          {view === 'facade' ? (
-            <LandingPage key="facade" setView={handleSetView} />
-          ) : view === 'login' ? (
-            <LoginScreen key="login" setView={handleSetView} />
-          ) : view === 'booking' ? (
-            <BookingFlow key="booking" setView={handleSetView} />
-          ) : view === 'my-bookings' ? (
-            token ? <UserBookings key="my-bookings" setView={handleSetView} /> : <LoginScreen key="login" setView={handleSetView} />
-          ) : view === 'lounge' ? (
-            token ? <MemberLounge key="lounge" setView={handleSetView} /> : <LoginScreen key="login" setView={handleSetView} />
-          ) : (
-            token ? <AtelierDashboard key="admin" setView={handleSetView} /> : <LoginScreen key="login" setView={handleSetView} />
-          )}
-        </Suspense>
-      </AnimatePresence>
-    </>
+      <AnimatedRoutes />
+    </BrowserRouter>
   );
 }
 

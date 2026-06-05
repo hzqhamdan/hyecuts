@@ -3,6 +3,7 @@ import { ArrowLeft, Calendar, Clock, Scissors, CalendarPlus, RefreshCw } from 'l
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../api/client';
+import { useNavigate } from 'react-router-dom';
 
 interface Booking {
   id: string;
@@ -16,7 +17,8 @@ interface Booking {
   };
 }
 
-export default function UserBookings({ setView }: { setView: (view: string) => void }) {
+export default function UserBookings() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const USER_ID = user?.id ?? "00000000-0000-0000-0000-000000000000";
 
@@ -36,7 +38,7 @@ export default function UserBookings({ setView }: { setView: (view: string) => v
     >
       <nav className="flex justify-between items-center max-w-5xl mx-auto mb-10 sm:mb-16">
         <button
-          onClick={() => { setView('lounge'); }}
+          onClick={() => { navigate('/lounge'); }}
           className="flex items-center gap-2 sm:gap-3 text-[10px] uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-bold"
         >
           <ArrowLeft className="w-3 h-3" /> <span className="hidden xs:inline">Return to Lounge</span><span className="xs:hidden">Lounge</span>
@@ -57,7 +59,7 @@ export default function UserBookings({ setView }: { setView: (view: string) => v
             <h2 className="font-display text-xl sm:text-2xl uppercase tracking-tighter mb-2 text-black dark:text-white">No Appointments Yet</h2>
             <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mb-8 font-light italic">You haven't made any bookings.</p>
             <button
-              onClick={() => { setView('booking'); }}
+              onClick={() => { navigate('/booking'); }}
               className="px-8 py-4 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all active:scale-[0.98]"
             >
               Book an Appointment
