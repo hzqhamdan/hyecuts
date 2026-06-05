@@ -36,6 +36,9 @@ public class LoyaltyService {
     @Transactional
     public User updateUser(UUID userId, UpdateProfileRequest req) {
         User user = getUser(userId);
+        
+        System.out.println("[DEBUG-PROFILE] Updating user ID: " + userId);
+        System.out.println("[DEBUG-PROFILE] Found user ID in DB: " + user.getId());
 
         if (req.fullName() != null) user.setFullName(req.fullName());
         
@@ -43,11 +46,19 @@ public class LoyaltyService {
             String newEmail = req.email().trim();
             String currentEmail = user.getEmail().trim();
             
+            System.out.println("[DEBUG-PROFILE] Current email: " + currentEmail);
+            System.out.println("[DEBUG-PROFILE] New email from req: " + newEmail);
+            
             if (!newEmail.equalsIgnoreCase(currentEmail)) {
                 // Check if new email is already taken by ANOTHER user
                 java.util.Optional<User> existingUser = userRepository.findByEmail(newEmail);
-                if (existingUser.isPresent() && !existingUser.get().getId().equals(userId)) {
-                    throw new RuntimeException("Email '" + newEmail + "' is already in use by another account.");
+                if (existingUser.isPresent()) {
+                    UUID existingId = existingUser.get().getId();
+                    System.out.println("[DEBUG-PROFILE] Collision! Email owned by: " + existingId);
+                    
+                    if (!existingId.equals(userId)) {
+                        throw new RuntimeException("Email '" + newEmail + "' is already in use by another account (ID: " + existingId + "). Your ID: " + userId);
+                    }
                 }
                 user.setEmail(newEmail);
             }
