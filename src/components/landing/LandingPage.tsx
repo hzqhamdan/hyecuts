@@ -4,6 +4,7 @@ import { ArrowRight, Menu, X, ChevronDown, Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { BOOKING_POLICIES, BUSINESS_HOURS, HYECUTS, SERVICE_CATEGORIES, TEAM_MEMBERS } from '../../data/hyecuts';
+import { useBookingStore } from '../../store/useBookingStore';
 
 interface LandingPageProps {
   setView: (view: string) => void;
@@ -13,8 +14,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
   const { t, i18n } = useTranslation();
   const { token, user: _user } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [openCategory, setOpenCategory] = useState<string | null>('Haircuts');
-  const [selectedService, setSelectedService] = useState<string | null>(null);
+  const { 
+    openCategory, setOpenCategory, 
+    selectedService, setSelectedService,
+    setStep 
+  } = useBookingStore();
 
   const toggleLanguage = () => {
     const newLang = i18n.language === 'en' ? 'ms' : 'en';
@@ -253,26 +257,24 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
                                 <div 
                                   key={service.name} 
                                   onClick={() => { setSelectedService(isServiceOpen ? null : service.name); }}
-                                  className={`p-4 border-4 cursor-pointer transition-all duration-300 group ${
+                                  className={`p-4 border-2 cursor-pointer transition-all duration-300 ${
                                     isServiceOpen 
-                                      ? 'border-studio-black !dark:border-studio-gold bg-neutral-50 dark:bg-studio-gold/10' 
-                                      : 'border-transparent hover:border-zinc-200 dark:hover:border-zinc-700'
+                                      ? '!border-[#B8A070] !bg-[#1A1A1A]' 
+                                      : 'border-transparent dark:border-transparent hover:border-zinc-300 dark:hover:border-zinc-700'
                                   }`}
                                 >
-                                  <div className="flex items-center justify-between gap-4">
+                                  <div className="flex justify-between items-start mb-1 gap-4">
                                     <div>
-                                      <h4 className={`text-xs md:text-sm font-bold mb-1 transition-colors ${isServiceOpen ? 'text-studio-black !dark:text-studio-gold' : 'text-studio-black dark:text-studio-white'}`}>
+                                      <h4 className={`font-serif text-base sm:text-lg uppercase tracking-tight transition-colors ${isServiceOpen ? '!text-[#B8A070]' : 'text-black dark:text-white'}`}>
                                         {t(`data.services.${service.name}` as any)}
                                       </h4>
-                                      <div className="text-[9px] md:text-[10px] uppercase tracking-widest text-zinc-500 dark:text-zinc-400 font-bold">{service.duration}</div>
                                     </div>
-                                    <div className={`font-mono text-[10px] md:text-xs px-3 py-1 transition-colors font-bold whitespace-nowrap ${
-                                      isServiceOpen 
-                                        ? 'bg-studio-black !dark:bg-studio-gold text-studio-white !dark:text-studio-black' 
-                                        : 'bg-zinc-50 dark:bg-zinc-800 text-studio-black dark:text-studio-white'
-                                    }`}>
+                                    <span className={`font-mono text-[10px] sm:text-xs whitespace-nowrap font-bold transition-colors ${isServiceOpen ? '!text-[#B8A070]' : 'text-black dark:text-white'}`}>
                                       {service.price}
-                                    </div>
+                                    </span>
+                                  </div>
+                                  <div className="flex gap-4 text-[9px] sm:text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 font-bold">
+                                    <span>{service.duration}</span>
                                   </div>
                                   
                                   <AnimatePresence>
@@ -287,6 +289,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
                                         <button
                                           onClick={(e) => {
                                             e.stopPropagation();
+                                            // Pre-set step to 1 if we're not logged in, or 2 if we are?
+                                            // Actually, let's keep it simple and just navigate.
                                             setView('booking');
                                           }}
                                           className="w-full py-3 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2"
