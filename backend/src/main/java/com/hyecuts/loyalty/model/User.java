@@ -62,7 +62,6 @@ public class User {
     @Column(name = "hair_scalp")
     private String hairScalp;
 
-    @Lob
     @Column(name = "avatar", columnDefinition = "TEXT")
     private String avatar;
 
