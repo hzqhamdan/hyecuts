@@ -23,17 +23,17 @@ All refactoring decisions should be evaluated through these 12 principles (see `
 
 ### Critical
 
-- [ ] **Exposed secrets** — `docker-compose.yml` and `application.yml` contain hardcoded JWT secrets, DB passwords, QR secrets. JWT secret `c2VjdXJlX2tleV90aGF0X211c3RfYmVfYXRfbGVhc3RfNTEyX2JpdHNfbG9uZ19mb3JfaG1hY19zaGE1MTI=` is base64-visible.
-- [ ] **`hibernate.ddl-auto: update`** in `application.yml` — Dangerous for production. Flyway should be the sole schema manager; `update` can cause unexpected schema changes.
-- [ ] **No centralized API client** — Raw `fetch()` calls scattered across components with no interceptors, error handling wrappers, or token refresh logic. Violates Principle 9 (Prefer Reuse Over Reinvention).
+- [x] **Exposed secrets** — Resolved in Phase 1. Moved to `.env`/env vars, no hardcoded defaults.
+- [x] **`hibernate.ddl-auto: update`** — Resolved in Phase 1. `application-prod.yml` overrides to `validate`.
+- [x] **No centralized API client** — Resolved in Phase 2. `src/api/client.ts` provides typed `api.get/post/put/del` methods.
 - [ ] **Monolithic page files** — `MemberLounge.tsx` (~690 lines) and `LandingPage.tsx` (~441 lines) mix data fetching, state management, modal logic, and rendering in single files. Violates Principle 5 (Optimize for Maintainability).
 
 ### Moderate
 
 - [ ] **No React Router** — View management is string-based (`view` state in `sessionStorage`). No URL bookmarks, no browser back/forward, no deep-linking. Violates Principle 3 (Design for Growth) and Principle 11 (Make Change Easy).
 - [ ] **`any` type usage** — Multiple places use `as any` type assertions (translation keys, service lookups) that bypass TypeScript safety. Violates Principle 5 (Optimize for Maintainability).
-- [ ] **Console.log in production** — `config.ts` logs credentials at module load time; several components have debug `console.log` statements. Violates Principle 6 (Anticipate Production Conditions).
-- [ ] **Dead dependency: Firebase** — `package.json` lists `firebase: ^12.12.0` but unused. Violates Principle 10 (Minimize Technical Debt).
+- [x] **Console.log in production** — Resolved in Phase 1. Removed debug logs from `config.ts`, `LoginScreen.tsx`, `AtelierDashboard.tsx`; backend `System.out.println` replaced with SLF4J.
+- [x] **Dead dependency: Firebase** — Resolved in Phase 1. Removed from `package.json`.
 - [ ] **Booking times hardcoded** — `TIMES = ['12:00 PM', '2:30 PM', '4:00 PM', '6:00 PM', '8:00 PM']` in `BookingFlow.tsx` is static, not dynamic from backend. Violates Principle 3 (Design for Growth).
 
 ### Minor
@@ -41,7 +41,7 @@ All refactoring decisions should be evaluated through these 12 principles (see `
 - [ ] **Inconsistent file organization** — `LandingPage.tsx` and `LoginScreen.tsx` are barrel re-exports from `components/`, but `MemberLounge.tsx` and `AtelierDashboard.tsx` are standalone page components in `src/` directly. Violates Principle 2 (Respect Existing Architecture).
 - [ ] **i18n keys with `as any` casts** — Translation calls like `` t(`data.services.${service.name}` as any) `` bypass static checking.
 - [ ] **Build tool noise** — `build-tech-v2.js` (1035+ lines DOCX generator) committed to the app repo.
-- [ ] **No `.env` file** — Only `.env.example` with a Stripe key placeholder. Environment variables expected at runtime with no documentation.
+- [x] **No `.env` file** — Resolved in Phase 1. `.env` created for local dev, `.env.example` documents all required vars.
 
 ---
 
@@ -55,10 +55,11 @@ All refactoring decisions should be evaluated through these 12 principles (see `
 - [x] Replace `System.out.println` with SLF4J logger in `DatabaseSeeder.java`; removed debug prints from `LoyaltyApplication.java` and `AuthController.java`
 - [x] Remove unused Firebase dependency from `package.json`
 
-### Phase 2: API Layer
-- [ ] Create centralized API client with interceptors, error handling, token refresh
-- [ ] Migrate all `fetch()` calls to use the new client
-- [ ] Add request/response type safety
+### Phase 2: API Layer ✅
+- [x] Create `src/api/client.ts` — centralized API client with `api.get/post/put/del` methods, auto-JSON parsing, typed error handling (`ApiError` class), conditional auth header injection
+- [x] Migrate all 32 raw `fetch()` calls across 13 files to use the new client
+- [x] Full type safety via generics on all API calls (no more `as Promise<T>` casts)
+- [x] Consistent error handling — `ApiError` with status + message thrown on non-ok responses
 
 ### Phase 3: Routing & Navigation
 - [ ] Evaluate and adopt React Router for proper URL-based navigation

@@ -16,8 +16,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { 
     openCategory, setOpenCategory, 
-    selectedService, setSelectedService,
-    setStep 
+    selectedService, setSelectedService
   } = useBookingStore();
 
   const toggleLanguage = () => {

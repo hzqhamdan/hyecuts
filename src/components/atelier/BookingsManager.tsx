@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Booking } from '../../types/loyalty';
 import { useTranslation } from 'react-i18next';
 
-import { API_BASE } from '../../config';
+import { api } from '../../api/client';
 
 export function BookingsManager({ token }: { token: string }) {
   const { t } = useTranslation();
@@ -11,23 +11,13 @@ export function BookingsManager({ token }: { token: string }) {
 
   const { data: bookings = [], isLoading } = useQuery<Booking[]>({
     queryKey: ['bookings', token],
-    queryFn: async () => {
-      const res = await fetch(`${API_BASE}/bookings/all`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (!res.ok) throw new Error('Failed to fetch bookings');
-      return res.json() as Promise<Booking[]>;
-    }
+    queryFn: () =>
+      api.get<Booking[]>('/bookings/all', { token })
   });
 
   const completeMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const res = await fetch(`${API_BASE}/bookings/${id}/complete`, {
-        method: 'PUT',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (!res.ok) throw new Error('Failed to complete booking');
-    },
+    mutationFn: (id: string) =>
+      api.put(`/bookings/${id}/complete`, { token }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['bookings', token] });
     }

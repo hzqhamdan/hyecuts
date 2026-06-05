@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { ShieldCheck, Loader2 } from 'lucide-react';
-import { API_BASE } from '../../config';
+import { api } from '../../api/client';
 import { useBookingStore } from '../../store/useBookingStore';
 import { useAuth } from '../../context/AuthContext';
 import { ALL_SERVICES } from '../../data/hyecuts';
@@ -90,16 +90,12 @@ export function PaymentStep({ onPaymentSuccess }: { onPaymentSuccess: () => void
   useEffect(() => {
     if (!clientSecret && !isFetching) {
       setIsFetching(true);
-      // Fetch intent from backend
-      fetch(`${API_BASE}/payments/create-intent`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      api.post<{ clientSecret: string }>('/payments/create-intent', {
+        body: {
           serviceId: service?.id || 1,
           userId: user?.id || 'guest',
-        })
+        }
       })
-      .then(res => res.json())
       .then(data => {
         setClientSecret(data.clientSecret);
       })

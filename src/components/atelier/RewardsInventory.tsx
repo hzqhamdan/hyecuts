@@ -3,7 +3,7 @@ import type { Reward } from '../../types/loyalty';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 
-import { API_BASE } from '../../config';
+import { api } from '../../api/client';
 
 export function RewardsInventory({ rewards, onRewardAdded }: { rewards: Reward[], onRewardAdded: () => void }) {
   const { t } = useTranslation();
@@ -19,18 +19,9 @@ export function RewardsInventory({ rewards, onRewardAdded }: { rewards: Reward[]
 
   const handleAddAsset = async () => {
     try {
-      const res = await fetch(`${API_BASE}/rewards`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token ?? ''}`
-        },
-        body: JSON.stringify(newReward)
-      });
-      if (res.ok) {
-        onRewardAdded();
-        setIsAdding(false);
-      }
+      await api.post('/rewards', { body: newReward, token });
+      onRewardAdded();
+      setIsAdding(false);
     } catch (err) {
       console.error(err);
     }

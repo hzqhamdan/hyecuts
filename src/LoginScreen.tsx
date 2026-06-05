@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from './context/AuthContext';
 import { ArrowLeft, ShieldCheck, Globe } from 'lucide-react';
-import { API_URL } from './config';
+import { api } from './api/client';
 import { useTranslation } from 'react-i18next';
 
 export default function LoginScreen({ setView }: { setView: (view: string) => void }) {
@@ -25,33 +25,22 @@ export default function LoginScreen({ setView }: { setView: (view: string) => vo
     setError('');
     setLoading(true);
     
-    const endpoint = isRegistering ? '/api/auth/register' : '/api/auth/login';
-    const targetUrl = `${API_URL}${endpoint}`;
-    
+    const endpoint = isRegistering ? '/auth/register' : '/auth/login';
+
     void (async () => {
       try {
-        const res = await fetch(targetUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password })
+        const data = await api.post<{ token: string; userId: string; role: string }>(endpoint, {
+          body: { username, password }
         });
-        
-        if (res.ok) {
-          const data = (await res.json()) as { token: string; userId: string; role: string };
-          login(data.token, data.userId, data.role, username);
-          // Direct users based on role
-          if (data.role === 'ROLE_ADMIN') {
-            setView('atelier');
-          } else {
-            setView('lounge');
-          }
+        login(data.token, data.userId, data.role, username);
+        if (data.role === 'ROLE_ADMIN') {
+          setView('atelier');
         } else {
-          const errText = await res.text();
-          console.error("Login failed:", errText);
-          setError(errText || 'Authentication failed');
+          setView('lounge');
         }
       } catch (err) {
-        console.error("Fetch error:", err);
+        const message = err instanceof Error ? err.message : 'Authentication failed';
+        console.error("Login failed:", message);
         setError('Network error or server unreachable');
       } finally {
         setLoading(false);

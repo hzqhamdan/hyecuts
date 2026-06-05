@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar, Clock, Scissors, CalendarPlus, RefreshCw } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../context/AuthContext';
-import { API_BASE } from '../../config';
+import { api } from '../../api/client';
 
 interface Booking {
   id: string;
@@ -22,11 +22,8 @@ export default function UserBookings({ setView }: { setView: (view: string) => v
 
   const { data: bookings = [], isLoading } = useQuery<Booking[]>({
     queryKey: ['user-bookings', USER_ID],
-    queryFn: async () => {
-      const res = await fetch(`${API_BASE}/bookings/user/${USER_ID}`);
-      if (!res.ok) throw new Error('Failed to fetch bookings');
-      return res.json() as Promise<Booking[]>;
-    },
+    queryFn: () =>
+      api.get<Booking[]>(`/bookings/user/${USER_ID}`),
     enabled: !!user?.id,
   });
 

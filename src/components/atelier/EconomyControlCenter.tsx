@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 
-import { API_BASE } from '../../config';
+import { api } from '../../api/client';
 
 interface EconomyProps {
   ratio: number;
@@ -20,16 +20,9 @@ export function EconomyControlCenter({ ratio, setRatio, multiplier, setMultiplie
 
   const handleAdjust = async () => {
     try {
-      const res = await fetch(`${API_BASE}/admin/points/adjust/${targetUser}?points=${adjustAmount.toString()}`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token ?? ''}` }
-      });
-      if (res.ok) {
-        setAdjustStatus(t('atelier.loyalty.success'));
-        setTimeout(() => { setAdjustStatus(''); }, 2000);
-      } else {
-        setAdjustStatus(t('atelier.loyalty.error'));
-      }
+      await api.post(`/admin/points/adjust/${targetUser}?points=${adjustAmount.toString()}`, { token });
+      setAdjustStatus(t('atelier.loyalty.success'));
+      setTimeout(() => { setAdjustStatus(''); }, 2000);
     } catch {
       setAdjustStatus(t('atelier.loyalty.error'));
     }

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ChevronRight, ChevronDown, Calendar, Clock, CheckCircle, ShieldCheck, UserCircle, UserPlus, Globe } from 'lucide-react';
 import { BOOKING_POLICIES, BUSINESS_HOURS, HYECUTS, ALL_SERVICES, SERVICE_CATEGORIES, TEAM_MEMBERS, type ServiceItem } from '../../data/hyecuts';
 import { useAuth } from '../../context/AuthContext';
-import { API_BASE } from '../../config';
+import { api } from '../../api/client';
 import { useBookingStore } from '../../store/useBookingStore';
 import { useTranslation } from 'react-i18next';
 import { PaymentStep } from './PaymentStep';
@@ -59,15 +59,12 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
     
     try {
       if (token && user) {
-        let serviceId = 1; // Fallback
+        let serviceId = 1;
         try {
-          const servicesRes = await fetch(`${API_BASE}/services/active`);
-          if (servicesRes.ok) {
-            const services = await servicesRes.json() as ServiceItem[];
-            const matchedService = services.find((s) => s.name === selectedService);
-            if (matchedService) {
-              serviceId = matchedService.id;
-            }
+          const services = await api.get<ServiceItem[]>('/services/active');
+          const matchedService = services.find((s) => s.name === selectedService);
+          if (matchedService) {
+            serviceId = matchedService.id;
           }
         } catch (e) {
           console.error("Error fetching services", e);
@@ -97,19 +94,15 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
           appointmentTime: localIso
         };
 
-        const res = await fetch(`${API_BASE}/bookings`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(bookingReq)
-        });
-
-        if (res.ok) {
-          const data = await res.json() as BookingResponse;
+        try {
+          const data = await api.post<BookingResponse>('/bookings', {
+            body: bookingReq
+          });
           setBookingRef(`HYC-${data.id.toString().slice(-4)}`);
-        } else {
-          const errorText = await res.text();
-          console.error("Booking failed:", res.status, errorText);
-          alert(`Booking failed: ${errorText}`);
+        } catch (e) {
+          const message = e instanceof Error ? e.message : 'Booking failed';
+          console.error("Booking failed:", message);
+          alert(`Booking failed: ${message}`);
           setBookingRef(`HYC-${Date.now().toString().slice(-4)}`);
         }
       } else {

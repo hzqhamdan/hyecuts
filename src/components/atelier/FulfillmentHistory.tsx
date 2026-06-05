@@ -4,15 +4,14 @@ import { useTranslation } from 'react-i18next';
 
 import type { ActivityLog } from '../../types/loyalty';
 
-import { API_BASE } from '../../config';
+import { api } from '../../api/client';
 
 export function FulfillmentHistory() {
   const { t } = useTranslation();
   const [logs, setLogs] = useState<ActivityLog[]>([]);
 
   useEffect(() => {
-    void fetch(`${API_BASE}/admin/activity`)
-      .then(r => r.json() as Promise<ActivityLog[]>)
+    void api.get<ActivityLog[]>('/admin/activity')
       .then(d => { setLogs(d); })
       .catch((err: unknown) => { console.error(err); });
   }, []);

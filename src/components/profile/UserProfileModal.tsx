@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, User, Scissors, ShieldAlert, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
-import { API_BASE } from '../../config';
+import { api } from '../../api/client';
 
 interface UserProfileModalProps {
   isOpen: boolean;
@@ -51,13 +51,8 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
 
   const handleSave = async () => {
     try {
-      const res = await fetch(`${API_BASE}/loyalty/profile/${user?.id}`, {
-        method: 'PUT',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` 
-        },
-        body: JSON.stringify({
+      await api.put(`/loyalty/profile/${user?.id}`, {
+        body: {
           fullName: formData.fullName,
           email: formData.email,
           dob: formData.dob,
@@ -68,15 +63,11 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
             scalp: formData.scalp
           },
           avatar: avatarPreview
-        })
+        },
+        token
       });
-      
-      if (res.ok) {
-        setIsSaved(true);
-        setTimeout(() => setIsSaved(false), 2000);
-      } else {
-        console.error("Failed to update profile");
-      }
+      setIsSaved(true);
+      setTimeout(() => setIsSaved(false), 2000);
     } catch (error) {
       console.error("Error updating profile", error);
     }

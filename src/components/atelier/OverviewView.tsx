@@ -3,7 +3,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   PieChart, Pie, BarChart, Bar 
 } from 'recharts';
-import { API_BASE } from '../../config';
+import { api } from '../../api/client';
 import type { Reward } from '../../types/loyalty';
 import { useTranslation } from 'react-i18next';
 
@@ -27,8 +27,8 @@ export function OverviewView() {
 
   useEffect(() => {
     Promise.all([
-      fetch(`${API_BASE}/rewards`).then(r => r.json() as Promise<Reward[]>),
-      fetch(`${API_BASE}/analytics/summary`).then(r => r.json() as Promise<Analytics>)
+      api.get<Reward[]>('/rewards'),
+      api.get<Analytics>('/analytics/summary')
     ])
     .then(([rewards, summary]) => {
       setStats(s => ({...s, activeRewards: rewards.length}));

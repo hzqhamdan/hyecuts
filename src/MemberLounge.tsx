@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Award, Sparkles, ChevronRight, Activity, Target, Globe, Bell, Menu, X } from 'lucide-react';
 import { useAuth } from './context/AuthContext';
-import { API_BASE } from './config';
+import { api } from './api/client';
 import { useTranslation } from 'react-i18next';
 
 import UserProfileModal from './components/profile/UserProfileModal';
@@ -100,38 +100,34 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        // Fetch Profile
-        const profileRes = await fetch(`${API_BASE}/loyalty/profile/${USER_ID}`);
-        if (profileRes.ok) {
-          const userData = (await profileRes.json()) as { id: string; currentPoints: number; tier?: { name: string } };
-          setProfile({
-            userId: userData.id,
-            pointsBalance: userData.currentPoints,
-            currentTier: userData.tier ? userData.tier.name : 'Rookie'
-          });
-        }
+        const profileData = await api.get<{ id: string; currentPoints: number; tier?: { name: string } }>(`/loyalty/profile/${USER_ID}`);
+        setProfile({
+          userId: profileData.id,
+          pointsBalance: profileData.currentPoints,
+          currentTier: profileData.tier ? profileData.tier.name : 'Rookie'
+        });
 
-        // Fetch Rewards
-        const rewardsRes = await fetch(`${API_BASE}/rewards`);
-        if (rewardsRes.ok) setRewards((await rewardsRes.json()) as Reward[]);
+        const [rewardsData, activitiesData] = await Promise.all([
+          api.get<Reward[]>('/rewards'),
+          api.get<ActivityLog[]>(`/gamification/activity/${USER_ID}`)
+        ]);
+        setRewards(rewardsData);
+        setActivities(activitiesData);
 
-        // Fetch Activity History
-        const activityRes = await fetch(`${API_BASE}/gamification/activity/${USER_ID}`);
-        if (activityRes.ok) setActivities((await activityRes.json()) as ActivityLog[]);
+        const [badgesData, userBadgesData] = await Promise.all([
+          api.get<Badge[]>('/gamification/badges'),
+          api.get<UserBadge[]>(`/gamification/badges/${USER_ID}`)
+        ]);
+        setBadges(badgesData);
+        setUserBadges(userBadgesData);
 
-        // Fetch Gamification data
-        const bRes = await fetch(`${API_BASE}/gamification/badges`);
-        if (bRes.ok) setBadges((await bRes.json()) as Badge[]);
-        
-        const ubRes = await fetch(`${API_BASE}/gamification/badges/${USER_ID}`);
-        if (ubRes.ok) setUserBadges((await ubRes.json()) as UserBadge[]);
-
-        const mDaily = (await fetch(`${API_BASE}/gamification/missions/type/DAILY`).then(r => r.ok ? r.json() : [])) as Mission[];
-        const mWeekly = (await fetch(`${API_BASE}/gamification/missions/type/WEEKLY`).then(r => r.ok ? r.json() : [])) as Mission[];
+        const [mDaily, mWeekly, umpData] = await Promise.all([
+          api.get<Mission[]>('/gamification/missions/type/DAILY'),
+          api.get<Mission[]>('/gamification/missions/type/WEEKLY'),
+          api.get<UserMissionProgress[]>(`/gamification/missions/${USER_ID}`)
+        ]);
         setMissions([...mDaily, ...mWeekly]);
-
-        const umpRes = await fetch(`${API_BASE}/gamification/missions/${USER_ID}`);
-        if (umpRes.ok) setMissionProgress((await umpRes.json()) as UserMissionProgress[]);
+        setMissionProgress(umpData);
 
       } catch (error) {
         console.error("Error fetching loyalty data:", error);
@@ -146,17 +142,10 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
   const handleRedeem = async (rewardId: number) => {
     setRedemptionStatus('loading');
     try {
-      const res = await fetch(`${API_BASE}/rewards/redeem/${USER_ID}/${rewardId.toString()}`, {
-        method: 'POST'
-      });
-      if (res.ok) {
-        setRedemptionStatus('success');
-        // Refresh profile to show deducted points
-        const profileRes = await fetch(`${API_BASE}/loyalty/profile/${USER_ID}`);
-        if (profileRes.ok) setProfile((await profileRes.json()) as LoyaltyProfile);
-      } else {
-        setRedemptionStatus('error');
-      }
+      await api.post(`/rewards/redeem/${USER_ID}/${rewardId.toString()}`);
+      setRedemptionStatus('success');
+      const profileData = await api.get<LoyaltyProfile>(`/loyalty/profile/${USER_ID}`);
+      setProfile(profileData);
     } catch {
       setRedemptionStatus('error');
     }
@@ -668,11 +657,7 @@ const MemberLounge = ({ setView }: { setView: (view: string) => void }) => {
         onDeleteAccount={async () => {
           if(confirm(t('lounge.delete_confirm'))) {
             try {
-              // Delete Account API Integration
-              await fetch(`${API_BASE}/admin/users/${user?.id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
-              });
+              await api.del(`/admin/users/${user?.id}`, { token });
               alert(t('lounge.delete_submitted'));
               logout();
               setView('facade');

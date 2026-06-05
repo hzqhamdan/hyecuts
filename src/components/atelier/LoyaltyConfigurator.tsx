@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { API_BASE } from '../../config';
+import { api } from '../../api/client';
 import { EconomyControlCenter } from './EconomyControlCenter';
 import { RewardsInventory } from './RewardsInventory';
 import type { Reward } from '../../types/loyalty';
@@ -14,44 +14,31 @@ export function LoyaltyConfigurator() {
   const { data, isLoading } = useQuery({
     queryKey: ['loyalty-config'],
     queryFn: async () => {
-      const authHeader = { 'Authorization': `Bearer ${token ?? ''}` };
-      const [rewardsRes, ratioRes, multiRes] = await Promise.all([
-        fetch(`${API_BASE}/rewards`, { headers: authHeader }),
-        fetch(`${API_BASE}/admin/settings/POINTS_PER_MYR`, { headers: authHeader }),
-        fetch(`${API_BASE}/admin/settings/SEASONAL_MULTIPLIER`, { headers: authHeader })
+      const [rewards, ratio, multiplier] = await Promise.all([
+        api.get<Reward[]>('/rewards', { token }),
+        api.get<string>('/admin/settings/POINTS_PER_MYR', { token }),
+        api.get<string>('/admin/settings/SEASONAL_MULTIPLIER', { token })
       ]);
 
-      let rewards: Reward[] = [];
-      let ratio = 10;
-      let multiplier = 1.0;
-
-      if (rewardsRes.ok) rewards = await rewardsRes.json() as Reward[];
-      if (ratioRes.ok) ratio = parseInt(await ratioRes.text(), 10) || 10;
-      if (multiRes.ok) multiplier = parseFloat(await multiRes.text()) || 1.0;
-
-      return { rewards, ratio, multiplier };
+      return {
+        rewards,
+        ratio: parseInt(ratio, 10) || 10,
+        multiplier: parseFloat(multiplier) || 1.0
+      };
     }
   });
 
   const ratioMutation = useMutation({
-    mutationFn: async (newRatio: number) => {
-      await fetch(`${API_BASE}/admin/settings?key=POINTS_PER_MYR&value=${newRatio.toString()}`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token ?? ''}` }
-      });
-    },
+    mutationFn: (newRatio: number) =>
+      api.post(`/admin/settings?key=POINTS_PER_MYR&value=${newRatio.toString()}`, { token }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['loyalty-config'] });
     }
   });
 
   const multiMutation = useMutation({
-    mutationFn: async (newMulti: number) => {
-      await fetch(`${API_BASE}/admin/settings?key=SEASONAL_MULTIPLIER&value=${newMulti.toString()}`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token ?? ''}` }
-      });
-    },
+    mutationFn: (newMulti: number) =>
+      api.post(`/admin/settings?key=SEASONAL_MULTIPLIER&value=${newMulti.toString()}`, { token }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['loyalty-config'] });
     }

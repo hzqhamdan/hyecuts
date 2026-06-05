@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Search, User as UserIcon, MoreHorizontal, ArrowUpDown, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { API_BASE } from '../../config';
+import { api } from '../../api/client';
 import type { User } from '../../types/loyalty';
 
 export function MemberManager({ token }: { token: string }) {
@@ -15,23 +15,13 @@ export function MemberManager({ token }: { token: string }) {
 
   const { data: members = [], isLoading } = useQuery<User[]>({
     queryKey: ['members', token],
-    queryFn: async () => {
-      const res = await fetch(`${API_BASE}/admin/users`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (!res.ok) throw new Error('Failed to fetch members');
-      return res.json() as Promise<User[]>;
-    }
+    queryFn: () =>
+      api.get<User[]>('/admin/users', { token })
   });
 
   const adjustMutation = useMutation({
-    mutationFn: async ({ userId, amount }: { userId: string, amount: number }) => {
-      const res = await fetch(`${API_BASE}/admin/points/adjust/${userId}?points=${amount}`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (!res.ok) throw new Error('Failed to adjust points');
-    },
+    mutationFn: ({ userId, amount }: { userId: string, amount: number }) =>
+      api.post(`/admin/points/adjust/${userId}?points=${amount}`, { token }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['members', token] });
       // Update selected member if open
@@ -45,13 +35,8 @@ export function MemberManager({ token }: { token: string }) {
   const [isOverridingTier, setIsOverridingTier] = useState(false);
 
   const tierMutation = useMutation({
-    mutationFn: async ({ userId, tierName }: { userId: string, tierName: string }) => {
-      const res = await fetch(`${API_BASE}/admin/tier/override/${userId}?tier=${tierName}`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (!res.ok) throw new Error('Failed to override tier');
-    },
+    mutationFn: ({ userId, tierName }: { userId: string, tierName: string }) =>
+      api.post(`/admin/tier/override/${userId}?tier=${tierName}`, { token }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['members', token] });
       setIsOverridingTier(false);
