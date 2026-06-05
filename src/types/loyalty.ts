@@ -4,21 +4,36 @@ export interface User {
   fullName: string;
   currentPoints: number;
   lifetimePoints: number;
-  pointsBalance?: number; // Added to match backend model name usage in some views
-  currentTier?: string;   // Added to match usage in MemberLounge
+  pointsBalance?: number; 
+  currentTier?: string;   
   currentStreak?: number;
   lastBookingDate?: string;
+  dob?: string;
+  phone?: string;
+  hairType?: string;
+  hairLength?: string;
+  hairScalp?: string;
+  avatar?: string | null;
   tier: {
     name: string;
     pointsRequired: number;
   } | null;
 }
 
-export interface Reward {
-  id: number;
-  title: string;
-  description: string;
-  type: string;
+export interface LoyaltyProfile {
+  userId: string;
+  email: string;
+  fullName: string;
+  pointsBalance: number;
+  currentTier: string;
+  dob: string;
+  phone: string;
+  hairType: string;
+  hairLength: string;
+  hairScalp: string;
+  avatar: string | null;
+}
+
   pointsCost: number;
   minimumTierRequired: string;
   stockAvailable: number | null;

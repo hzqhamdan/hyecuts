@@ -1,30 +1,65 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, User, Scissors, ShieldAlert, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../api/client';
+import type { LoyaltyProfile } from '../../types/loyalty';
 
 interface UserProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
   onExportData: () => void;
   onDeleteAccount: () => void;
+  profile?: LoyaltyProfile | null;
 }
 
 type TabType = 'general' | 'hair' | 'security';
 
-export default function UserProfileModal({ isOpen, onClose, onExportData, onDeleteAccount }: UserProfileModalProps) {
+export default function UserProfileModal({ isOpen, onClose, onExportData, onDeleteAccount, profile }: UserProfileModalProps) {
   const { t } = useTranslation();
   const { user, token } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>('general');
 
   // Avatar handling
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(profile?.avatar || null);
 
+  // Form states
+  const [formData, setFormData] = useState({
+    username: profile?.email || user?.username || 'Client',
+    fullName: profile?.fullName || 'Client',
+    dob: profile?.dob || '1990-01-01',
+    email: profile?.email || user?.username || 'client@hyecuts.com',
+    phone: profile?.phone || '',
+    hairType: profile?.hairType || 'straight',
+    hairLength: profile?.hairLength || 'short',
+    scalp: profile?.hairScalp || 'normal',
+  });
+
+  // Sync state when profile prop changes
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        username: profile.email,
+        fullName: profile.fullName || '',
+        dob: profile.dob || '1990-01-01',
+        email: profile.email,
+        phone: profile.phone || '',
+        hairType: profile.hairType || 'straight',
+        hairLength: profile.hairLength || 'short',
+        scalp: profile.hairScalp || 'normal',
+      });
+      setAvatarPreview(profile.avatar || null);
+    }
+  }, [profile]);
+  
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 1024 * 1024) {
+        alert("Image size must be less than 1MB");
+        return;
+      }
       const reader = new FileReader();
       reader.onloadend = () => {
         setAvatarPreview(reader.result as string);
@@ -33,23 +68,13 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
     }
   };
 
-  // Form states
-  const [formData, setFormData] = useState({
-    username: user?.username || 'Client',
-    fullName: user?.username || 'Client',
-    dob: '1990-01-01',
-    email: 'client@hyecuts.com',
-    phone: '+60 12-345 6789',
-    hairType: 'straight',
-    hairLength: 'short',
-    scalp: 'normal',
-  });
-  
   const [isSaved, setIsSaved] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
   const handleSave = async () => {
+    setErrorMessage(null);
     try {
       await api.put(`/loyalty/profile/${user?.id}`, {
         body: {
@@ -68,8 +93,9 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
       });
       setIsSaved(true);
       setTimeout(() => setIsSaved(false), 2000);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating profile", error);
+      setErrorMessage(error.message || "Failed to update profile");
     }
   };
 
@@ -189,15 +215,11 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                   </h3>
 
                   <div className="space-y-6">
-                    <div className="flex flex-col gap-2">
-                      <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">{t('profile_modal.general.username')}</label>
-                      <input
-                        type="text"
-                        value={formData.username}
-                        onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                        className="bg-transparent border-b border-black/20 dark:border-white/20 py-2 text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors"
-                      />
-                    </div>
+                    {errorMessage && (
+                      <div className="p-4 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 text-xs font-bold text-center">
+                        {errorMessage}
+                      </div>
+                    )}
                     <div className="flex flex-col gap-2">
                       <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">{t('profile_modal.general.name')}</label>
                       <input

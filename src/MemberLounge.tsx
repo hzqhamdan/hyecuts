@@ -57,11 +57,19 @@ const MemberLounge = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const profileData = await api.get<{ id: string; currentPoints: number; tier?: { name: string } }>(`/loyalty/profile/${USER_ID}`);
+        const profileData = await api.get<any>(`/loyalty/profile/${USER_ID}`);
         setProfile({
           userId: profileData.id,
+          email: profileData.email,
+          fullName: profileData.fullName || '',
           pointsBalance: profileData.currentPoints,
-          currentTier: profileData.tier ? profileData.tier.name : 'Rookie'
+          currentTier: profileData.tier ? profileData.tier.name : 'Rookie',
+          dob: profileData.dob || '1990-01-01',
+          phone: profileData.phone || '',
+          hairType: profileData.hairType || 'straight',
+          hairLength: profileData.hairLength || 'short',
+          hairScalp: profileData.hairScalp || 'normal',
+          avatar: profileData.avatar || null
         });
 
         const [rewardsData, activitiesData] = await Promise.all([

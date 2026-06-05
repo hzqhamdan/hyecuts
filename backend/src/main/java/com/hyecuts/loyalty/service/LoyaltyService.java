@@ -38,7 +38,15 @@ public class LoyaltyService {
         User user = getUser(userId);
 
         if (req.fullName() != null) user.setFullName(req.fullName());
-        if (req.email() != null) user.setEmail(req.email());
+        
+        if (req.email() != null && !req.email().equalsIgnoreCase(user.getEmail())) {
+            // Check if new email is already taken by ANOTHER user
+            if (userRepository.findByEmail(req.email()).isPresent()) {
+                throw new RuntimeException("Email '" + req.email() + "' is already in use by another account.");
+            }
+            user.setEmail(req.email());
+        }
+
         if (req.dob() != null) user.setDob(req.dob());
         if (req.phone() != null) user.setPhone(req.phone());
         if (req.avatar() != null) user.setAvatar(req.avatar());
