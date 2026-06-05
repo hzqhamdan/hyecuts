@@ -23,3 +23,16 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# IDE/Tool settings
+.claude/settings.local.json
+
+# Gradle (Java Build System)
+backend/.gradle/
+
+# Playwright / Testing
+playwright-report/
+test-results/
+
+# Production Config (If it contains secrets)
+backend/src/main/resources/application-prod.yml

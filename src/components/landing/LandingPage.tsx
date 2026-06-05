@@ -198,7 +198,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-6 sm:px-0">
               <button
                 onClick={() => { setView('booking'); }}
-                className="group relative px-10 py-5 bg-black dark:bg-white text-white dark:text-black overflow-hidden transition-all duration-500 hover:bg-zinc-800 dark:hover:bg-zinc-200"
+                className="group relative px-10 py-5 bg-black dark:bg-white text-white dark:text-black overflow-hidden transition-all duration-500 hover:bg-zinc-800 dark:hover:bg-zinc-800 hover:text-white dark:hover:text-white"
               >
                 <span className="relative z-10 text-[10px] md:text-xs uppercase tracking-[0.2em] font-bold">{t('hero.cta_primary')}</span>
                 <ArrowRight className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-[-10px] group-hover:translate-x-0" size={16} />
@@ -259,7 +259,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
                                   onClick={() => { setSelectedService(isServiceOpen ? null : service.name); }}
                                   className={`p-4 border-2 cursor-pointer transition-all duration-300 ${
                                     isServiceOpen 
-                                      ? '!border-[#B8A070] !bg-[#1A1A1A]' 
+                                      ? '!border-[#B8A070] bg-white dark:bg-[#1A1A1A]' 
                                       : 'border-transparent dark:border-transparent hover:border-zinc-300 dark:hover:border-zinc-700'
                                   }`}
                                 >
@@ -289,12 +289,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
                                         <button
                                           onClick={(e) => {
                                             e.stopPropagation();
-                                            // Pre-set step to 1 if we're not logged in, or 2 if we are?
-                                            // Actually, let's keep it simple and just navigate.
                                             setView('booking');
                                           }}
-                                          className="w-full py-3 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2"
+                                          className="w-full py-3 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-800 hover:text-white dark:hover:text-white transition-colors flex items-center justify-center gap-2"
                                         >
+
                                           {t('landing.book_now')} <ArrowRight size={14} />
                                         </button>
                                       </motion.div>
@@ -411,7 +410,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ setView }) => {
             </div>
             <button
               onClick={() => { setView('booking'); }}
-              className="mt-12 px-8 py-5 bg-black dark:bg-white text-white dark:text-black text-[10px] md:text-xs uppercase tracking-[0.2em] font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all duration-500"
+              className="mt-12 px-8 py-5 bg-black dark:bg-white text-white dark:text-black text-[10px] md:text-xs uppercase tracking-[0.2em] font-bold hover:bg-zinc-800 dark:hover:bg-zinc-800 hover:text-white dark:hover:text-white transition-all duration-500"
             >
               {t('landing.book_now')}
             </button>

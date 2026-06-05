@@ -10,7 +10,7 @@ services:
     environment:
       POSTGRES_DB: hyecuts
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: casillas1
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       TZ: Asia/Kuala_Lumpur
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -33,11 +33,10 @@ services:
       - SPRING_PROFILES_ACTIVE=prod
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/hyecuts
       - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=casillas1
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
       - SERVER_PORT=8080
-      # Note: In production, inject these secrets via an .env file
-      - JWT_SECRET=c2VjdXJlX2tleV90aGF0X211c3RfYmVfYXRfbGVhc3RfNTEyX2JpdHNfbG9uZ19mb3JfaG1hY19zaGE1MTI=
-      - QR_SECRET=c3R1ZGlvX3FyX3NlY3JldF9rZXlfdGhhdF9zaG91bGRfYmVfbG9uZ19lbm91Z2g=
+      - JWT_SECRET=${JWT_SECRET}
+      - QR_SECRET=${QR_SECRET}
       - TZ=Asia/Kuala_Lumpur
     depends_on:
       db:

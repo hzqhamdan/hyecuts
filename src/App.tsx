@@ -67,7 +67,7 @@ function App() {
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.95 }}
         aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-        className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-[60] inline-flex h-10 sm:h-12 items-center justify-center gap-2 sm:gap-3 rounded-full border border-luxury-slate/20 bg-luxury-white/90 px-4 sm:px-5 py-2 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-luxury-black shadow-lg backdrop-blur transition-all hover:bg-luxury-slate/10 dark:border-luxury-slate/20 dark:bg-luxury-black/90 dark:text-luxury-white dark:hover:bg-luxury-slate/80"
+        className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-[60] inline-flex h-10 sm:h-12 items-center justify-center gap-2 sm:gap-3 rounded-full border border-zinc-200 bg-white px-4 sm:px-5 py-2 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-black shadow-lg backdrop-blur transition-all hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800"
       >
         <AnimatePresence mode="wait" initial={false}>
           <motion.div

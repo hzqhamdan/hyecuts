@@ -35,9 +35,9 @@ logging:
     com.hyecuts.loyalty: DEBUG
 
 jwt:
-  secret: ${JWT_SECRET:Y2F0Y2hfbWVfaWZfeW91X2Nhbl9oYWNrZXJfYm95XzEyMw==}
+  secret: ${JWT_SECRET}
   expiration: 86400000 # 24 hours
 
 stripe:
   secret:
-    key: ${STRIPE_SECRET_KEY:sk_test_placeholder}
+    key: ${STRIPE_SECRET_KEY}

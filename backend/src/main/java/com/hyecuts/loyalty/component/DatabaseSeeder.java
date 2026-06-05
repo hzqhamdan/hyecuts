@@ -3,6 +3,8 @@ package com.hyecuts.loyalty.component;
 import com.hyecuts.loyalty.model.*;
 import com.hyecuts.loyalty.repository.*;
 import com.hyecuts.loyalty.service.LoyaltyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -12,6 +14,8 @@ import java.util.List;
 
 @Component
 public class DatabaseSeeder implements CommandLineRunner {
+
+    private static final Logger log = LoggerFactory.getLogger(DatabaseSeeder.class);
 
     private final UserRepository userRepository;
     private final RewardRepository rewardRepository;
@@ -43,7 +47,7 @@ public class DatabaseSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if (userRepository.count() == 0) {
-            System.out.println("Seeding Database...");
+            log.info("Seeding Database...");
 
             // 0. Global Settings
             globalSettingsRepository.saveAll(List.of(
@@ -141,7 +145,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 
             missionRepository.saveAll(List.of(m1, m2));
 
-            System.out.println("Seeding Complete!");
+            log.info("Seeding Complete!");
         }
     }
 

@@ -196,7 +196,7 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 w-full max-w-2xl px-4 sm:px-0">
                   <button
                     onClick={() => { setView('login'); }}
-                    className="p-6 md:p-8 border border-black dark:border-white bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-900 dark:hover:bg-zinc-100 transition-all flex flex-col items-center text-center group active:scale-[0.98]"
+                    className="p-6 md:p-8 border border-black dark:border-white bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-900 dark:hover:bg-zinc-800 hover:text-white dark:hover:text-white transition-all flex flex-col items-center text-center group active:scale-[0.98]"
                   >
                     <UserCircle className="w-8 h-8 mb-4 opacity-80 group-hover:opacity-100 transition-opacity" />
                     <span className="text-[10px] uppercase tracking-widest font-bold mb-2">{t('booking.login_cta')}</span>
@@ -251,7 +251,7 @@ export default function BookingFlow({ setView }: { setView: (view: string) => vo
                                       onClick={() => { setSelectedService(service.name); }}
                                       className={`p-4 border-2 cursor-pointer transition-all duration-300 ${
                                         selectedService === service.name 
-                                          ? '!border-[#B8A070] !bg-[#1A1A1A]' 
+                                          ? '!border-[#B8A070] bg-white dark:bg-[#1A1A1A]' 
                                           : 'border-transparent dark:border-transparent hover:border-zinc-300 dark:hover:border-zinc-700'
                                       }`}
                                     >

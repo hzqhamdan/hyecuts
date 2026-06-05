@@ -13,7 +13,9 @@
       "Bash(unzip *)",
       "Bash(grep \":$\")",
       "Bash(Select-String -Pattern \"^[^backend]\")",
-      "Bash(openssl rand *)"
+      "Bash(openssl rand *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\nurha\\\\hyecuts\" -Filter \"codingprinciples.md\" -Recurse -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object -First 5 -Property FullName)"
     ]
   },
   "enableAllProjectMcpServers": true,

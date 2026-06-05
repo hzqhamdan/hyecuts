@@ -1,0 +1,89 @@
+# Codebase Refactoring Progress
+
+## Guiding Principles
+
+All refactoring decisions should be evaluated through these 12 principles (see `codingprinciples.md`):
+
+1. **Understand Before Generating** — Know purpose, architecture, data flow, side effects
+2. **Respect Existing Architecture** — Follow established conventions and patterns
+3. **Design for Growth** — Prefer configurable, reusable, modular solutions
+4. **Consider Performance During Design** — Evaluate complexity, queries, memory
+5. **Optimize for Maintainability** — Prioritize readability, consistency, clear naming
+6. **Anticipate Production Conditions** — Design for real-world traffic and data volume
+7. **Recognize Context Limitations** — Don't assume unverified business knowledge
+8. **Think Beyond Current Requirements** — Consider expansion and reuse
+9. **Prefer Reuse Over Reinvention** — Use existing services, utilities, patterns
+10. **Minimize Technical Debt** — Avoid hacks, duplication, unclear abstractions
+11. **Make Change Easy** — Build for new features, rules, integrations
+12. **Preserve System Integrity** — Don't damage the system for a feature
+
+---
+
+## Discovered Issues
+
+### Critical
+
+- [ ] **Exposed secrets** — `docker-compose.yml` and `application.yml` contain hardcoded JWT secrets, DB passwords, QR secrets. JWT secret `c2VjdXJlX2tleV90aGF0X211c3RfYmVfYXRfbGVhc3RfNTEyX2JpdHNfbG9uZ19mb3JfaG1hY19zaGE1MTI=` is base64-visible.
+- [ ] **`hibernate.ddl-auto: update`** in `application.yml` — Dangerous for production. Flyway should be the sole schema manager; `update` can cause unexpected schema changes.
+- [ ] **No centralized API client** — Raw `fetch()` calls scattered across components with no interceptors, error handling wrappers, or token refresh logic. Violates Principle 9 (Prefer Reuse Over Reinvention).
+- [ ] **Monolithic page files** — `MemberLounge.tsx` (~690 lines) and `LandingPage.tsx` (~441 lines) mix data fetching, state management, modal logic, and rendering in single files. Violates Principle 5 (Optimize for Maintainability).
+
+### Moderate
+
+- [ ] **No React Router** — View management is string-based (`view` state in `sessionStorage`). No URL bookmarks, no browser back/forward, no deep-linking. Violates Principle 3 (Design for Growth) and Principle 11 (Make Change Easy).
+- [ ] **`any` type usage** — Multiple places use `as any` type assertions (translation keys, service lookups) that bypass TypeScript safety. Violates Principle 5 (Optimize for Maintainability).
+- [ ] **Console.log in production** — `config.ts` logs credentials at module load time; several components have debug `console.log` statements. Violates Principle 6 (Anticipate Production Conditions).
+- [ ] **Dead dependency: Firebase** — `package.json` lists `firebase: ^12.12.0` but unused. Violates Principle 10 (Minimize Technical Debt).
+- [ ] **Booking times hardcoded** — `TIMES = ['12:00 PM', '2:30 PM', '4:00 PM', '6:00 PM', '8:00 PM']` in `BookingFlow.tsx` is static, not dynamic from backend. Violates Principle 3 (Design for Growth).
+
+### Minor
+
+- [ ] **Inconsistent file organization** — `LandingPage.tsx` and `LoginScreen.tsx` are barrel re-exports from `components/`, but `MemberLounge.tsx` and `AtelierDashboard.tsx` are standalone page components in `src/` directly. Violates Principle 2 (Respect Existing Architecture).
+- [ ] **i18n keys with `as any` casts** — Translation calls like `` t(`data.services.${service.name}` as any) `` bypass static checking.
+- [ ] **Build tool noise** — `build-tech-v2.js` (1035+ lines DOCX generator) committed to the app repo.
+- [ ] **No `.env` file** — Only `.env.example` with a Stripe key placeholder. Environment variables expected at runtime with no documentation.
+
+---
+
+## Refactoring Plan (To Be Completed)
+
+### Phase 1: Safety & Hygiene ✅
+- [x] Move secrets to environment variables — `docker-compose.yml` now references `${VAR}` with no defaults, `.env` file created for local dev, `.env.example` documents all required vars
+- [x] Add `application-prod.yml` with `ddl-auto: validate` and reduced logging (activated via `SPRING_PROFILES_ACTIVE=prod`)
+- [x] Remove hardcoded JWT/Stripe fallback defaults from `application.yml` (they must now be explicitly provided)
+- [x] Remove `console.log` debug statements from `config.ts`, `LoginScreen.tsx`, `AtelierDashboard.tsx` (kept legitimate `console.error` calls)
+- [x] Replace `System.out.println` with SLF4J logger in `DatabaseSeeder.java`; removed debug prints from `LoyaltyApplication.java` and `AuthController.java`
+- [x] Remove unused Firebase dependency from `package.json`
+
+### Phase 2: API Layer
+- [ ] Create centralized API client with interceptors, error handling, token refresh
+- [ ] Migrate all `fetch()` calls to use the new client
+- [ ] Add request/response type safety
+
+### Phase 3: Routing & Navigation
+- [ ] Evaluate and adopt React Router for proper URL-based navigation
+- [ ] Replace string-based `view` state with route definitions
+- [ ] Enable deep-linking and browser back/forward support
+
+### Phase 4: Component Decomposition
+- [ ] Break down `MemberLounge.tsx` into focused sub-components
+- [ ] Break down `LandingPage.tsx` into focused sub-components
+- [ ] Standardize file organization (all pages under `src/pages/` or consistent pattern)
+
+### Phase 5: Code Quality
+- [ ] Remove `as any` type assertions, add proper TypeScript types
+- [ ] Make booking times dynamic from backend API
+- [ ] Remove or archive `build-tech-v2.js`
+- [ ] Create proper `.env` documentation
+
+---
+
+## Session Continuation Notes
+
+- **Tech stack:** React 19, TypeScript 6, Vite 8, Tailwind 3, Zustand 5, TanStack Query 5, Spring Boot 3.2.5, Java 17, PostgreSQL
+- **Frontend:** `src/` directory, 42 source files, feature-based component folders
+- **Backend:** `backend/` directory, Spring Boot layered architecture (controller/service/repository/model/security)
+- **Tests:** Vitest (1 unit test file), Playwright (2 E2E specs), JUnit (1 backend test)
+- **Lint:** ESLint flat config with strict TypeScript rules
+- **PRD:** See `updatedPRD.md` for full product requirements
+- **Coding principles:** See `codingprinciples.md` for the 12 guiding principles

@@ -27,7 +27,6 @@ export default function LoginScreen({ setView }: { setView: (view: string) => vo
     
     const endpoint = isRegistering ? '/api/auth/register' : '/api/auth/login';
     const targetUrl = `${API_URL}${endpoint}`;
-    console.log("Attempting fetch to:", targetUrl);
     
     void (async () => {
       try {
@@ -36,11 +35,9 @@ export default function LoginScreen({ setView }: { setView: (view: string) => vo
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password })
         });
-        console.log("Response status:", res.status);
         
         if (res.ok) {
           const data = (await res.json()) as { token: string; userId: string; role: string };
-          console.log("Login successful, role:", data.role);
           login(data.token, data.userId, data.role, username);
           // Direct users based on role
           if (data.role === 'ROLE_ADMIN') {

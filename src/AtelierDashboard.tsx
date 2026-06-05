@@ -42,13 +42,9 @@ export default function AtelierDashboard({ setView }: AtelierDashboardProps) {
     damping: 20
   };
 
-  console.log("Dashboard user role:", user?.role);
-
   const isOwner = user?.role === 'ROLE_ADMIN' || user?.role === 'owner';
   const isMasterBarber = user?.role === 'master_barber' || isOwner;
   const isStaff = user?.role === 'junior' || isMasterBarber;
-
-  console.log("Role checks - isOwner:", isOwner, "isMasterBarber:", isMasterBarber, "isStaff:", isStaff);
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-white dark:bg-[#1A1A1A] text-black dark:text-[#FAFAFA] font-sans selection:bg-black selection:text-white transition-colors duration-500">

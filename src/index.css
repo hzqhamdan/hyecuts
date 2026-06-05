@@ -17,9 +17,10 @@
     @apply bg-studio-black text-zinc-100;
   }
 
-  html.dark .bg-white {
-    @apply bg-zinc-950;
-  }
+  /* 
+     REMOVED: Aggressive global overrides that were hijacking 
+     explicit dark:bg-white and dark:bg-black utilities.
+  */
 
   html.dark .bg-zinc-50,
   html.dark .bg-zinc-100,
@@ -36,39 +37,13 @@
     background-color: rgb(24 24 27 / 0.8);
   }
 
-  html.dark .text-black {
-    @apply text-zinc-100;
-  }
-
-  html.dark .text-studio-slate {
-    @apply text-zinc-300;
-  }
-
+  /* Essential border styles for dark mode consistency */
   html.dark .border-zinc-50,
   html.dark .border-zinc-100,
   html.dark .border-zinc-200,
-  html.dark .border-black,
-  html.dark .border-black\/10,
-  html.dark .border-black\/20,
-  html.dark .border-white,
-  html.dark .border-white\/10 {
+  html.dark .border-zinc-300,
+  html.dark .border-zinc-800 {
     @apply border-zinc-700;
-  }
-
-  html.dark .bg-black {
-    @apply bg-zinc-200 text-zinc-900;
-  }
-
-  html.dark .hover\:bg-black:hover {
-    @apply bg-zinc-200 text-zinc-900;
-  }
-
-  html.dark .hover\:text-black:hover {
-    @apply text-zinc-100;
-  }
-
-  html.dark .hover\:border-black:hover {
-    @apply border-zinc-500;
   }
 
   h1, h2, h3 {
