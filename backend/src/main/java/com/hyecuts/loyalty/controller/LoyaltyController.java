@@ -24,8 +24,23 @@ public class LoyaltyController {
     }
 
     @PutMapping("/profile/{userId}")
-    public ResponseEntity<User> updateProfile(@PathVariable UUID userId, @RequestBody UpdateProfileRequest request) {
-        return ResponseEntity.ok(loyaltyService.updateUser(userId, request));
+    public ResponseEntity<?> updateProfile(@PathVariable UUID userId, @RequestBody UpdateProfileRequest request) {
+        try {
+            User updated = loyaltyService.updateUser(userId, request);
+            return ResponseEntity.ok(updated);
+        } catch (Throwable t) {
+            System.err.println("[CRITICAL-PROFILE-ERROR] " + t.getMessage());
+            t.printStackTrace();
+            
+            java.util.Map<String, Object> error = new java.util.HashMap<>();
+            error.put("timestamp", java.time.Instant.now().toString());
+            error.put("status", 500);
+            error.put("error", "Internal Server Error");
+            error.put("message", "Profile update failed: " + t.getMessage());
+            error.put("cause", t.getCause() != null ? t.getCause().getMessage() : "Unknown");
+            
+            return ResponseEntity.status(500).body(error);
+        }
     }
 
     @PostMapping("/earn/{userId}")
