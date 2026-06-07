@@ -58,7 +58,7 @@ export default function LoginScreen() {
     >
       {/* WebGL smokey background (only the shader; the existing form is preserved) */}
       <div className="absolute inset-0 z-0 bg-[#0A0A0A]">
-        <SmokeyBackground color="#3B82F6" backdropBlurAmount="none" />
+        <SmokeyBackground color="#B8A070" backdropBlurAmount="none" />
       </div>
 
       <div className="relative z-10 absolute top-8 sm:top-12 left-6 sm:left-12 flex items-center gap-3">
