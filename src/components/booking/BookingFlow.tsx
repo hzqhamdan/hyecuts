@@ -8,6 +8,7 @@ import { useBookingStore } from '../../store/useBookingStore';
 import { useTranslation } from 'react-i18next';
 import { PaymentStep } from './PaymentStep';
 import { useNavigate } from 'react-router-dom';
+import PWAInstallPrompt from '../ui/PWAInstallPrompt';
 
 interface BookingResponse {
   id: number;
@@ -454,6 +455,8 @@ export default function BookingFlow() {
                 <div className="font-mono text-xs bg-neutral-50 dark:bg-zinc-900 p-4 border border-zinc-200 dark:border-zinc-800 mb-12 inline-block text-black dark:text-white font-bold">
                   {t('booking.ref_label')}: {bookingRef || 'HYC-0000'}
                 </div>
+
+                <PWAInstallPrompt />
 
                 <div className="flex flex-col gap-4">
                   {token && (
