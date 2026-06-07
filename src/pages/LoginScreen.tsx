@@ -5,6 +5,7 @@ import { ArrowLeft, ShieldCheck, Globe } from 'lucide-react';
 import { api } from '../api/client';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { SmokeyBackground } from '../components/ui/login-form';
 
 export default function LoginScreen() {
   const navigate = useNavigate();
@@ -51,11 +52,16 @@ export default function LoginScreen() {
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="min-h-screen bg-white dark:bg-[#1A1A1A] text-black dark:text-[#FAFAFA] font-sans flex flex-col justify-center items-center p-4 sm:p-6 relative overflow-hidden transition-colors duration-500"
+      className="min-h-screen text-black dark:text-[#FAFAFA] font-sans flex flex-col justify-center items-center p-4 sm:p-6 relative overflow-hidden transition-colors duration-500"
     >
-      <div className="absolute top-8 sm:top-12 left-6 sm:left-12 flex items-center gap-3">
+      {/* WebGL smokey background (only the shader; the existing form is preserved) */}
+      <div className="absolute inset-0 z-0 bg-[#0A0A0A]">
+        <SmokeyBackground color="#3B82F6" backdropBlurAmount="none" />
+      </div>
+
+      <div className="relative z-10 absolute top-8 sm:top-12 left-6 sm:left-12 flex items-center gap-3">
         <button 
           onClick={() => { navigate('/'); }}
           className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-bold"
@@ -64,7 +70,7 @@ export default function LoginScreen() {
         </button>
       </div>
 
-      <div className="absolute top-8 sm:top-12 right-6 sm:right-12">
+      <div className="relative z-10 absolute top-8 sm:top-12 right-6 sm:right-12">
         <button 
           onClick={toggleLanguage}
           className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-bold"
@@ -74,9 +80,9 @@ export default function LoginScreen() {
         </button>
       </div>
 
-      <motion.div 
+      <motion.div
         initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-        className="w-full max-w-md bg-white dark:bg-[#1A1A1A] border border-zinc-200 dark:border-zinc-800 p-8 sm:p-12 transition-colors"
+        className="relative z-10 w-full max-w-md bg-white/80 dark:bg-[#1A1A1A]/70 backdrop-blur-xl border border-white/30 dark:border-zinc-700/50 p-8 sm:p-12 transition-colors shadow-2xl"
       >
         <div className="text-center mb-8 md:mb-10">
           <ShieldCheck className="w-8 h-8 mx-auto mb-4 text-black dark:text-white" />
