@@ -83,8 +83,6 @@ export function SmokeyBackground({
   className = "",
 }: SmokeyBackgroundProps): ReactElement {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState(false);
 
   // Helper to convert hex color to RGB (0-1 range)
   const hexToRgb = (hex: string): [number, number, number] => {
@@ -193,22 +191,12 @@ export function SmokeyBackground({
 
         gl.uniform2f(iResolutionLocation, width, height);
         gl.uniform1f(iTimeLocation, currentTime);
-        gl.uniform2f(iMouseLocation, isHovering ? mousePosition.x : width / 2, isHovering ? height - mousePosition.y : height / 2);
+        // Fixed mouse position at center
+        gl.uniform2f(iMouseLocation, width / 2, height / 2);
 
         gl.drawArrays(gl.TRIANGLES, 0, 6);
         animationFrameId = requestAnimationFrame(render);
       };
-
-      const handleMouseMove = (event: MouseEvent) => {
-        const rect = canvas.getBoundingClientRect();
-        setMousePosition({ x: event.clientX - rect.left, y: event.clientY - rect.top });
-      };
-      const handleMouseEnter = () => setIsHovering(true);
-      const handleMouseLeave = () => setIsHovering(false);
-
-      canvas.addEventListener("mousemove", handleMouseMove);
-      canvas.addEventListener("mouseenter", handleMouseEnter);
-      canvas.addEventListener("mouseleave", handleMouseLeave);
 
       // If the container resizes, the next render() will pick up the new size.
       const handleResize = () => { /* render() reads clientWidth/Height each frame */ };
@@ -218,9 +206,6 @@ export function SmokeyBackground({
 
       cleanup = () => {
         cancelAnimationFrame(animationFrameId);
-        canvas.removeEventListener("mousemove", handleMouseMove);
-        canvas.removeEventListener("mouseenter", handleMouseEnter);
-        canvas.removeEventListener("mouseleave", handleMouseLeave);
         window.removeEventListener("resize", handleResize);
       };
     };
@@ -231,7 +216,7 @@ export function SmokeyBackground({
       cancelled = true;
       if (cleanup) cleanup();
     };
-  }, [isHovering, mousePosition, color]);
+  }, [color]);
 
   const finalBlurClass = blurClassMap[backdropBlurAmount as BlurSize] || blurClassMap["sm"];
 
