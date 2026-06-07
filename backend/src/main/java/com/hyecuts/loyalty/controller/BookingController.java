@@ -72,12 +72,31 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.getAllBookings());
     }
 
+    // Admin/User endpoint
+    @GetMapping("/date/{date}")
+    public ResponseEntity<List<Booking>> getBookingsByDate(@PathVariable String date) {
+        java.time.LocalDate localDate = java.time.LocalDate.parse(date);
+        java.time.LocalDateTime start = localDate.atStartOfDay();
+        java.time.LocalDateTime end = localDate.atTime(java.time.LocalTime.MAX);
+        return ResponseEntity.ok(bookingService.getBookingsByDateRange(start, end));
+    }
+
     // Admin endpoint
     @PutMapping("/{bookingId}/complete")
     public ResponseEntity<?> completeBooking(@PathVariable UUID bookingId) {
         try {
             Booking completed = bookingService.completeBooking(bookingId);
             return ResponseEntity.ok(completed);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{bookingId}/reschedule")
+    public ResponseEntity<?> rescheduleBooking(@PathVariable UUID bookingId, @RequestBody String newTime) {
+        try {
+            Booking rescheduled = bookingService.rescheduleBooking(bookingId, java.time.LocalDateTime.parse(newTime));
+            return ResponseEntity.ok(rescheduled);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

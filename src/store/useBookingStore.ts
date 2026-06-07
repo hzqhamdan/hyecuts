@@ -22,6 +22,7 @@ interface BookingState {
   setBookingRef: (ref: string) => void;
   setIsConfirming: (isConfirming: boolean) => void;
   setClientSecret: (secret: string | null) => void;
+  prepopulate: (data: { serviceName: string; staffId: string }) => void;
   reset: () => void;
 }
 
@@ -47,6 +48,13 @@ export const useBookingStore = create<BookingState>((set) => ({
   setBookingRef: (bookingRef) => { set({ bookingRef }); },
   setIsConfirming: (isConfirming) => { set({ isConfirming }); },
   setClientSecret: (clientSecret) => { set({ clientSecret }); },
+  prepopulate: (data) => {
+    set({
+      step: 3,
+      selectedService: data.serviceName,
+      selectedStaff: data.staffId,
+    });
+  },
   reset: () => { 
     set({ 
       step: 0, 

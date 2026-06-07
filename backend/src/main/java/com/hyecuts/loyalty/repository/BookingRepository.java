@@ -18,4 +18,7 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
 
     @EntityGraph(attributePaths = {"service", "user"})
     List<Booking> findAllByOrderByAppointmentTimeDesc();
+
+    @EntityGraph(attributePaths = {"service", "user"})
+    List<Booking> findByAppointmentTimeBetween(java.time.LocalDateTime start, java.time.LocalDateTime end);
 }

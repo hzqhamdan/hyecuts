@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar, Clock, Scissors, CalendarPlus, RefreshCw } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../api/client';
 import { useNavigate } from 'react-router-dom';
+import RescheduleModal from './RescheduleModal';
 
 interface Booking {
   id: string;
@@ -20,6 +22,8 @@ interface Booking {
 export default function UserBookings() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const [rescheduleBookingId, setRescheduleBookingId] = useState<string | null>(null);
   const USER_ID = user?.id ?? "00000000-0000-0000-0000-000000000000";
 
   const { data: bookings = [], isLoading } = useQuery<Booking[]>({
@@ -148,6 +152,7 @@ export default function UserBookings() {
                           <CalendarPlus className="w-4 h-4 text-zinc-500 group-hover/cal:text-black dark:group-hover/cal:text-white" />
                         </button>
                         <button 
+                          onClick={() => setRescheduleBookingId(booking.id)}
                           className="flex items-center gap-2 px-4 py-3 border border-zinc-200 dark:border-zinc-800 text-[10px] uppercase tracking-widest font-bold hover:bg-neutral-50 dark:hover:bg-zinc-900 transition-colors text-black dark:text-white active:scale-95"
                           title="Reschedule Appointment"
                         >
@@ -162,6 +167,14 @@ export default function UserBookings() {
           </div>
         )}
       </div>
+      <RescheduleModal
+        isOpen={!!rescheduleBookingId}
+        onClose={() => setRescheduleBookingId(null)}
+        bookingId={rescheduleBookingId || ''}
+        onSuccess={() => {
+            queryClient.invalidateQueries({ queryKey: ['user-bookings', USER_ID] });
+        }}
+      />
     </motion.div>
   );
 }

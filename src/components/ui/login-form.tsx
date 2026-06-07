@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState, type ReactElement } from "react";
+import { useEffect, useRef, type ReactElement } from "react";
 
 // Vertex shader source code
 const vertexSmokeySource = `

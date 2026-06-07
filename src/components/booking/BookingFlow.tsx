@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ChevronRight, ChevronDown, Calendar, Clock, CheckCircle, ShieldCheck, UserCircle, UserPlus, Globe } from 'lucide-react';
 import { BOOKING_POLICIES, BUSINESS_HOURS, HYECUTS, ALL_SERVICES, SERVICE_CATEGORIES, TEAM_MEMBERS, AVAILABLE_TIMES, type ServiceItem } from '../../data/hyecuts';
@@ -30,7 +30,8 @@ export default function BookingFlow() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { token, user } = useAuth();
-  
+  const [bookedTimes, setBookedTimes] = useState<string[]>([]);
+
   const {
     step, setStep, nextStep, prevStep,
     openCategory, setOpenCategory,
@@ -42,6 +43,12 @@ export default function BookingFlow() {
     isConfirming, setIsConfirming,
     reset
   } = useBookingStore();
+
+  useEffect(() => {
+    if (selectedDate) {
+      setBookedTimes(['02:00 PM', '04:00 PM']);
+    }
+  }, [selectedDate]);
 
   useEffect(() => {
     // Automatically skip step 0 if the user is already logged in and we haven't advanced yet
@@ -352,19 +359,24 @@ export default function BookingFlow() {
                     <Clock className="w-3 h-3" /> {t('booking.time')}
                   </h4>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {AVAILABLE_TIMES.map((time) => (
-                      <div
-                        key={time}
-                        onClick={() => { setSelectedTime(time); }}
-                        className={`p-3 border-2 text-center cursor-pointer text-xs font-mono transition-all ${
-                          selectedTime === time 
-                            ? 'border-studio-black dark:border-studio-gold bg-studio-black dark:bg-studio-gold text-studio-white dark:text-studio-black font-bold' 
-                            : 'border-zinc-200 dark:border-zinc-800 text-black dark:text-white hover:border-black dark:hover:border-white'
-                        }`}
-                      >
-                        {time}
-                      </div>
-                    ))}
+                    {AVAILABLE_TIMES.map((time) => {
+                      const isBooked = bookedTimes.includes(time);
+                      return (
+                        <div
+                          key={time}
+                          onClick={() => { if (!isBooked) setSelectedTime(time); }}
+                          className={`p-3 border-2 text-center cursor-pointer text-xs font-mono transition-all ${
+                            isBooked 
+                              ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 border-zinc-200 dark:border-zinc-800 cursor-not-allowed'
+                              : selectedTime === time 
+                                ? 'border-studio-black dark:border-studio-gold bg-studio-black dark:bg-studio-gold text-studio-white dark:text-studio-black font-bold' 
+                                : 'border-zinc-200 dark:border-zinc-800 text-black dark:text-white hover:border-black dark:hover:border-white'
+                          }`}
+                        >
+                          {time} {isBooked && '(Booked)'}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 
