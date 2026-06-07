@@ -430,9 +430,16 @@ export default function BookingFlow() {
                   <button
                     onClick={() => { setStep(5); }}
                     disabled={isConfirming}
-                    className="w-full py-5 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-50 active:scale-[0.98]"
+                    className="w-full py-5 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-50 active:scale-[0.98] mb-3"
                   >
                     {t('booking.proceed_to_payment', { defaultValue: 'Proceed to Payment' })}
+                  </button>
+                  <button
+                    onClick={handleConfirm}
+                    disabled={isConfirming}
+                    className="w-full py-5 border border-black/20 dark:border-white/20 text-zinc-500 hover:text-black dark:hover:text-white text-[10px] uppercase tracking-widest font-bold transition-colors disabled:opacity-50 active:scale-[0.98]"
+                  >
+                    {t('booking.pay_at_shop', { defaultValue: 'Pay at Shop' })}
                   </button>
                 </motion.div>
               )}

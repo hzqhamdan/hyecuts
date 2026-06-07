@@ -186,6 +186,7 @@
     "secured": "Secured",
     "ref_label": "REF",
     "proceed_to_payment": "Proceed to Payment",
+    "pay_at_shop": "Pay at Shop",
     "payment": {
       "title": "Secure Deposit",
       "description": "A 50% deposit is required to secure your appointment. This will be deducted from your final bill.",
@@ -408,5 +409,10 @@
     "processing": "Processing...",
     "establish_profile": "Establish Profile",
     "join_network": "Join the network to track your assets and bookings."
+  },
+  "pwa": {
+    "install_title": "Install The Studio App",
+    "install_desc": "Install the app to your home screen for quick access and to receive booking reminders.",
+    "install_button": "Install Now"
   }
 }
