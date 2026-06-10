@@ -44,6 +44,10 @@ public class BookingService {
         return bookingRepository.findAllByOrderByAppointmentTimeDesc();
     }
 
+    public List<Booking> getBookingsByDateRange(java.time.LocalDateTime start, java.time.LocalDateTime end) {
+        return bookingRepository.findByAppointmentTimeBetween(start, end);
+    }
+
     public Optional<Booking> getBookingById(UUID bookingId) {
         return bookingRepository.findById(bookingId);
     }
@@ -82,6 +86,19 @@ public class BookingService {
         log.setDescription("Points earned for completing " + booking.getService().getName());
         activityLogRepository.save(log);
 
+        return bookingRepository.save(booking);
+    }
+
+    @Transactional
+    public Booking rescheduleBooking(UUID bookingId, java.time.LocalDateTime newTime) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+        
+        if (booking.getStatus() == Booking.BookingStatus.COMPLETED || booking.getStatus() == Booking.BookingStatus.CANCELLED) {
+            throw new RuntimeException("Cannot reschedule a completed or cancelled booking.");
+        }
+
+        booking.setAppointmentTime(newTime);
         return bookingRepository.save(booking);
     }
 

@@ -186,6 +186,7 @@
     "secured": "Disahkan",
     "ref_label": "RUJ",
     "proceed_to_payment": "Teruskan ke Pembayaran",
+    "pay_at_shop": "Bayar di Kedai",
     "payment": {
       "title": "Deposit Selamat",
       "description": "Deposit 50% diperlukan untuk mengesahkan tempahan anda. Ini akan ditolak daripada bil akhir anda.",
@@ -401,5 +402,10 @@
     "processing": "Memproses...",
     "establish_profile": "Cipta Profil",
     "join_network": "Sertai rangkaian untuk mengesan aset dan tempahan anda."
+  },
+  "pwa": {
+    "install_title": "Pasang Aplikasi The Studio",
+    "install_desc": "Pasang aplikasi ke skrin utama anda untuk akses pantas dan menerima peringatan tempahan.",
+    "install_button": "Pasang Sekarang"
   }
 }

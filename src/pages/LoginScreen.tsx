@@ -1,11 +1,23 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
-import { ArrowLeft, ShieldCheck, Globe } from 'lucide-react';
+import { ArrowLeft, Globe } from 'lucide-react';
 import { api } from '../api/client';
 import { API_URL } from '../config';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { SmokeyBackground } from '../components/ui/login-form';
+
+const CustomShieldIcon = ({ className }: { className?: string }) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 256 256" 
+    fill="currentColor" 
+    className={className}
+  >
+    <path d="M208,40H48A16,16,0,0,0,32,56v56c0,52.72,25.52,84.67,46.93,102.19,23.06,18.86,46,25.26,47,25.53a8,8,0,0,0,4.2,0c1-.27,23.91-6.67,47-25.53C198.48,196.67,224,164.72,224,112V56A16,16,0,0,0,208,40Zm0,72c0,37.07-13.66,67.16-40.6,89.42A129.3,129.3,0,0,1,128,223.62a128.25,128.25,0,0,1-38.92-21.81C61.82,179.51,48,149.3,48,112l0-56,160,0ZM82.34,141.66a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32l-56,56a8,8,0,0,1-11.32,0Z" />
+  </svg>
+);
 
 export default function LoginScreen() {
   const navigate = useNavigate();
@@ -52,11 +64,16 @@ export default function LoginScreen() {
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="min-h-screen bg-white dark:bg-[#1A1A1A] text-black dark:text-[#FAFAFA] font-sans flex flex-col justify-center items-center p-4 sm:p-6 relative overflow-hidden transition-colors duration-500"
+      className="min-h-screen text-black dark:text-[#FAFAFA] font-sans flex flex-col justify-center items-center p-4 sm:p-6 relative overflow-hidden transition-colors duration-500"
     >
-      <div className="absolute top-8 sm:top-12 left-6 sm:left-12 flex items-center gap-3">
+      {/* WebGL smokey background (only the shader; the existing form is preserved) */}
+      <div className="absolute inset-0 z-0 bg-[#0A0A0A]">
+        <SmokeyBackground color="#B8A070" backdropBlurAmount="none" />
+      </div>
+
+      <div className="relative z-10 absolute top-8 sm:top-12 left-6 sm:left-12 flex items-center gap-3">
         <button 
           onClick={() => { navigate('/'); }}
           className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-bold"
@@ -65,7 +82,7 @@ export default function LoginScreen() {
         </button>
       </div>
 
-      <div className="absolute top-8 sm:top-12 right-6 sm:right-12">
+      <div className="relative z-10 absolute top-8 sm:top-12 right-6 sm:right-12">
         <button 
           onClick={toggleLanguage}
           className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-bold"
@@ -75,12 +92,12 @@ export default function LoginScreen() {
         </button>
       </div>
 
-      <motion.div 
+      <motion.div
         initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-        className="w-full max-w-md bg-white dark:bg-[#1A1A1A] border border-zinc-200 dark:border-zinc-800 p-8 sm:p-12 transition-colors"
+        className="relative z-10 w-full max-w-md bg-white/80 dark:bg-[#1A1A1A]/70 backdrop-blur-xl border border-white/30 dark:border-zinc-700/50 p-8 sm:p-12 transition-colors shadow-2xl"
       >
         <div className="text-center mb-8 md:mb-10">
-          <ShieldCheck className="w-8 h-8 mx-auto mb-4 text-black dark:text-white" />
+          <CustomShieldIcon className="w-8 h-8 mx-auto mb-4 text-black dark:text-white" />
           <h2 className="font-serif text-2xl md:text-3xl font-light tracking-tight text-black dark:text-white">{isRegistering ? t('login.establish_profile') : t('login.member_login')}</h2>
           <p className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mt-2 font-bold">{isRegistering ? t('login.join_network') : t('login.welcome_back')}</p>
         </div>
