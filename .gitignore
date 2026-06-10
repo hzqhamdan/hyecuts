@@ -36,3 +36,7 @@ test-results/
 
 # Production Config (If it contains secrets)
 backend/src/main/resources/application-prod.yml
+.gradle/
+build/
+.idea/
+*.class
