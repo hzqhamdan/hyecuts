@@ -92,10 +92,17 @@ public class BookingController {
         }
     }
 
+    public static class RescheduleRequest {
+        public String newAppointmentTime;
+    }
+
     @PutMapping("/{bookingId}/reschedule")
-    public ResponseEntity<?> rescheduleBooking(@PathVariable UUID bookingId, @RequestBody String newTime) {
+    public ResponseEntity<?> rescheduleBooking(@PathVariable UUID bookingId, @RequestBody RescheduleRequest request) {
         try {
-            Booking rescheduled = bookingService.rescheduleBooking(bookingId, java.time.LocalDateTime.parse(newTime));
+            java.time.LocalDateTime newTime = java.time.LocalDateTime.parse(
+                request.newAppointmentTime.replace("Z", "").replace("z", "")
+            );
+            Booking rescheduled = bookingService.rescheduleBooking(bookingId, newTime);
             return ResponseEntity.ok(rescheduled);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

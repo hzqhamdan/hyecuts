@@ -37,21 +37,35 @@ export default function RescheduleModal({ isOpen, onClose, bookingId, onSuccess 
 
   if (!isOpen) return null;
 
+  function parseTime12h(timeStr: string): { hours: number; minutes: number } {
+    const match = timeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    if (!match) return { hours: 0, minutes: 0 };
+    let h = parseInt(match[1], 10);
+    const m = parseInt(match[2], 10);
+    const mer = match[3].toUpperCase();
+    if (mer === 'PM' && h !== 12) h += 12;
+    if (mer === 'AM' && h === 12) h = 0;
+    return { hours: h, minutes: m };
+  }
+
   const handleReschedule = async () => {
     if (!selectedDate || !selectedTime) return;
-    
+
     setLoading(true);
     try {
-      // Basic time parsing to construct ISO string
-      const date = new Date(); // Need to map selectedDate.day to actual date
-      // Simplified: assume next day for demo purposes as in BookingFlow
-      date.setDate(date.getDate() + 1); 
-      
-      const [hours, minutes] = selectedTime.split(':');
-      date.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+      const dayMap: Record<string, number> = { Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 0 };
+      const targetDay = dayMap[selectedDate];
+      if (targetDay === undefined) throw new Error('Invalid day');
+
+      const now = new Date();
+      const date = new Date(now);
+      date.setDate(now.getDate() + ((targetDay + 7 - now.getDay()) % 7 || 7));
+
+      const { hours, minutes } = parseTime12h(selectedTime);
+      date.setHours(hours, minutes, 0, 0);
 
       await api.put(`/bookings/${bookingId}/reschedule`, {
-        body: date.toISOString()
+        body: { newAppointmentTime: date.toISOString() }
       });
       onSuccess();
       onClose();
