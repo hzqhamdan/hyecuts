@@ -122,6 +122,7 @@ const MemberLounge = () => {
       />
 
       <UserProfileModal
+        profile={profile}
         isOpen={showSettingsModal}
         onClose={() => setShowSettingsModal(false)}
         onProfileUpdate={refreshProfile}

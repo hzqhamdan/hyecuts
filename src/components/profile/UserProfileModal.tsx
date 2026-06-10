@@ -111,7 +111,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
   };
 
   const getInitials = (name: string) => {
-    return name.slice(0, 2).toUpperCase();
+    return name.trim().slice(0, 2).toUpperCase();
   };
 
   return (
@@ -156,7 +156,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                     />
                   ) : (
                     <div className="w-16 h-16 bg-black dark:bg-white text-white dark:text-black flex items-center justify-center font-serif text-xl rounded-full">
-                      {getInitials(formData.username)}
+                      {getInitials(formData.fullName || formData.username)}
                     </div>
                   )}
                   <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
