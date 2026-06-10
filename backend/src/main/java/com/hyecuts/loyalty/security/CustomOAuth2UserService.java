@@ -2,6 +2,7 @@ package com.hyecuts.loyalty.security;
 
 import com.hyecuts.loyalty.model.User;
 import com.hyecuts.loyalty.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -17,9 +18,11 @@ import java.util.Map;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public CustomOAuth2UserService(UserRepository userRepository) {
+    public CustomOAuth2UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -37,6 +40,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             newUser.setUsername(email);
             newUser.setFullName(name);
             newUser.setRole("ROLE_USER");
+            newUser.setPasswordHash(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
             return userRepository.save(newUser);
         });
 
