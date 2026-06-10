@@ -164,9 +164,9 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                   </div>
                 </label>
               </div>
-              <div>
-                <h2 className="font-serif text-2xl uppercase tracking-tighter">{formData.username}</h2>
-                <div className="text-[10px] uppercase tracking-widest text-zinc-500">{t('lounge.tier_label')}</div>
+              <div className="min-w-0">
+                <h2 className="font-serif text-2xl uppercase tracking-tighter truncate">{formData.fullName || formData.username}</h2>
+                <div className="text-[10px] uppercase tracking-widest text-zinc-500 truncate">{profile?.currentTier ?? t('lounge.tier_label')}</div>
               </div>
             </div>
 
