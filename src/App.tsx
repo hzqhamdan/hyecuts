@@ -9,6 +9,7 @@ const LandingPage = lazy(() => import('./LandingPage'));
 const MemberLounge = lazy(() => import('./MemberLounge'));
 const AtelierDashboard = lazy(() => import('./AtelierDashboard'));
 const LoginScreen = lazy(() => import('./LoginScreen'));
+const OAuth2Callback = lazy(() => import('./pages/OAuth2Callback'));
 const BookingFlow = lazy(() => import('./components/booking/BookingFlow'));
 const UserBookings = lazy(() => import('./components/booking/UserBookings'));
 const BookingsManager = lazy(() => import('./components/atelier/BookingsManager').then(m => ({ default: m.BookingsManager })));
@@ -41,6 +42,7 @@ function AnimatedRoutes() {
         <Routes location={location} key={location.key}>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginScreen />} />
+          <Route path="/oauth2/callback" element={<OAuth2Callback />} />
           <Route path="/booking" element={<BookingFlow />} />
           <Route
             path="/my-bookings"
