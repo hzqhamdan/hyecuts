@@ -28,6 +28,22 @@ public class GlobalSettingsService {
         }
     }
 
+    public int getBirthdayBonusPoints() {
+        try {
+            return Integer.parseInt(getSettingValue("BIRTHDAY_BONUS_POINTS", "100"));
+        } catch (NumberFormatException e) {
+            return 100;
+        }
+    }
+
+    public int getInsiderBonusPercent() {
+        try {
+            return Integer.parseInt(getSettingValue("INSIDER_BONUS_PERCENT", "10"));
+        } catch (NumberFormatException e) {
+            return 10;
+        }
+    }
+
     public GlobalSettings saveSetting(String key, String value, String description) {
         GlobalSettings setting = repository.findById(key).orElse(new GlobalSettings(key, value, description));
         setting.setValue(value);

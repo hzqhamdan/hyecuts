@@ -17,7 +17,7 @@ const StatusCard = ({ profile, isLoading, progressData, tierLabel }: StatusCardP
       <div className="w-full max-w-sm flex flex-col items-center bg-white dark:bg-[#1A1A1A] border border-black/10 dark:border-white/10 px-8 py-12 md:py-16">
         <span className="text-xs uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 font-sans mb-4">{tierLabel}</span>
         <h2 className="font-serif text-[32px] md:text-[40px] text-black dark:text-white text-center">
-          {isLoading ? '...' : t('data.tiers.' + (profile?.currentTier ?? 'Rookie'))}
+          {isLoading ? '...' : t('data.tiers.' + (profile?.currentTier ?? 'MEMBER'))}
         </h2>
 
         {/* The Hairline Progress Arc */}

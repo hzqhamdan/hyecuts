@@ -3,68 +3,68 @@ import { calculateLoyaltyPoints, determineTier, calculateProgressToNextTier } fr
 
 describe('Gamification Logic', () => {
   describe('calculateLoyaltyPoints', () => {
-    it('should calculate base points correctly', () => {
-      expect(calculateLoyaltyPoints(50, 10)).toBe(500);
+    it('should calculate points as 1:1 MYR', () => {
+      expect(calculateLoyaltyPoints(25, 1)).toBe(25);
     });
 
     it('should apply seasonal multiplier', () => {
-      expect(calculateLoyaltyPoints(50, 10, 1.5)).toBe(750);
+      expect(calculateLoyaltyPoints(25, 1, 1.5)).toBe(37);
     });
 
     it('should return 0 for negative spend', () => {
-      expect(calculateLoyaltyPoints(-10, 10)).toBe(0);
+      expect(calculateLoyaltyPoints(-10, 1)).toBe(0);
     });
 
     it('should floor decimal points', () => {
-      expect(calculateLoyaltyPoints(25.5, 10, 1.25)).toBe(318);
+      expect(calculateLoyaltyPoints(25.5, 1, 1.25)).toBe(31);
     });
   });
 
   describe('determineTier', () => {
-    it('should identify Rookie tier', () => {
-      expect(determineTier(0)).toBe('Rookie');
-      expect(determineTier(499)).toBe('Rookie');
+    it('should identify MEMBER tier', () => {
+      expect(determineTier(0)).toBe('MEMBER');
+      expect(determineTier(99)).toBe('MEMBER');
     });
 
-    it('should identify Regular tier', () => {
-      expect(determineTier(500)).toBe('Regular');
-      expect(determineTier(999)).toBe('Regular');
+    it('should identify INSIDER tier', () => {
+      expect(determineTier(100)).toBe('INSIDER');
+      expect(determineTier(349)).toBe('INSIDER');
     });
 
-    it('should identify Legend tier', () => {
-      expect(determineTier(1000)).toBe('Legend');
-      expect(determineTier(2999)).toBe('Legend');
+    it('should identify ARTISAN tier', () => {
+      expect(determineTier(350)).toBe('ARTISAN');
+      expect(determineTier(749)).toBe('ARTISAN');
     });
 
-    it('should identify Master tier', () => {
-      expect(determineTier(3000)).toBe('Master');
-      expect(determineTier(4999)).toBe('Master');
+    it('should identify CONNOISSEUR tier', () => {
+      expect(determineTier(750)).toBe('CONNOISSEUR');
+      expect(determineTier(1499)).toBe('CONNOISSEUR');
     });
 
-    it('should identify Icon tier', () => {
-      expect(determineTier(5000)).toBe('Icon');
-      expect(determineTier(10000)).toBe('Icon');
+    it('should identify PATRON tier', () => {
+      expect(determineTier(1500)).toBe('PATRON');
+      expect(determineTier(5000)).toBe('PATRON');
     });
   });
 
   describe('calculateProgressToNextTier', () => {
-    it('should calculate progress from Rookie to Regular', () => {
-      const result = calculateProgressToNextTier(250);
-      expect(result.nextTier).toBe('Regular');
-      expect(result.pointsNeeded).toBe(250);
+    it('should calculate progress from MEMBER to INSIDER', () => {
+      const result = calculateProgressToNextTier(50);
+      expect(result.nextTier).toBe('INSIDER');
+      expect(result.pointsNeeded).toBe(50);
       expect(result.progressPercentage).toBe(50);
     });
 
-    it('should calculate progress from Legend to Master', () => {
+    it('should calculate progress from ARTISAN to CONNOISSEUR', () => {
+      const result = calculateProgressToNextTier(550);
+      expect(result.nextTier).toBe('CONNOISSEUR');
+      expect(result.pointsNeeded).toBe(200);
+      // 200 points into the 400 point range (350 to 750)
+      expect(result.progressPercentage).toBe(50);
+    });
+
+    it('should handle max tier (PATRON)', () => {
       const result = calculateProgressToNextTier(2000);
-      expect(result.nextTier).toBe('Master');
-      expect(result.pointsNeeded).toBe(1000);
-      // 1000 points into the 2000 point range (1000 to 3000)
-      expect(result.progressPercentage).toBe(50);
-    });
-
-    it('should handle max tier (Icon)', () => {
-      const result = calculateProgressToNextTier(6000);
       expect(result.nextTier).toBe(null);
       expect(result.pointsNeeded).toBe(0);
       expect(result.progressPercentage).toBe(100);

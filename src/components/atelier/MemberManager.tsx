@@ -50,7 +50,7 @@ export function MemberManager() {
     }
   });
 
-  const tiers = ['Rookie', 'Regular', 'Legend', 'Master', 'Icon'];
+  const tiers = ['MEMBER', 'INSIDER', 'ARTISAN', 'CONNOISSEUR', 'PATRON'];
 
   const filteredMembers = members.filter(m => 
     m.email.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -107,7 +107,7 @@ export function MemberManager() {
                 </td>
                 <td className="p-6">
                   <span className="text-[9px] uppercase tracking-widest px-2 py-1 border border-black/10 dark:border-white/10 font-bold text-black dark:text-white">
-                    {t(`data.tiers.${member.tier?.name ?? 'Rookie'}`)}
+                    {t(`data.tiers.${member.tier ?? 'MEMBER'}`)}
                   </span>
                 </td>
                 <td className="p-6 font-mono text-sm text-black dark:text-white">
@@ -166,7 +166,7 @@ export function MemberManager() {
                 </div>
                 <div className="p-8 bg-white dark:bg-[#1A1A1A] text-center">
                   <p className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2">{t('lounge.tier_label')}</p>
-                  <p className="font-serif text-3xl text-[#B8A070]">{t(`data.tiers.${selectedMember.tier?.name ?? 'Rookie'}`)}</p>
+                  <p className="font-serif text-3xl text-[#B8A070]">{t(`data.tiers.${selectedMember.tier ?? 'MEMBER'}`)}</p>
                 </div>
               </div>
 
@@ -224,9 +224,9 @@ export function MemberManager() {
                           <button
                             key={tier}
                             onClick={() => tierMutation.mutate({ userId: selectedMember.id, tierName: tier })}
-                            disabled={tierMutation.isPending || selectedMember.tier?.name === tier}
+                            disabled={tierMutation.isPending || selectedMember.tier === tier}
                             className={`px-4 py-2 text-[9px] uppercase tracking-widest font-bold border transition-all ${
-                              selectedMember.tier?.name === tier 
+                              selectedMember.tier === tier 
                                 ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white' 
                                 : 'border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white'
                             } disabled:opacity-50`}

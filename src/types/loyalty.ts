@@ -6,7 +6,6 @@ export interface User {
   currentPoints: number;
   lifetimePoints: number;
   pointsBalance?: number; 
-  currentTier?: string;   
   currentStreak?: number;
   lastBookingDate?: string;
   dob?: string;
@@ -15,10 +14,7 @@ export interface User {
   hairLength?: string;
   hairScalp?: string;
   avatar?: string | null;
-  tier: {
-    name: string;
-    pointsRequired: number;
-  } | null;
+  tier: string;
 }
 
 export interface LoyaltyProfile {

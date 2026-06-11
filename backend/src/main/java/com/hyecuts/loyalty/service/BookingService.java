@@ -9,7 +9,6 @@ import com.hyecuts.loyalty.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -18,18 +17,21 @@ import java.util.UUID;
 public class BookingService {
 
     private final BookingRepository bookingRepository;
-    private final GlobalSettingsService globalSettingsService;
     private final UserRepository userRepository;
     private final ActivityLogRepository activityLogRepository;
+    private final LoyaltyService loyaltyService;
+    private final GlobalSettingsService globalSettingsService;
 
     public BookingService(BookingRepository bookingRepository,
-                          GlobalSettingsService globalSettingsService,
                           UserRepository userRepository,
-                          ActivityLogRepository activityLogRepository) {
+                          ActivityLogRepository activityLogRepository,
+                          LoyaltyService loyaltyService,
+                          GlobalSettingsService globalSettingsService) {
         this.bookingRepository = bookingRepository;
-        this.globalSettingsService = globalSettingsService;
         this.userRepository = userRepository;
         this.activityLogRepository = activityLogRepository;
+        this.loyaltyService = loyaltyService;
+        this.globalSettingsService = globalSettingsService;
     }
 
     public Booking createBooking(Booking booking) {
@@ -61,27 +63,20 @@ public class BookingService {
             throw new RuntimeException("Booking is already completed.");
         }
 
-        // Calculate points based on MYR
         int pointsPerMyr = globalSettingsService.getPointsPerMyr();
-        BigDecimal price = booking.getTotalPriceMyr();
-        
-        // Base points + (Price * Rate)
-        int calculatedPoints = booking.getService().getBasePoints() + 
-                (price.intValue() * pointsPerMyr);
+        int earnedPoints = booking.getTotalPriceMyr().intValue() * pointsPerMyr;
 
-        booking.setPointsAwarded(calculatedPoints);
+        booking.setPointsAwarded(earnedPoints);
         booking.setStatus(Booking.BookingStatus.COMPLETED);
-        
-        // Update user points
+
+        // Update user points via LoyaltyService (applies tier bonus)
         User user = booking.getUser();
-        user.setCurrentPoints(user.getCurrentPoints() + calculatedPoints);
-        user.setLifetimePoints(user.getLifetimePoints() + calculatedPoints);
-        userRepository.save(user);
+        loyaltyService.addPointsToUser(user, earnedPoints);
 
         // Log activity
         ActivityLog log = new ActivityLog();
         log.setUser(user);
-        log.setPointsEarned(calculatedPoints);
+        log.setPointsEarned(earnedPoints);
         log.setActionType(ActivityLog.TransactionType.BOOKING);
         log.setDescription("Points earned for completing " + booking.getService().getName());
         activityLogRepository.save(log);

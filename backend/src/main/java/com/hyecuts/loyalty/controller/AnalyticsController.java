@@ -64,7 +64,7 @@ public class AnalyticsController {
         // 2. Tier Distribution
         Map<String, Long> tierDistribution = allUsers.stream()
                 .collect(Collectors.groupingBy(
-                        u -> u.getTier() != null ? u.getTier().getName() : "Initiate",
+                        u -> u.getTier() != null ? u.getTier().name() : "MEMBER",
                         Collectors.counting()
                 ));
         summary.put("tierDistribution", tierDistribution);

@@ -13,7 +13,7 @@ interface Notification {
 }
 
 const mockNotifications: Notification[] = [
-  { id: 1, title: 'Tier Upgraded', message: 'Welcome to Legend tier. Enjoy your new perks.', isRead: false, time: '2h ago' },
+  { id: 1, title: 'Tier Upgraded', message: 'Welcome to Artisan tier. Enjoy your new perks.', isRead: false, time: '2h ago' },
   { id: 2, title: 'Reward Redeemed', message: 'Complimentary Hair Cut applied successfully.', isRead: true, time: '1d ago' },
 ];
 
@@ -51,7 +51,7 @@ export function useLoungeData(userId: string) {
         username: profileData.username || profileData.email,
         fullName: profileData.fullName || '',
         pointsBalance: profileData.currentPoints,
-        currentTier: profileData.tier ? profileData.tier.name : 'Rookie',
+        currentTier: profileData.tier ?? 'MEMBER',
         dob: profileData.dob || '1990-01-01',
         phone: profileData.phone || '',
         hairType: profileData.hairType || 'straight',

@@ -22,7 +22,7 @@ export function LoyaltyConfigurator() {
 
       return {
         rewards,
-        ratio: parseInt(ratio, 10) || 10,
+        ratio: parseInt(ratio, 10) || 1,
         multiplier: parseFloat(multiplier) || 1.0
       };
     }

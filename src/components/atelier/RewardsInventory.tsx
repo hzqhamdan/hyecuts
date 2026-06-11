@@ -13,7 +13,7 @@ export function RewardsInventory({ rewards, onRewardAdded }: { rewards: Reward[]
     title: '', 
     pointsCost: 1000, 
     type: 'SERVICE_DISCOUNT', 
-    minimumTierRequired: 'Rookie', 
+    minimumTierRequired: 'MEMBER', 
     stockAvailable: 10 
   });
 
@@ -48,11 +48,11 @@ export function RewardsInventory({ rewards, onRewardAdded }: { rewards: Reward[]
             <input type="text" placeholder="Title" value={newReward.title} onChange={e => { setNewReward({...newReward, title: e.target.value}); }} className="p-3 border border-zinc-200 dark:border-zinc-800 bg-transparent text-black dark:text-white text-sm outline-none focus:border-black dark:focus:border-white transition-all" />
             <input type="number" placeholder={t('atelier.loyalty.valuation')} value={newReward.pointsCost} onChange={e => { setNewReward({...newReward, pointsCost: parseInt(e.target.value)}); }} className="p-3 border border-zinc-200 dark:border-zinc-800 bg-transparent text-black dark:text-white text-sm outline-none focus:border-black dark:focus:border-white transition-all" />
             <select value={newReward.minimumTierRequired} onChange={e => { setNewReward({...newReward, minimumTierRequired: e.target.value}); }} className="p-3 border border-zinc-200 dark:border-zinc-800 bg-transparent text-black dark:text-white text-sm outline-none focus:border-black dark:focus:border-white transition-all">
-              <option value="Rookie" className="bg-white dark:bg-[#1A1A1A]">{t('data.tiers.Rookie')}</option>
-              <option value="Regular" className="bg-white dark:bg-[#1A1A1A]">{t('data.tiers.Regular')}</option>
-              <option value="Legend" className="bg-white dark:bg-[#1A1A1A]">{t('data.tiers.Legend')}</option>
-              <option value="Master" className="bg-white dark:bg-[#1A1A1A]">{t('data.tiers.Master')}</option>
-              <option value="Icon" className="bg-white dark:bg-[#1A1A1A]">{t('data.tiers.Icon')}</option>
+              <option value="MEMBER" className="bg-white dark:bg-[#1A1A1A]">{t('data.tiers.MEMBER')}</option>
+              <option value="INSIDER" className="bg-white dark:bg-[#1A1A1A]">{t('data.tiers.INSIDER')}</option>
+              <option value="ARTISAN" className="bg-white dark:bg-[#1A1A1A]">{t('data.tiers.ARTISAN')}</option>
+              <option value="CONNOISSEUR" className="bg-white dark:bg-[#1A1A1A]">{t('data.tiers.CONNOISSEUR')}</option>
+              <option value="PATRON" className="bg-white dark:bg-[#1A1A1A]">{t('data.tiers.PATRON')}</option>
             </select>
             <input type="number" placeholder={t('atelier.loyalty.stock')} value={newReward.stockAvailable} onChange={e => { setNewReward({...newReward, stockAvailable: parseInt(e.target.value)}); }} className="p-3 border border-zinc-200 dark:border-zinc-800 bg-transparent text-black dark:text-white text-sm outline-none focus:border-black dark:focus:border-white transition-all" />
           </div>

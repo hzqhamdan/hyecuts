@@ -292,11 +292,11 @@
       "the_studio": "Studio"
     },
     "tiers": {
-      "Rookie": "Rookie",
-      "Regular": "Regular",
-      "Legend": "Legend",
-      "Master": "Master",
-      "Icon": "Icon"
+      "MEMBER": "Ahli",
+      "INSIDER": "Insider",
+      "ARTISAN": "Artisan",
+      "CONNOISSEUR": "Connaisseur",
+      "PATRON": "Pelindung"
     },
     "rewards": {
       "Complimentary Hair Cut": {

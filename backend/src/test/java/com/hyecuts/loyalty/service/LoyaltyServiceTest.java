@@ -2,7 +2,6 @@ package com.hyecuts.loyalty.service;
 
 import com.hyecuts.loyalty.model.Tier;
 import com.hyecuts.loyalty.model.User;
-import com.hyecuts.loyalty.repository.TierRepository;
 import com.hyecuts.loyalty.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,16 +24,13 @@ public class LoyaltyServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private TierRepository tierRepository;
+    private GlobalSettingsService globalSettingsService;
 
     @InjectMocks
     private LoyaltyService loyaltyService;
 
     private User testUser;
     private UUID userId;
-    private Tier rookieTier;
-    private Tier regularTier;
-    private Tier legendTier;
 
     @BeforeEach
     void setUp() {
@@ -44,48 +39,66 @@ public class LoyaltyServiceTest {
         testUser.setId(userId);
         testUser.setCurrentPoints(0);
         testUser.setLifetimePoints(0);
-
-        rookieTier = new Tier();
-        rookieTier.setName("Rookie");
-        rookieTier.setPointsRequired(0);
-
-        regularTier = new Tier();
-        regularTier.setName("Regular");
-        regularTier.setPointsRequired(1000);
-
-        legendTier = new Tier();
-        legendTier.setName("Legend");
-        legendTier.setPointsRequired(2500);
-
-        testUser.setTier(rookieTier);
+        testUser.setTier(Tier.MEMBER);
     }
 
     @Test
     void addPoints_shouldUpdatePointsAndTier() {
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
-        when(tierRepository.findAll()).thenReturn(Arrays.asList(rookieTier, regularTier, legendTier));
+        when(globalSettingsService.getInsiderBonusPercent()).thenReturn(0);
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // Add 1200 points - should move to "Regular" tier
-        User updatedUser = loyaltyService.addPoints(userId, 1200);
+        User updatedUser = loyaltyService.addPoints(userId, 120);
 
-        assertEquals(1200, updatedUser.getCurrentPoints());
-        assertEquals(1200, updatedUser.getLifetimePoints());
-        assertEquals("Regular", updatedUser.getTier().getName());
+        assertEquals(120, updatedUser.getCurrentPoints());
+        assertEquals(120, updatedUser.getLifetimePoints());
+        assertEquals(Tier.INSIDER, updatedUser.getTier());
         verify(userRepository).save(testUser);
     }
 
     @Test
-    void addPoints_shouldMoveToLegendTier() {
+    void addPoints_shouldMoveToArtisanTier() {
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
-        when(tierRepository.findAll()).thenReturn(Arrays.asList(rookieTier, regularTier, legendTier));
+        when(globalSettingsService.getInsiderBonusPercent()).thenReturn(0);
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // Add 3000 points - should move to "Legend" tier
-        User updatedUser = loyaltyService.addPoints(userId, 3000);
+        User updatedUser = loyaltyService.addPoints(userId, 350);
 
-        assertEquals(3000, updatedUser.getCurrentPoints());
-        assertEquals("Legend", updatedUser.getTier().getName());
+        assertEquals(350, updatedUser.getCurrentPoints());
+        assertEquals(Tier.ARTISAN, updatedUser.getTier());
+    }
+
+    @Test
+    void addPoints_shouldApplyInsiderBonus() {
+        testUser.setTier(Tier.INSIDER);
+        testUser.setLifetimePoints(100);
+        testUser.setCurrentPoints(100);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+        when(globalSettingsService.getInsiderBonusPercent()).thenReturn(10);
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // 25 points + 10% = 27 (25 + 2 = 27)
+        User updatedUser = loyaltyService.addPoints(userId, 25);
+
+        assertEquals(127, updatedUser.getCurrentPoints());
+        assertEquals(127, updatedUser.getLifetimePoints());
+        assertEquals(Tier.ARTISAN, updatedUser.getTier());
+    }
+
+    @Test
+    void addPoints_shouldMoveToConnoisseur() {
+        testUser.setLifetimePoints(350);
+        testUser.setCurrentPoints(350);
+        testUser.setTier(Tier.ARTISAN);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+        when(globalSettingsService.getInsiderBonusPercent()).thenReturn(10);
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        User updatedUser = loyaltyService.addPoints(userId, 400);
+
+        // 400 + 10% = 440, total = 350 + 440 = 790
+        assertEquals(790, updatedUser.getCurrentPoints());
+        assertEquals(Tier.CONNOISSEUR, updatedUser.getTier());
     }
 
     @Test
@@ -118,5 +131,25 @@ public class LoyaltyServiceTest {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class, () -> loyaltyService.getUser(userId));
+    }
+
+    @Test
+    void overrideTier_shouldUpdateTierAndLifetimePoints() {
+        testUser.setCurrentPoints(0);
+        testUser.setLifetimePoints(0);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        User updatedUser = loyaltyService.overrideTier(userId, "PATRON");
+
+        assertEquals(Tier.PATRON, updatedUser.getTier());
+        assertEquals(1500, updatedUser.getLifetimePoints());
+    }
+
+    @Test
+    void overrideTier_shouldThrowForInvalidTier() {
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+
+        assertThrows(RuntimeException.class, () -> loyaltyService.overrideTier(userId, "INVALID"));
     }
 }

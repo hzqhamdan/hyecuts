@@ -28,6 +28,9 @@ public class Voucher {
     @Column(name = "redeemed_at")
     private LocalDateTime redeemedAt;
 
+    @Column(name = "expires_at")
+    private LocalDateTime expiresAt;
+
     public enum VoucherStatus {
         ACTIVE, REDEEMED, EXPIRED
     }
@@ -47,4 +50,6 @@ public class Voucher {
     public void setIssuedAt(LocalDateTime issuedAt) { this.issuedAt = issuedAt; }
     public LocalDateTime getRedeemedAt() { return redeemedAt; }
     public void setRedeemedAt(LocalDateTime redeemedAt) { this.redeemedAt = redeemedAt; }
+    public LocalDateTime getExpiresAt() { return expiresAt; }
+    public void setExpiresAt(LocalDateTime expiresAt) { this.expiresAt = expiresAt; }
 }

@@ -65,11 +65,12 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
+        configuration.setAllowedOrigins(Arrays.asList(
+            "http://localhost:5173"
+        ));
         configuration.setAllowedOriginPatterns(Arrays.asList(
             "https://*.vercel.app",
-            "https://*.railway.app",
-            "http://localhost:[*]",
-            "*"
+            "https://*.railway.app"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));

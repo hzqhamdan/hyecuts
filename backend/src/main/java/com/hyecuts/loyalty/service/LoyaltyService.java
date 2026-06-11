@@ -2,13 +2,11 @@ package com.hyecuts.loyalty.service;
 
 import com.hyecuts.loyalty.model.Tier;
 import com.hyecuts.loyalty.model.User;
-import com.hyecuts.loyalty.repository.TierRepository;
 import com.hyecuts.loyalty.repository.UserRepository;
 import com.hyecuts.loyalty.web.UpdateProfileRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -17,11 +15,11 @@ import java.util.UUID;
 public class LoyaltyService {
 
     private final UserRepository userRepository;
-    private final TierRepository tierRepository;
+    private final GlobalSettingsService globalSettingsService;
 
-    public LoyaltyService(UserRepository userRepository, TierRepository tierRepository) {
+    public LoyaltyService(UserRepository userRepository, GlobalSettingsService globalSettingsService) {
         this.userRepository = userRepository;
-        this.tierRepository = tierRepository;
+        this.globalSettingsService = globalSettingsService;
     }
 
     public User getUser(UUID userId) {
@@ -70,19 +68,32 @@ public class LoyaltyService {
             if (hp.get("scalp") != null) user.setHairScalp(hp.get("scalp"));
         }
 
+        // Extract birth month from dob if present
+        if (req.dob() != null && !req.dob().isEmpty()) {
+            try {
+                String[] parts = req.dob().split("-");
+                if (parts.length >= 2) {
+                    user.setBirthMonth(Integer.parseInt(parts[1]));
+                }
+            } catch (NumberFormatException ignored) {}
+        }
+
         return userRepository.save(user);
     }
 
     @Transactional
     public User overrideTier(UUID userId, String tierName) {
         User user = getUser(userId);
-        Tier tier = tierRepository.findByName(tierName)
-                .orElseThrow(() -> new RuntimeException("Tier not found: " + tierName));
+        Tier tier;
+        try {
+            tier = Tier.valueOf(tierName.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid tier: " + tierName);
+        }
         
         user.setTier(tier);
-        // Ensure lifetime points match the new tier's minimum requirement if they're below it
-        if (user.getLifetimePoints() < tier.getPointsRequired()) {
-            user.setLifetimePoints(tier.getPointsRequired());
+        if (user.getLifetimePoints() < tier.getMinPoints()) {
+            user.setLifetimePoints(tier.getMinPoints());
         }
         
         return userRepository.save(user);
@@ -91,30 +102,26 @@ public class LoyaltyService {
     @Transactional
     public User addPoints(UUID userId, int points) {
         User user = getUser(userId);
-        user.setCurrentPoints(user.getCurrentPoints() + points);
-        user.setLifetimePoints(user.getLifetimePoints() + points);
+        return addPointsToUser(user, points);
+    }
+
+    @Transactional
+    public User addPointsToUser(User user, int points) {
+        int bonusPercent = user.getTier() == Tier.INSIDER || user.getTier() == Tier.ARTISAN
+                || user.getTier() == Tier.CONNOISSEUR || user.getTier() == Tier.PATRON
+                ? globalSettingsService.getInsiderBonusPercent() : 0;
+
+        int finalPoints = points + (points * bonusPercent / 100);
+
+        user.setCurrentPoints(user.getCurrentPoints() + finalPoints);
+        user.setLifetimePoints(user.getLifetimePoints() + finalPoints);
         
-        updateTier(user);
+        Tier newTier = Tier.forLifetimePoints(user.getLifetimePoints());
+        user.setTier(newTier);
         
         return userRepository.save(user);
     }
 
-    @Transactional
-    public void updateTier(User user) {
-        int pts = user.getLifetimePoints();
-        List<Tier> tiers = tierRepository.findAll();
-        
-        // Find the highest tier where points_required <= user's lifetime points
-        Tier bestTier = tiers.stream()
-                .filter(t -> t.getPointsRequired() <= pts)
-                .max(Comparator.comparingInt(Tier::getPointsRequired))
-                .orElse(null);
-
-        if (bestTier != null) {
-            user.setTier(bestTier);
-        }
-    }
-    
     @Transactional
     public boolean redeemPoints(UUID userId, int cost) {
         User user = getUser(userId);

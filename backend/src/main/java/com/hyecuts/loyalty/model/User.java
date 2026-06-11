@@ -3,6 +3,7 @@ package com.hyecuts.loyalty.model;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.Map;
@@ -31,9 +32,21 @@ public class User {
     @Column(name = "lifetime_points", nullable = false)
     private Integer lifetimePoints = 0;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "tier_id")
-    private Tier tier;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Tier tier = Tier.MEMBER;
+
+    @Column(name = "last_beard_trim_redeemed")
+    private LocalDate lastBeardTrimRedeemed;
+
+    @Column(name = "birth_month")
+    private Integer birthMonth;
+
+    @Column(name = "birthday_bonus_year")
+    private Integer birthdayBonusYear;
+
+    @Column(name = "last_quarterly_voucher_quarter", length = 10)
+    private String lastQuarterlyVoucherQuarter;
 
     @Column(name = "referral_code", unique = true)
     private String referralCode;
@@ -96,6 +109,14 @@ public class User {
     public void setLifetimePoints(Integer lifetimePoints) { this.lifetimePoints = lifetimePoints; }
     public Tier getTier() { return tier; }
     public void setTier(Tier tier) { this.tier = tier; }
+    public LocalDate getLastBeardTrimRedeemed() { return lastBeardTrimRedeemed; }
+    public void setLastBeardTrimRedeemed(LocalDate lastBeardTrimRedeemed) { this.lastBeardTrimRedeemed = lastBeardTrimRedeemed; }
+    public Integer getBirthMonth() { return birthMonth; }
+    public void setBirthMonth(Integer birthMonth) { this.birthMonth = birthMonth; }
+    public Integer getBirthdayBonusYear() { return birthdayBonusYear; }
+    public void setBirthdayBonusYear(Integer birthdayBonusYear) { this.birthdayBonusYear = birthdayBonusYear; }
+    public String getLastQuarterlyVoucherQuarter() { return lastQuarterlyVoucherQuarter; }
+    public void setLastQuarterlyVoucherQuarter(String lastQuarterlyVoucherQuarter) { this.lastQuarterlyVoucherQuarter = lastQuarterlyVoucherQuarter; }
     public String getReferralCode() { return referralCode; }
     public void setReferralCode(String referralCode) { this.referralCode = referralCode; }
     public User getReferredBy() { return referredBy; }

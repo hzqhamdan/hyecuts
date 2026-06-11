@@ -1,23 +1,23 @@
-export function calculateLoyaltyPoints(spendMyr: number, pointsPerMyr: number, seasonalMultiplier: number = 1.0): number {
+export function calculateLoyaltyPoints(spendMyr: number, _pointsPerMyr: number = 1, seasonalMultiplier: number = 1.0): number {
   if (spendMyr <= 0) return 0;
-  return Math.floor(spendMyr * pointsPerMyr * seasonalMultiplier);
+  return Math.floor(spendMyr * 1 * seasonalMultiplier);
 }
 
 export function determineTier(lifetimePoints: number): string {
-  if (lifetimePoints >= 5000) return 'Icon';
-  if (lifetimePoints >= 3000) return 'Master';
-  if (lifetimePoints >= 1000) return 'Legend';
-  if (lifetimePoints >= 500) return 'Regular';
-  return 'Rookie';
+  if (lifetimePoints >= 1500) return 'PATRON';
+  if (lifetimePoints >= 750) return 'CONNOISSEUR';
+  if (lifetimePoints >= 350) return 'ARTISAN';
+  if (lifetimePoints >= 100) return 'INSIDER';
+  return 'MEMBER';
 }
 
 export function calculateProgressToNextTier(lifetimePoints: number): { nextTier: string | null, pointsNeeded: number, progressPercentage: number } {
   const tiers = [
-    { name: 'Rookie', threshold: 0 },
-    { name: 'Regular', threshold: 500 },
-    { name: 'Legend', threshold: 1000 },
-    { name: 'Master', threshold: 3000 },
-    { name: 'Icon', threshold: 5000 },
+    { name: 'MEMBER', threshold: 0 },
+    { name: 'INSIDER', threshold: 100 },
+    { name: 'ARTISAN', threshold: 350 },
+    { name: 'CONNOISSEUR', threshold: 750 },
+    { name: 'PATRON', threshold: 1500 },
   ];
 
   let currentTierIndex = 0;

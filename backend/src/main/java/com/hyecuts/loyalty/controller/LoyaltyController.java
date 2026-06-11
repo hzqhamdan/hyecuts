@@ -35,7 +35,7 @@ public class LoyaltyController {
         response.put("fullName", u.getFullName());
         response.put("points", u.getCurrentPoints());
 
-        response.put("tier", u.getTier() != null ? u.getTier().getName() : "Rookie");
+        response.put("tier", u.getTier() != null ? u.getTier().name() : "MEMBER");
         
         return ResponseEntity.ok(response);
     }

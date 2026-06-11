@@ -299,11 +299,11 @@
       "the_studio": "The Studio"
     },
     "tiers": {
-      "Rookie": "Rookie",
-      "Regular": "Regular",
-      "Legend": "Legend",
-      "Master": "Master",
-      "Icon": "Icon"
+      "MEMBER": "Member",
+      "INSIDER": "Insider",
+      "ARTISAN": "Artisan",
+      "CONNOISSEUR": "Connoisseur",
+      "PATRON": "Patron"
     },
     "rewards": {
       "Complimentary Hair Cut": {
