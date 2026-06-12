@@ -15,7 +15,7 @@ export default defineConfig({
     }),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'icons.svg', 'assets/*.mp4', 'assets/*.png'],
+      includeAssets: ['favicon.svg', 'icons.svg', 'logo.png', 'assets/*.mp4', 'assets/*.png'],
       manifest: {
         name: 'Hyecuts: The Studio',
         short_name: 'The Studio',
