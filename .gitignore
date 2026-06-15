@@ -26,6 +26,7 @@ dist-ssr
 
 # IDE/Tool settings
 .claude/settings.local.json
+CLAUDE.md
 
 # Gradle (Java Build System)
 backend/.gradle/
