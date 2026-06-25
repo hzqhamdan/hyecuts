@@ -35,6 +35,18 @@ public class BookingService {
     }
 
     public Booking createBooking(Booking booking) {
+        if (booking.getUser() == null) {
+            throw new RuntimeException("User not found");
+        }
+        if (booking.getService() == null) {
+            throw new RuntimeException("Service not found");
+        }
+        if (booking.getAppointmentTime() != null && booking.getAppointmentTime().isBefore(java.time.LocalDateTime.now())) {
+            throw new RuntimeException("Appointment time cannot be in the past");
+        }
+        if (!booking.getService().getIsActive()) {
+            throw new RuntimeException("Service is not active");
+        }
         return bookingRepository.save(booking);
     }
 
@@ -61,6 +73,10 @@ public class BookingService {
 
         if (booking.getStatus() == Booking.BookingStatus.COMPLETED) {
             throw new RuntimeException("Booking is already completed.");
+        }
+
+        if (booking.getStatus() == Booking.BookingStatus.CANCELLED) {
+            throw new RuntimeException("Cannot complete a cancelled booking.");
         }
 
         int pointsPerMyr = globalSettingsService.getPointsPerMyr();
@@ -93,6 +109,10 @@ public class BookingService {
             throw new RuntimeException("Cannot reschedule a completed or cancelled booking.");
         }
 
+        if (newTime != null && newTime.isBefore(java.time.LocalDateTime.now())) {
+            throw new RuntimeException("New appointment time cannot be in the past");
+        }
+
         booking.setAppointmentTime(newTime);
         return bookingRepository.save(booking);
     }
@@ -104,6 +124,10 @@ public class BookingService {
         
         if (booking.getStatus() == Booking.BookingStatus.COMPLETED) {
             throw new RuntimeException("Cannot cancel a completed booking.");
+        }
+
+        if (booking.getStatus() == Booking.BookingStatus.CANCELLED) {
+            throw new RuntimeException("Booking is already cancelled.");
         }
 
         booking.setStatus(Booking.BookingStatus.CANCELLED);
