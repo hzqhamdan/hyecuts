@@ -106,27 +106,31 @@ public class LoyaltyServiceTest {
 
     @Test
     void redeemPoints_shouldDeductPointsWhenSufficient() {
-        testUser.setCurrentPoints(500);
-        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        // redeemPoints now spends via a single atomic conditional UPDATE
+        // (see UserRepository#deductPointsIfSufficient) rather than a
+        // read-then-write, so this only needs to stub that query's result.
+        when(userRepository.deductPointsIfSufficient(userId, 200)).thenReturn(1);
 
         boolean success = loyaltyService.redeemPoints(userId, 200);
 
         assertTrue(success);
-        assertEquals(300, testUser.getCurrentPoints());
-        verify(userRepository).save(testUser);
     }
 
     @Test
     void redeemPoints_shouldFailWhenInsufficientPoints() {
-        testUser.setCurrentPoints(100);
-        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+        when(userRepository.deductPointsIfSufficient(userId, 200)).thenReturn(0);
 
         boolean success = loyaltyService.redeemPoints(userId, 200);
 
         assertFalse(success);
-        assertEquals(100, testUser.getCurrentPoints());
-        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void redeemPoints_shouldRejectNegativeCostWithoutTouchingRepository() {
+        boolean success = loyaltyService.redeemPoints(userId, -1000);
+
+        assertFalse(success);
+        verify(userRepository, never()).deductPointsIfSufficient(any(UUID.class), anyInt());
     }
 
     @Test

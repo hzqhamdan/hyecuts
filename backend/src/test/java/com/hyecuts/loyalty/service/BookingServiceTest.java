@@ -8,6 +8,9 @@ import com.hyecuts.loyalty.model.User;
 import com.hyecuts.loyalty.repository.ActivityLogRepository;
 import com.hyecuts.loyalty.repository.BookingRepository;
 import com.hyecuts.loyalty.repository.UserRepository;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -335,20 +338,22 @@ class BookingServiceTest {
 
     @Test
     void getAllBookings_shouldReturnAllBookings() {
-        when(bookingRepository.findAllByOrderByAppointmentTimeDesc())
-                .thenReturn(List.of(testBooking));
+        Pageable pageable = PageRequest.of(0, 100);
+        when(bookingRepository.findAllByOrderByAppointmentTimeDesc(pageable))
+                .thenReturn(new PageImpl<>(List.of(testBooking)));
 
-        List<Booking> bookings = bookingService.getAllBookings();
+        List<Booking> bookings = bookingService.getAllBookings(pageable);
 
         assertEquals(1, bookings.size());
     }
 
     @Test
     void getAllBookings_shouldReturnEmptyListWhenNoBookings() {
-        when(bookingRepository.findAllByOrderByAppointmentTimeDesc())
-                .thenReturn(List.of());
+        Pageable pageable = PageRequest.of(0, 100);
+        when(bookingRepository.findAllByOrderByAppointmentTimeDesc(pageable))
+                .thenReturn(new PageImpl<>(List.of()));
 
-        List<Booking> bookings = bookingService.getAllBookings();
+        List<Booking> bookings = bookingService.getAllBookings(pageable);
 
         assertTrue(bookings.isEmpty());
     }

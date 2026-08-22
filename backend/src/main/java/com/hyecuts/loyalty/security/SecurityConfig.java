@@ -104,7 +104,16 @@ public class SecurityConfig {
                 })
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+            .headers(headers -> headers
+                // Was frameOptions().disable() app-wide, apparently only to let
+                // H2 console frame itself — that stripped clickjacking protection
+                // from every response, including the admin dashboard. sameOrigin()
+                // still lets H2 console (same origin) frame itself while blocking
+                // any other site from framing this app. frame-ancestors backs the
+                // same policy at the CSP level for browsers that prefer it.
+                .frameOptions(frame -> frame.sameOrigin())
+                .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'; frame-ancestors 'self'"))
+            )
             .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

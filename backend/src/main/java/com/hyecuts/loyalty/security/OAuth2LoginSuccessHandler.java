@@ -17,16 +17,16 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
-    private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
+    private final OAuth2CodeExchangeService codeExchangeService;
     private final String frontendBaseUrl;
 
     public OAuth2LoginSuccessHandler(
-            JwtUtil jwtUtil,
             UserRepository userRepository,
+            OAuth2CodeExchangeService codeExchangeService,
             @Value("${frontend.base-url}") String frontendBaseUrl) {
-        this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
+        this.codeExchangeService = codeExchangeService;
         this.frontendBaseUrl = frontendBaseUrl;
     }
 
@@ -39,15 +39,15 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found after OAuth2 login"));
 
-        String jwt = jwtUtil.generateToken(user.getEmail(), user.getId().toString());
-        String displayName = user.getUsername() != null ? user.getUsername() : user.getEmail();
+        // Hand the browser a short-lived, single-use code instead of the JWT
+        // itself — putting the real token in the redirect URL leaks it into
+        // browser history, Referer headers, and access logs. The frontend
+        // exchanges this code for the real token via a POST request.
+        String code = codeExchangeService.issueCode(user.getId());
 
-        String redirectUrl = String.format("%s/oauth2/callback?token=%s&userId=%s&role=%s&username=%s",
+        String redirectUrl = String.format("%s/oauth2/callback?code=%s",
                 frontendBaseUrl,
-                URLEncoder.encode(jwt, StandardCharsets.UTF_8),
-                URLEncoder.encode(user.getId().toString(), StandardCharsets.UTF_8),
-                URLEncoder.encode(user.getRole(), StandardCharsets.UTF_8),
-                URLEncoder.encode(displayName, StandardCharsets.UTF_8));
+                URLEncoder.encode(code, StandardCharsets.UTF_8));
 
         response.sendRedirect(redirectUrl);
     }

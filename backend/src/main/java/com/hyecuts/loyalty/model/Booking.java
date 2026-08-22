@@ -13,9 +13,19 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    // Only the fields the booking UIs actually display (member name/email in
+    // admin lists, "your appointment" summaries) are serialized here — not the
+    // full User, which would otherwise drag a per-user avatar (up to ~1MB
+    // base64) and other PII into every row of /api/bookings/all.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties(value = {
+        "hibernateLazyInitializer", "handler",
+        "avatar", "phone", "dob", "hairType", "hairLength", "hairScalp",
+        "referralCode", "oauthProvider", "currentPoints", "lifetimePoints",
+        "tier", "role", "createdAt", "username",
+        "lastBeardTrimRedeemed", "birthMonth", "birthdayBonusYear", "lastQuarterlyVoucherQuarter"
+    })
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)

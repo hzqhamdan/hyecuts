@@ -3,7 +3,9 @@ package com.hyecuts.loyalty.service;
 import com.hyecuts.loyalty.model.Tier;
 import com.hyecuts.loyalty.model.User;
 import com.hyecuts.loyalty.repository.UserRepository;
+import com.hyecuts.loyalty.web.AdminUserSummary;
 import com.hyecuts.loyalty.web.UpdateProfileRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,8 +32,10 @@ public class LoyaltyService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    // Was an unbounded findAll() returning the full User entity (avatar and
+    // all) for every member — see AdminUserSummary for what's actually kept.
+    public List<AdminUserSummary> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable).map(AdminUserSummary::from).getContent();
     }
 
     @Transactional
@@ -172,12 +176,10 @@ public class LoyaltyService {
             // this endpoint must never be usable to mint points.
             return false;
         }
-        User user = getUser(userId);
-        if (user.getCurrentPoints() >= cost) {
-            user.setCurrentPoints(user.getCurrentPoints() - cost);
-            userRepository.save(user);
-            return true;
-        }
-        return false;
+        // Deduct atomically instead of read-then-write: two concurrent redeem
+        // calls against the same balance (e.g. both spending the last 500
+        // points) could otherwise both pass a "currentPoints >= cost" check
+        // before either one wrote, redeeming twice off a single balance.
+        return userRepository.deductPointsIfSufficient(userId, cost) > 0;
     }
 }

@@ -7,6 +7,7 @@ import com.hyecuts.loyalty.repository.ActivityLogRepository;
 import com.hyecuts.loyalty.repository.BookingRepository;
 import com.hyecuts.loyalty.repository.UserRepository;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,8 +67,10 @@ public class BookingService {
         return bookingRepository.findByUserIdOrderByAppointmentTimeDesc(userId);
     }
 
-    public List<Booking> getAllBookings() {
-        return bookingRepository.findAllByOrderByAppointmentTimeDesc();
+    // Was an unbounded findAll() — with enough history this loads every
+    // booking (and its nested user/service) into memory and JSON in one go.
+    public List<Booking> getAllBookings(Pageable pageable) {
+        return bookingRepository.findAllByOrderByAppointmentTimeDesc(pageable).getContent();
     }
 
     public List<Booking> getBookingsByDateRange(java.time.LocalDateTime start, java.time.LocalDateTime end) {

@@ -11,8 +11,14 @@ public class ActivityLog {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    // Neither the per-user activity feed nor the admin activity list displays
+    // the associated user, but Jackson would otherwise lazy-load and embed
+    // the full User (avatar included) into every row. @JsonIgnore keeps the
+    // relation available server-side (e.g. when building a log entry) without
+    // ever serializing it.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private User user;
 
     @Column(name = "amount", nullable = false)

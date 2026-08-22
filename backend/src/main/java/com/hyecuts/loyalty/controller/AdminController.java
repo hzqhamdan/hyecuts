@@ -2,10 +2,15 @@ package com.hyecuts.loyalty.controller;
 
 import com.hyecuts.loyalty.model.ActivityLog;
 import com.hyecuts.loyalty.model.User;
+import com.hyecuts.loyalty.model.Voucher;
 import com.hyecuts.loyalty.repository.VoucherRepository;
 import com.hyecuts.loyalty.service.GamificationService;
 import com.hyecuts.loyalty.service.LoyaltyService;
 import com.hyecuts.loyalty.service.RewardService;
+import com.hyecuts.loyalty.web.AdminUserSummary;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +20,11 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
+
+    // None of these admin list endpoints send more than this many rows per
+    // page even if the caller asks for more — they previously had no bound
+    // at all (findAll() over the whole table).
+    private static final int MAX_PAGE_SIZE = 200;
 
     private final LoyaltyService loyaltyService;
     private final RewardService rewardService;
@@ -35,18 +45,27 @@ public class AdminController {
     }
 
     @GetMapping("/redemptions")
-    public ResponseEntity<List<Object>> getAllRedemptions() {
-        return ResponseEntity.ok((List<Object>)(List<?>)rewardService.getAllVouchers());
+    public ResponseEntity<List<Voucher>> getAllRedemptions(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "100") int size) {
+        Pageable pageable = PageRequest.of(page, Math.min(size, MAX_PAGE_SIZE));
+        return ResponseEntity.ok(rewardService.getAllVouchers(pageable));
     }
 
     @GetMapping("/activity")
-    public ResponseEntity<List<ActivityLog>> getAllActivityLogs() {
-        return ResponseEntity.ok(gamificationService.getAllActivityLogs());
+    public ResponseEntity<List<ActivityLog>> getAllActivityLogs(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "100") int size) {
+        Pageable pageable = PageRequest.of(page, Math.min(size, MAX_PAGE_SIZE), Sort.by(Sort.Direction.DESC, "timestamp"));
+        return ResponseEntity.ok(gamificationService.getAllActivityLogs(pageable));
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(loyaltyService.getAllUsers());
+    public ResponseEntity<List<AdminUserSummary>> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "100") int size) {
+        Pageable pageable = PageRequest.of(page, Math.min(size, MAX_PAGE_SIZE));
+        return ResponseEntity.ok(loyaltyService.getAllUsers(pageable));
     }
 
     @PostMapping("/points/adjust/{userId}")

@@ -29,6 +29,9 @@ public class JwtUtil {
     public String generateToken(String username, String userId) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
+        // Unique per-token id so a single token can be revoked on logout
+        // without needing to invalidate every token for the user.
+        claims.put("jti", java.util.UUID.randomUUID().toString());
         return createToken(claims, username);
     }
 
@@ -54,6 +57,15 @@ public class JwtUtil {
     public String extractUserId(String token) {
         final Claims claims = extractAllClaims(token);
         return (String) claims.get("userId");
+    }
+
+    public String extractJti(String token) {
+        final Claims claims = extractAllClaims(token);
+        return (String) claims.get("jti");
+    }
+
+    public long extractExpirationMillis(String token) {
+        return extractExpiration(token).getTime();
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {

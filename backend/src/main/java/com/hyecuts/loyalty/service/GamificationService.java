@@ -10,6 +10,7 @@ import com.hyecuts.loyalty.repository.BadgeRepository;
 import com.hyecuts.loyalty.repository.UserBadgeRepository;
 import com.hyecuts.loyalty.repository.MissionRepository;
 import com.hyecuts.loyalty.repository.UserMissionProgressRepository;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -56,8 +57,9 @@ public class GamificationService {
         return activityLogRepository.findByUser_IdOrderByTimestampDesc(userId);
     }
 
-    public List<ActivityLog> getAllActivityLogs() {
-        return activityLogRepository.findAll();
+    // Was an unbounded findAll() over the entire activity-log table.
+    public List<ActivityLog> getAllActivityLogs(Pageable pageable) {
+        return activityLogRepository.findAll(pageable).getContent();
     }
 
     // Creating entities

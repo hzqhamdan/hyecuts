@@ -1,6 +1,14 @@
 import { useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { api } from '../api/client';
+
+interface OAuth2ExchangeResponse {
+  token: string;
+  userId: string;
+  role: string;
+  username: string;
+}
 
 export default function OAuth2Callback() {
   const [searchParams] = useSearchParams();
@@ -12,17 +20,24 @@ export default function OAuth2Callback() {
     if (called.current) return;
     called.current = true;
 
-    const token = searchParams.get('token');
-    const userId = searchParams.get('userId');
-    const role = searchParams.get('role');
-    const username = searchParams.get('username');
+    // The redirect only ever carries a short-lived, single-use code — never
+    // the token itself (see OAuth2CodeExchangeService on the backend for why).
+    // It's exchanged here over a POST body instead of sitting in the URL.
+    const code = searchParams.get('code');
 
-    if (token && userId && role) {
-      login(token, userId, role, username || '');
-      navigate(role === 'ROLE_ADMIN' ? '/admin' : '/lounge', { replace: true });
-    } else {
-      navigate('/login', { replace: true });
+    if (!code) {
+      void navigate('/login', { replace: true });
+      return;
     }
+
+    api.post<OAuth2ExchangeResponse>('/auth/oauth2/exchange', { body: { code } })
+      .then((data) => {
+        login(data.token, data.userId, data.role, data.username || '');
+        void navigate(data.role === 'ROLE_ADMIN' ? '/admin' : '/lounge', { replace: true });
+      })
+      .catch(() => {
+        void navigate('/login', { replace: true });
+      });
   }, [searchParams, login, navigate]);
 
   return (

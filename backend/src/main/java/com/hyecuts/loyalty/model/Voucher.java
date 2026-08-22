@@ -10,8 +10,17 @@ public class Voucher {
     @Column(nullable = false, unique = true, length = 12)
     private String id; // E.g. "V-8F92A" for scanning
 
+    // Same reasoning as Booking.user: keep only what's actually displayed,
+    // not the full User (avatar etc.) on every voucher row.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties(value = {
+        "hibernateLazyInitializer", "handler",
+        "avatar", "phone", "dob", "hairType", "hairLength", "hairScalp",
+        "referralCode", "oauthProvider", "currentPoints", "lifetimePoints",
+        "tier", "role", "createdAt", "username",
+        "lastBeardTrimRedeemed", "birthMonth", "birthdayBonusYear", "lastQuarterlyVoucherQuarter"
+    })
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)

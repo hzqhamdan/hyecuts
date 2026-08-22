@@ -5,7 +5,10 @@ management:
         include: health,info
   endpoint:
     health:
-      show-details: always
+      # "always" leaked DB connection state and disk space to the unauthenticated
+      # /actuator/health probe; "when-authorized" still gives the platform's
+      # health check a plain UP/DOWN, full detail only for an authenticated admin.
+      show-details: when-authorized
 
 spring:
   datasource:
@@ -17,7 +20,9 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
-    show-sql: true
+    # Was `true` — every query with bound parameters (emails, phone numbers)
+    # was being written to production logs.
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -39,10 +44,13 @@ server:
   forward-headers-strategy: native
 
 logging:
+  # Was DEBUG for security/web — Spring Security DEBUG logs authentication
+  # tokens and web DEBUG logs request/response bodies, so this was writing
+  # credentials and PII to production logs on every request.
   level:
-    org.springframework.security: DEBUG
-    org.springframework.web: DEBUG
-    com.hyecuts.loyalty: DEBUG
+    org.springframework.security: WARN
+    org.springframework.web: WARN
+    com.hyecuts.loyalty: INFO
 
 jwt:
   secret: ${JWT_SECRET}

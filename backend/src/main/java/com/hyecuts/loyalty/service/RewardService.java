@@ -2,6 +2,7 @@ package com.hyecuts.loyalty.service;
 
 import com.hyecuts.loyalty.model.*;
 import com.hyecuts.loyalty.repository.*;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -101,8 +102,10 @@ public class RewardService {
         return voucherRepository.findByUser_Id(userId);
     }
 
-    public List<Voucher> getAllVouchers() {
-        return voucherRepository.findAll();
+    // Was an unbounded findAll() with lazy user/reward triggering an N+1 on
+    // serialization.
+    public List<Voucher> getAllVouchers(Pageable pageable) {
+        return voucherRepository.findAllByOrderByIssuedAtDesc(pageable).getContent();
     }
 
     public Voucher fulfillVoucher(String voucherId) {

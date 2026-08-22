@@ -8,6 +8,9 @@ import com.hyecuts.loyalty.security.AuthorizationUtil;
 import com.hyecuts.loyalty.security.CustomUserDetails;
 import com.hyecuts.loyalty.service.BarberServiceService;
 import com.hyecuts.loyalty.service.BookingService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -75,10 +78,16 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.getUserBookings(userId));
     }
 
-    // Admin endpoint
+    // Admin endpoint. Bounded to avoid loading (and returning) the entire
+    // bookings table in one response — the frontend doesn't send page/size
+    // today, so this defaults to the 100 most recent bookings rather than
+    // silently truncating what used to be an unbounded list.
     @GetMapping("/all")
-    public ResponseEntity<List<Booking>> getAllBookings() {
-        return ResponseEntity.ok(bookingService.getAllBookings());
+    public ResponseEntity<List<Booking>> getAllBookings(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "100") int size) {
+        Pageable pageable = PageRequest.of(page, Math.min(size, 200), Sort.by(Sort.Direction.DESC, "appointmentTime"));
+        return ResponseEntity.ok(bookingService.getAllBookings(pageable));
     }
 
     // Admin/User endpoint
