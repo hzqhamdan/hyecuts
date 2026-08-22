@@ -4,9 +4,13 @@ import com.hyecuts.loyalty.model.Booking;
 import com.hyecuts.loyalty.model.BarberService;
 import com.hyecuts.loyalty.model.User;
 import com.hyecuts.loyalty.repository.UserRepository;
+import com.hyecuts.loyalty.security.AuthorizationUtil;
+import com.hyecuts.loyalty.security.CustomUserDetails;
 import com.hyecuts.loyalty.service.BarberServiceService;
 import com.hyecuts.loyalty.service.BookingService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,10 +38,11 @@ public class BookingController {
         public String appointmentTime; // ISO 8601 string
     }
 
-    // Public/User endpoint
+    // User endpoint
     @PostMapping
-    public ResponseEntity<?> createBooking(@RequestBody CreateBookingRequest request) {
-        User user = userRepository.findById(request.userId).orElse(null);
+    public ResponseEntity<?> createBooking(@RequestBody CreateBookingRequest request, @AuthenticationPrincipal CustomUserDetails principal) {
+        // The booking always belongs to the caller, regardless of what userId the client sent.
+        User user = userRepository.findById(principal.getId()).orElse(null);
         if (user == null) {
             return ResponseEntity.badRequest().body("User not found");
         }
@@ -50,19 +55,23 @@ public class BookingController {
         Booking newBooking = new Booking();
         newBooking.setUser(user);
         newBooking.setService(service);
-        // Using Spring's default ISO-8601 parsing for LocalDateTime
-        newBooking.setAppointmentTime(java.time.LocalDateTime.parse(request.appointmentTime));
-        // Using the service's current MYR price
         newBooking.setTotalPriceMyr(service.getPriceMyr());
         newBooking.setStatus(Booking.BookingStatus.PENDING);
-        
-        Booking saved = bookingService.createBooking(newBooking);
-        return ResponseEntity.ok(saved);
+
+        try {
+            // Using Spring's default ISO-8601 parsing for LocalDateTime
+            newBooking.setAppointmentTime(java.time.LocalDateTime.parse(request.appointmentTime));
+            Booking saved = bookingService.createBooking(newBooking);
+            return ResponseEntity.ok(saved);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
-    // Public/User endpoint
+    // User endpoint
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Booking>> getUserBookings(@PathVariable UUID userId) {
+    public ResponseEntity<List<Booking>> getUserBookings(@PathVariable UUID userId, @AuthenticationPrincipal CustomUserDetails principal) {
+        AuthorizationUtil.requireSelfOrAdmin(principal, userId);
         return ResponseEntity.ok(bookingService.getUserBookings(userId));
     }
 
@@ -97,13 +106,16 @@ public class BookingController {
     }
 
     @PutMapping("/{bookingId}/reschedule")
-    public ResponseEntity<?> rescheduleBooking(@PathVariable UUID bookingId, @RequestBody RescheduleRequest request) {
+    public ResponseEntity<?> rescheduleBooking(@PathVariable UUID bookingId, @RequestBody RescheduleRequest request, @AuthenticationPrincipal CustomUserDetails principal) {
         try {
+            requireOwnsBooking(bookingId, principal);
             java.time.LocalDateTime newTime = java.time.LocalDateTime.parse(
                 request.newAppointmentTime.replace("Z", "").replace("z", "")
             );
             Booking rescheduled = bookingService.rescheduleBooking(bookingId, newTime);
             return ResponseEntity.ok(rescheduled);
+        } catch (AccessDeniedException e) {
+            throw e;
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -111,12 +123,21 @@ public class BookingController {
 
     // Admin/User endpoint
     @PutMapping("/{bookingId}/cancel")
-    public ResponseEntity<?> cancelBooking(@PathVariable UUID bookingId) {
+    public ResponseEntity<?> cancelBooking(@PathVariable UUID bookingId, @AuthenticationPrincipal CustomUserDetails principal) {
         try {
+            requireOwnsBooking(bookingId, principal);
             Booking cancelled = bookingService.cancelBooking(bookingId);
             return ResponseEntity.ok(cancelled);
+        } catch (AccessDeniedException e) {
+            throw e;
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    private void requireOwnsBooking(UUID bookingId, CustomUserDetails principal) {
+        Booking booking = bookingService.getBookingById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+        AuthorizationUtil.requireSelfOrAdmin(principal, booking.getUser().getId());
     }
 }

@@ -4,6 +4,7 @@ import com.hyecuts.loyalty.model.Tier;
 import com.hyecuts.loyalty.model.User;
 import com.hyecuts.loyalty.repository.UserRepository;
 import com.hyecuts.loyalty.web.UpdateProfileRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,10 +17,12 @@ public class LoyaltyService {
 
     private final UserRepository userRepository;
     private final GlobalSettingsService globalSettingsService;
+    private final PasswordEncoder passwordEncoder;
 
-    public LoyaltyService(UserRepository userRepository, GlobalSettingsService globalSettingsService) {
+    public LoyaltyService(UserRepository userRepository, GlobalSettingsService globalSettingsService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.globalSettingsService = globalSettingsService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User getUser(UUID userId) {
@@ -111,19 +114,64 @@ public class LoyaltyService {
                 || user.getTier() == Tier.CONNOISSEUR || user.getTier() == Tier.PATRON
                 ? globalSettingsService.getInsiderBonusPercent() : 0;
 
-        int finalPoints = points + (points * bonusPercent / 100);
+        // Admin point adjustments are intentionally bidirectional (see
+        // AdminController#adjustPoints — deducting points to correct a mistake
+        // is a real feature), so this stays sign-agnostic. Everything here uses
+        // long arithmetic and clamps to the int range so a large adjustment
+        // can't silently overflow into a wildly wrong (often negative) balance.
+        long finalPoints = (long) points + ((long) points * bonusPercent / 100);
 
-        user.setCurrentPoints(user.getCurrentPoints() + finalPoints);
-        user.setLifetimePoints(user.getLifetimePoints() + finalPoints);
-        
+        long newCurrent = clampToInt((long) user.getCurrentPoints() + finalPoints);
+        long newLifetime = clampToInt((long) user.getLifetimePoints() + finalPoints);
+
+        user.setCurrentPoints((int) newCurrent);
+        user.setLifetimePoints((int) newLifetime);
+
         Tier newTier = Tier.forLifetimePoints(user.getLifetimePoints());
         user.setTier(newTier);
-        
+
         return userRepository.save(user);
+    }
+
+    private static long clampToInt(long value) {
+        return Math.max(Integer.MIN_VALUE, Math.min(Integer.MAX_VALUE, value));
+    }
+
+    /**
+     * Erases a member's personal data (PDPA right-to-erasure). This anonymizes
+     * the account rather than deleting the row outright: bookings, vouchers,
+     * and activity logs all reference the user with no ON DELETE rule, and a
+     * real business needs to retain that transaction history for accounting —
+     * a hard delete would either violate the FK constraint or silently take
+     * that history with it. Randomizing the email/username also invalidates
+     * any outstanding JWT for this account, since JwtRequestFilter re-resolves
+     * the token's subject against the current email on every request.
+     */
+    @Transactional
+    public void deleteUser(UUID userId) {
+        User user = getUser(userId);
+        String anonId = UUID.randomUUID().toString();
+        user.setEmail("deleted-" + anonId + "@hyecuts.invalid");
+        user.setUsername("deleted-" + anonId);
+        user.setPasswordHash(passwordEncoder.encode(UUID.randomUUID().toString()));
+        user.setFullName(null);
+        user.setPhone(null);
+        user.setDob(null);
+        user.setAvatar(null);
+        user.setHairType(null);
+        user.setHairLength(null);
+        user.setHairScalp(null);
+        user.setOauthProvider(null);
+        userRepository.save(user);
     }
 
     @Transactional
     public boolean redeemPoints(UUID userId, int cost) {
+        if (cost < 0) {
+            // A negative "cost" would add points instead of spending them —
+            // this endpoint must never be usable to mint points.
+            return false;
+        }
         User user = getUser(userId);
         if (user.getCurrentPoints() >= cost) {
             user.setCurrentPoints(user.getCurrentPoints() - cost);

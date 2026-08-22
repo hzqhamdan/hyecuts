@@ -78,7 +78,7 @@ function CheckoutForm({ onSuccess }: { onSuccess: () => void }) {
 
 export function PaymentStep({ onPaymentSuccess }: { onPaymentSuccess: () => void }) {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const { selectedService, clientSecret, setClientSecret } = useBookingStore();
   const [isFetching, setIsFetching] = useState(false);
 
@@ -88,13 +88,14 @@ export function PaymentStep({ onPaymentSuccess }: { onPaymentSuccess: () => void
   const depositAmount = (numericPrice * 0.5).toFixed(2);
 
   useEffect(() => {
-    if (!clientSecret && !isFetching) {
+    if (!clientSecret && !isFetching && token) {
       setIsFetching(true);
       api.post<{ clientSecret: string }>('/payments/create-intent', {
         body: {
           serviceId: service?.id || 1,
           userId: user?.id || 'guest',
-        }
+        },
+        token
       })
       .then(data => {
         setClientSecret(data.clientSecret);
@@ -106,7 +107,7 @@ export function PaymentStep({ onPaymentSuccess }: { onPaymentSuccess: () => void
         setIsFetching(false);
       });
     }
-  }, [clientSecret, isFetching, service, user, setClientSecret]);
+  }, [clientSecret, isFetching, service, user, token, setClientSecret]);
 
   if (!clientSecret) {
     return (

@@ -82,6 +82,13 @@ public class User {
     @Column(name = "avatar", length = 1000000)
     private String avatar;
 
+    // Null for accounts created via local password registration. Set to the
+    // provider id (e.g. "google") for accounts created via OAuth2 — used to
+    // decide whether it's safe to auto-link an OAuth login to an existing
+    // account with the same email (see CustomOAuth2UserService).
+    @Column(name = "oauth_provider")
+    private String oauthProvider;
+
     public User() {}
 
     // Special setter to handle the hairProfile object from frontend
@@ -139,4 +146,6 @@ public class User {
     public void setHairScalp(String hairScalp) { this.hairScalp = hairScalp; }
     public String getAvatar() { return avatar; }
     public void setAvatar(String avatar) { this.avatar = avatar; }
+    public String getOauthProvider() { return oauthProvider; }
+    public void setOauthProvider(String oauthProvider) { this.oauthProvider = oauthProvider; }
 }

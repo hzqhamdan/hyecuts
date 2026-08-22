@@ -21,4 +21,8 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
 
     @EntityGraph(attributePaths = {"service", "user"})
     List<Booking> findByAppointmentTimeBetween(java.time.LocalDateTime start, java.time.LocalDateTime end);
+
+    boolean existsByAppointmentTimeAndStatusNot(java.time.LocalDateTime appointmentTime, Booking.BookingStatus status);
+
+    boolean existsByAppointmentTimeAndStatusNotAndIdNot(java.time.LocalDateTime appointmentTime, Booking.BookingStatus status, UUID excludeId);
 }

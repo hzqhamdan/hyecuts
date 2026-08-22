@@ -5,16 +5,18 @@ import { useTranslation } from 'react-i18next';
 import type { ActivityLog } from '../../types/loyalty';
 
 import { api } from '../../api/client';
+import { useAuth } from '../../context/AuthContext';
 
 export function FulfillmentHistory() {
   const { t } = useTranslation();
+  const { token } = useAuth();
   const [logs, setLogs] = useState<ActivityLog[]>([]);
 
   useEffect(() => {
-    void api.get<ActivityLog[]>('/admin/activity')
+    void api.get<ActivityLog[]>('/admin/activity', { token: token ?? undefined })
       .then(d => { setLogs(d); })
       .catch((err: unknown) => { console.error(err); });
-  }, []);
+  }, [token]);
 
   return (
     <div className="space-y-16">

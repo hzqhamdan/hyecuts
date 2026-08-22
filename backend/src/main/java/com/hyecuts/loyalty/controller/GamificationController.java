@@ -5,8 +5,11 @@ import com.hyecuts.loyalty.model.Badge;
 import com.hyecuts.loyalty.model.UserBadge;
 import com.hyecuts.loyalty.model.Mission;
 import com.hyecuts.loyalty.model.UserMissionProgress;
+import com.hyecuts.loyalty.security.AuthorizationUtil;
+import com.hyecuts.loyalty.security.CustomUserDetails;
 import com.hyecuts.loyalty.service.GamificationService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,7 +37,8 @@ public class GamificationController {
     }
 
     @GetMapping("/badges/{userId}")
-    public ResponseEntity<List<UserBadge>> getUserBadges(@PathVariable UUID userId) {
+    public ResponseEntity<List<UserBadge>> getUserBadges(@PathVariable UUID userId, @AuthenticationPrincipal CustomUserDetails principal) {
+        AuthorizationUtil.requireSelfOrAdmin(principal, userId);
         return ResponseEntity.ok(gamificationService.getUserBadges(userId));
     }
 
@@ -50,13 +54,15 @@ public class GamificationController {
     }
 
     @GetMapping("/missions/{userId}")
-    public ResponseEntity<List<UserMissionProgress>> getUserMissions(@PathVariable UUID userId) {
+    public ResponseEntity<List<UserMissionProgress>> getUserMissions(@PathVariable UUID userId, @AuthenticationPrincipal CustomUserDetails principal) {
+        AuthorizationUtil.requireSelfOrAdmin(principal, userId);
         return ResponseEntity.ok(gamificationService.getUserMissions(userId));
     }
 
     // Activity History endpoint
     @GetMapping("/activity/{userId}")
-    public ResponseEntity<List<ActivityLog>> getUserActivity(@PathVariable UUID userId) {
+    public ResponseEntity<List<ActivityLog>> getUserActivity(@PathVariable UUID userId, @AuthenticationPrincipal CustomUserDetails principal) {
+        AuthorizationUtil.requireSelfOrAdmin(principal, userId);
         return ResponseEntity.ok(gamificationService.getUserActivity(userId));
     }
 }

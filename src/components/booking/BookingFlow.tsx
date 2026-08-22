@@ -78,8 +78,19 @@ export default function BookingFlow() {
           console.error("Error fetching services", e);
         }
 
-        const localDate = new Date();
-        localDate.setDate(localDate.getDate() + 1);
+        const dayMap: Record<string, number> = { Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6, Sunday: 0 };
+        const chosenDate = DATES.find((d) => d.id === selectedDate);
+        const now = new Date();
+        const localDate = new Date(now);
+        if (chosenDate) {
+          const targetDay = dayMap[chosenDate.day];
+          // Next occurrence of the selected weekday (today only if picked and still upcoming).
+          localDate.setDate(now.getDate() + ((targetDay + 7 - now.getDay()) % 7));
+        } else {
+          // No date was actually selected (shouldn't happen — Confirm is disabled
+          // without one) — fall back to tomorrow rather than silently booking "today".
+          localDate.setDate(now.getDate() + 1);
+        }
         let hours = 12, mins = 0;
         if (selectedTime) {
           const match = /(\d+):(\d+)\s*(AM|PM)/i.exec(selectedTime);
@@ -104,7 +115,8 @@ export default function BookingFlow() {
 
         try {
           const data = await api.post<BookingResponse>('/bookings', {
-            body: bookingReq
+            body: bookingReq,
+            token
           });
           setBookingRef(`HYC-${data.id.toString().slice(-4)}`);
         } catch (e) {

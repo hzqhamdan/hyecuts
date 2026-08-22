@@ -6,6 +6,7 @@ import com.hyecuts.loyalty.model.User;
 import com.hyecuts.loyalty.repository.ActivityLogRepository;
 import com.hyecuts.loyalty.repository.BookingRepository;
 import com.hyecuts.loyalty.repository.UserRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +36,18 @@ public class BookingService {
     }
 
     public Booking createBooking(Booking booking) {
-        return bookingRepository.save(booking);
+        if (bookingRepository.existsByAppointmentTimeAndStatusNot(booking.getAppointmentTime(), Booking.BookingStatus.CANCELLED)) {
+            throw new RuntimeException("This time slot is already booked.");
+        }
+        try {
+            return bookingRepository.save(booking);
+        } catch (DataIntegrityViolationException e) {
+            // Two concurrent requests can both pass the check above before either
+            // writes; the unique index on (appointment_time) is what actually
+            // prevents the double-booking — this just turns that race into a
+            // clean error instead of a raw constraint-violation message.
+            throw new RuntimeException("This time slot is already booked.");
+        }
     }
 
     public List<Booking> getUserBookings(UUID userId) {
@@ -88,13 +100,21 @@ public class BookingService {
     public Booking rescheduleBooking(UUID bookingId, java.time.LocalDateTime newTime) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
-        
+
         if (booking.getStatus() == Booking.BookingStatus.COMPLETED || booking.getStatus() == Booking.BookingStatus.CANCELLED) {
             throw new RuntimeException("Cannot reschedule a completed or cancelled booking.");
         }
 
+        if (bookingRepository.existsByAppointmentTimeAndStatusNotAndIdNot(newTime, Booking.BookingStatus.CANCELLED, bookingId)) {
+            throw new RuntimeException("This time slot is already booked.");
+        }
+
         booking.setAppointmentTime(newTime);
-        return bookingRepository.save(booking);
+        try {
+            return bookingRepository.save(booking);
+        } catch (DataIntegrityViolationException e) {
+            throw new RuntimeException("This time slot is already booked.");
+        }
     }
 
     @Transactional

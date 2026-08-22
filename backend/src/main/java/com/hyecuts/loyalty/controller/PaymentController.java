@@ -1,6 +1,7 @@
 package com.hyecuts.loyalty.controller;
 
 import com.hyecuts.loyalty.model.BarberService;
+import com.hyecuts.loyalty.security.CustomUserDetails;
 import com.hyecuts.loyalty.service.BarberServiceService;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
@@ -8,6 +9,7 @@ import com.stripe.model.PaymentIntent;
 import com.stripe.param.PaymentIntentCreateParams;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.PostConstruct;
@@ -39,22 +41,24 @@ public class PaymentController {
     }
 
     @PostMapping("/create-intent")
-    public ResponseEntity<Map<String, String>> createPaymentIntent(@RequestBody PaymentRequest request) {
+    public ResponseEntity<Map<String, String>> createPaymentIntent(@RequestBody PaymentRequest request, @AuthenticationPrincipal CustomUserDetails principal) {
         try {
             BarberService service = barberServiceService.getServiceById(request.serviceId)
                     .orElseThrow(() -> new RuntimeException("Service not found"));
 
             // 50% deposit
             BigDecimal deposit = service.getPriceMyr().multiply(new BigDecimal("0.5"));
-            
+
             // Stripe expects amount in smallest unit (cents/sen)
             long amountInSen = deposit.multiply(new BigDecimal("100")).longValue();
 
+            // Use the authenticated caller's id, not whatever the client sent
+            // (previously the frontend sent the literal string "guest").
             PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
                     .setAmount(amountInSen)
                     .setCurrency("myr")
                     .putMetadata("serviceId", String.valueOf(request.serviceId))
-                    .putMetadata("userId", request.userId)
+                    .putMetadata("userId", principal.getId().toString())
                     .build();
 
             PaymentIntent intent = PaymentIntent.create(params);

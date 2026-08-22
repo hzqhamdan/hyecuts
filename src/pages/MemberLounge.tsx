@@ -46,7 +46,7 @@ const MemberLounge = () => {
     toggleLanguage,
     handleRedeem,
     refreshProfile
-  } = useLoungeData(USER_ID);
+  } = useLoungeData(USER_ID, token);
 
   return (
     <motion.div
@@ -149,12 +149,13 @@ const MemberLounge = () => {
         onDeleteAccount={async () => {
           if(confirm(t('lounge.delete_confirm'))) {
             try {
-              await api.del(`/admin/users/${user?.id}`, { token: token ?? undefined });
+              await api.del(`/loyalty/profile/${user?.id}`, { token: token ?? undefined });
               alert(t('lounge.delete_submitted'));
               logout();
               navigate('/');
             } catch (error) {
               console.error('Failed to delete account', error);
+              alert(t('lounge.delete_error', { defaultValue: 'Failed to delete your account. Please try again or contact support.' }));
             }
           }
         }}

@@ -1,9 +1,12 @@
 package com.hyecuts.loyalty.controller;
 
 import com.hyecuts.loyalty.model.User;
+import com.hyecuts.loyalty.security.AuthorizationUtil;
+import com.hyecuts.loyalty.security.CustomUserDetails;
 import com.hyecuts.loyalty.service.LoyaltyService;
 import com.hyecuts.loyalty.web.UpdateProfileRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -19,12 +22,14 @@ public class LoyaltyController {
     }
 
     @GetMapping("/profile/{userId}")
-    public ResponseEntity<User> getProfile(@PathVariable UUID userId) {
+    public ResponseEntity<User> getProfile(@PathVariable UUID userId, @AuthenticationPrincipal CustomUserDetails principal) {
+        AuthorizationUtil.requireSelfOrAdmin(principal, userId);
         return ResponseEntity.ok(loyaltyService.getUser(userId));
     }
 
     @PutMapping("/profile/{userId}")
-    public ResponseEntity<?> updateProfile(@PathVariable UUID userId, @RequestBody UpdateProfileRequest request) {
+    public ResponseEntity<?> updateProfile(@PathVariable UUID userId, @RequestBody UpdateProfileRequest request, @AuthenticationPrincipal CustomUserDetails principal) {
+        AuthorizationUtil.requireSelfOrAdmin(principal, userId);
         User u = loyaltyService.updateUser(userId, request);
         
         // Return a flat map to avoid serialization issues with lazy relations
@@ -40,14 +45,30 @@ public class LoyaltyController {
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping("/profile/{userId}")
+    public ResponseEntity<Void> deleteAccount(@PathVariable UUID userId, @AuthenticationPrincipal CustomUserDetails principal) {
+        AuthorizationUtil.requireSelfOrAdmin(principal, userId);
+        loyaltyService.deleteUser(userId);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/earn/{userId}")
-    public ResponseEntity<User> earnPoints(@PathVariable UUID userId, @RequestParam int points) {
+    public ResponseEntity<?> earnPoints(@PathVariable UUID userId, @RequestParam int points) {
+        // Unlike /admin/points/adjust (intentionally bidirectional, for
+        // corrections), "earning" a negative amount is never meaningful — that's
+        // effectively a stealth point deduction through the wrong endpoint.
+        if (points < 0) {
+            return ResponseEntity.badRequest().body("Points to earn must not be negative.");
+        }
         User updatedUser = loyaltyService.addPoints(userId, points);
         return ResponseEntity.ok(updatedUser);
     }
-    
+
     @PostMapping("/redeem/{userId}")
     public ResponseEntity<String> redeemPoints(@PathVariable UUID userId, @RequestParam int cost) {
+        if (cost < 0) {
+            return ResponseEntity.badRequest().body("Cost must not be negative.");
+        }
         boolean success = loyaltyService.redeemPoints(userId, cost);
         if (success) {
             return ResponseEntity.ok("Points redeemed successfully");

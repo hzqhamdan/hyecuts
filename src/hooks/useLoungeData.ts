@@ -17,8 +17,9 @@ const mockNotifications: Notification[] = [
   { id: 2, title: 'Reward Redeemed', message: 'Complimentary Hair Cut applied successfully.', isRead: true, time: '1d ago' },
 ];
 
-export function useLoungeData(userId: string) {
+export function useLoungeData(userId: string, token?: string | null) {
   const { i18n } = useTranslation();
+  const authToken = token ?? undefined;
 
   const [profile, setProfile] = useState<LoyaltyProfile | null>(null);
   const [rewards, setRewards] = useState<Reward[]>([]);
@@ -44,7 +45,7 @@ export function useLoungeData(userId: string) {
 
   const fetchProfile = async () => {
     try {
-      const profileData = await api.get<any>(`/loyalty/profile/${userId}`);
+      const profileData = await api.get<any>(`/loyalty/profile/${userId}`, { token: authToken });
       setProfile({
         userId: profileData.id,
         email: profileData.email,
@@ -71,23 +72,23 @@ export function useLoungeData(userId: string) {
         await fetchProfile();
 
         const [rewardsData, activitiesData] = await Promise.all([
-          api.get<Reward[]>('/rewards'),
-          api.get<ActivityLog[]>(`/gamification/activity/${userId}`)
+          api.get<Reward[]>('/rewards', { token: authToken }),
+          api.get<ActivityLog[]>(`/gamification/activity/${userId}`, { token: authToken })
         ]);
         setRewards(rewardsData);
         setActivities(activitiesData);
 
         const [badgesData, userBadgesData] = await Promise.all([
-          api.get<Badge[]>('/gamification/badges'),
-          api.get<UserBadge[]>(`/gamification/badges/${userId}`)
+          api.get<Badge[]>('/gamification/badges', { token: authToken }),
+          api.get<UserBadge[]>(`/gamification/badges/${userId}`, { token: authToken })
         ]);
         setBadges(badgesData);
         setUserBadges(userBadgesData);
 
         const [mDaily, mWeekly, umpData] = await Promise.all([
-          api.get<Mission[]>('/gamification/missions/type/DAILY'),
-          api.get<Mission[]>('/gamification/missions/type/WEEKLY'),
-          api.get<UserMissionProgress[]>(`/gamification/missions/${userId}`)
+          api.get<Mission[]>('/gamification/missions/type/DAILY', { token: authToken }),
+          api.get<Mission[]>('/gamification/missions/type/WEEKLY', { token: authToken }),
+          api.get<UserMissionProgress[]>(`/gamification/missions/${userId}`, { token: authToken })
         ]);
         setMissions([...mDaily, ...mWeekly]);
         setMissionProgress(umpData);
@@ -100,14 +101,14 @@ export function useLoungeData(userId: string) {
     };
 
     void fetchData();
-  }, [userId]);
+  }, [userId, authToken]);
 
   const handleRedeem = async (rewardId: number) => {
     setRedemptionStatus('loading');
     try {
-      await api.post(`/rewards/redeem/${userId}/${rewardId.toString()}`);
+      await api.post(`/rewards/redeem/${userId}/${rewardId.toString()}`, { token: authToken });
       setRedemptionStatus('success');
-      const profileData = await api.get<LoyaltyProfile>(`/loyalty/profile/${userId}`);
+      const profileData = await api.get<LoyaltyProfile>(`/loyalty/profile/${userId}`, { token: authToken });
       setProfile(profileData);
     } catch {
       setRedemptionStatus('error');

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -40,22 +39,43 @@ public class RewardService {
 
     @Transactional
     public String redeemReward(UUID userId, UUID rewardId) {
-        Optional<Reward> optReward = rewardRepository.findById(rewardId);
-        if (optReward.isEmpty()) return "Reward not found";
-        
-        Reward reward = optReward.get();
-        if (reward.getStockCount() != null && reward.getStockCount() <= 0) return "Out of stock";
+        Reward reward = rewardRepository.findById(rewardId)
+                .orElseThrow(() -> new RuntimeException("Reward not found"));
+
+        if (!Boolean.TRUE.equals(reward.getIsActive())) {
+            throw new RuntimeException("This reward is no longer available.");
+        }
 
         User user = loyaltyService.getUser(userId);
 
-        // Deduct points
-        boolean isRedeemed = loyaltyService.redeemPoints(userId, reward.getPointsCost());
-        if (!isRedeemed) return "Insufficient points";
+        if (reward.getMinTier() != null && !reward.getMinTier().isBlank()) {
+            Tier requiredTier;
+            try {
+                requiredTier = Tier.valueOf(reward.getMinTier().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                // Unrecognised tier name on the reward — fail closed rather than
+                // silently letting everyone redeem it.
+                requiredTier = Tier.PATRON;
+            }
+            if (user.getTier() == null || user.getTier().ordinal() < requiredTier.ordinal()) {
+                throw new RuntimeException("Your tier does not qualify for this reward.");
+            }
+        }
 
-        // Update stock
+        // Claim stock atomically, before touching points: if two requests race for
+        // the last unit, the DB-level conditional UPDATE lets only one succeed.
         if (reward.getStockCount() != null) {
-            reward.setStockCount(reward.getStockCount() - 1);
-            rewardRepository.save(reward);
+            int updated = rewardRepository.decrementStockIfAvailable(rewardId);
+            if (updated == 0) {
+                throw new RuntimeException("Out of stock");
+            }
+        }
+
+        // Deduct points. If this fails, the @Transactional rollback also undoes
+        // the stock decrement above.
+        boolean isRedeemed = loyaltyService.redeemPoints(userId, reward.getPointsCost());
+        if (!isRedeemed) {
+            throw new RuntimeException("Insufficient points");
         }
 
         // Create Voucher

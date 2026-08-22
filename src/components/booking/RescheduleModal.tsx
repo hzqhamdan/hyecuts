@@ -15,9 +15,10 @@ interface RescheduleModalProps {
   onClose: () => void;
   bookingId: string;
   onSuccess: () => void;
+  token?: string | null;
 }
 
-export default function RescheduleModal({ isOpen, onClose, bookingId, onSuccess }: RescheduleModalProps) {
+export default function RescheduleModal({ isOpen, onClose, bookingId, onSuccess, token }: RescheduleModalProps) {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [bookedTimes, setBookedTimes] = useState<string[]>([]);
@@ -26,14 +27,14 @@ export default function RescheduleModal({ isOpen, onClose, bookingId, onSuccess 
   useEffect(() => {
     if (selectedDate && isOpen) {
         // Fetch booked times for selected date
-        api.get<Booking[]>(`/bookings/date/${selectedDate}`).then(bookings => {
+        api.get<Booking[]>(`/bookings/date/${selectedDate}`, { token: token ?? undefined }).then(bookings => {
             const times = bookings
                 .filter(b => b.status === 'PENDING')
                 .map(b => new Date(b.appointmentTime).toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', hour12: true}));
             setBookedTimes(times);
         }).catch(console.error);
     }
-  }, [selectedDate, isOpen]);
+  }, [selectedDate, isOpen, token]);
 
   if (!isOpen) return null;
 
@@ -65,7 +66,8 @@ export default function RescheduleModal({ isOpen, onClose, bookingId, onSuccess 
       date.setHours(hours, minutes, 0, 0);
 
       await api.put(`/bookings/${bookingId}/reschedule`, {
-        body: { newAppointmentTime: date.toISOString() }
+        body: { newAppointmentTime: date.toISOString() },
+        token: token ?? undefined
       });
       onSuccess();
       onClose();

@@ -168,6 +168,7 @@
     "delete_account_desc": "Padamkan profil anda secara kekal.",
     "delete_confirm": "Adakah anda pasti mahu memadam akaun dan semua data berkaitan secara kekal? Tindakan ini tidak boleh dibatalkan.",
     "delete_submitted": "Permintaan pemadaman akaun telah dihantar. Pemadaman akan diselesaikan dalam tempoh 30 hari.",
+    "delete_error": "Gagal memadam akaun anda. Sila cuba lagi atau hubungi sokongan.",
     "close": "Tutup"
   },
   "booking": {

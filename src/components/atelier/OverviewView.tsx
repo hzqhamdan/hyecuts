@@ -6,6 +6,7 @@ import {
 import { api } from '../../api/client';
 import type { Reward } from '../../types/loyalty';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext';
 
 interface Analytics {
   tierDistribution: Record<string, number>;
@@ -21,14 +22,15 @@ const COLORS = ['#B8A070', '#6B6B6B', '#D4C4A8', '#8A8A8A', '#4A4A4A'];
 
 export function OverviewView() {
   const { t } = useTranslation();
+  const { token } = useAuth();
   const [stats, setStats] = useState({ redemptions: 0, activeRewards: 0 });
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([
-      api.get<Reward[]>('/rewards'),
-      api.get<Analytics>('/analytics/summary')
+      api.get<Reward[]>('/rewards', { token: token ?? undefined }),
+      api.get<Analytics>('/analytics/summary', { token: token ?? undefined })
     ])
     .then(([rewards, summary]) => {
       setStats(s => ({...s, activeRewards: rewards.length}));
@@ -39,7 +41,7 @@ export function OverviewView() {
       console.error("Failed to fetch analytics", err);
       setLoading(false);
     });
-  }, []);
+  }, [token]);
 
   if (loading) {
     return (

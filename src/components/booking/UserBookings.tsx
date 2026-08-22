@@ -21,7 +21,7 @@ interface Booking {
 
 export default function UserBookings() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const queryClient = useQueryClient();
   const [rescheduleBookingId, setRescheduleBookingId] = useState<string | null>(null);
   const USER_ID = user?.id ?? "00000000-0000-0000-0000-000000000000";
@@ -29,7 +29,7 @@ export default function UserBookings() {
   const { data: bookings = [], isLoading } = useQuery<Booking[]>({
     queryKey: ['user-bookings', USER_ID],
     queryFn: () =>
-      api.get<Booking[]>(`/bookings/user/${USER_ID}`),
+      api.get<Booking[]>(`/bookings/user/${USER_ID}`, { token: token ?? undefined }),
     enabled: !!user?.id,
   });
 
@@ -171,6 +171,7 @@ export default function UserBookings() {
         isOpen={!!rescheduleBookingId}
         onClose={() => setRescheduleBookingId(null)}
         bookingId={rescheduleBookingId || ''}
+        token={token}
         onSuccess={() => {
             queryClient.invalidateQueries({ queryKey: ['user-bookings', USER_ID] });
         }}

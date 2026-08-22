@@ -6,6 +6,8 @@ import com.hyecuts.loyalty.service.LoyaltyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -25,15 +27,17 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final GlobalSettingsRepository globalSettingsRepository;
     private final PasswordEncoder passwordEncoder;
     private final LoyaltyService loyaltyService;
+    private final Environment environment;
 
-    public DatabaseSeeder(UserRepository userRepository, 
-                          RewardRepository rewardRepository, 
-                          BadgeRepository badgeRepository, 
+    public DatabaseSeeder(UserRepository userRepository,
+                          RewardRepository rewardRepository,
+                          BadgeRepository badgeRepository,
                           MissionRepository missionRepository,
                           BarberServiceRepository serviceRepository,
                           GlobalSettingsRepository globalSettingsRepository,
                           PasswordEncoder passwordEncoder,
-                          LoyaltyService loyaltyService) {
+                          LoyaltyService loyaltyService,
+                          Environment environment) {
         this.userRepository = userRepository;
         this.rewardRepository = rewardRepository;
         this.badgeRepository = badgeRepository;
@@ -42,11 +46,15 @@ public class DatabaseSeeder implements CommandLineRunner {
         this.globalSettingsRepository = globalSettingsRepository;
         this.passwordEncoder = passwordEncoder;
         this.loyaltyService = loyaltyService;
+        this.environment = environment;
     }
 
     @Override
     public void run(String... args) throws Exception {
-        if (userRepository.count() == 0) {
+        // Gated on the service catalog, not on users: the demo accounts below are
+        // dev-only, so in every other environment userRepository.count() would stay
+        // 0 forever and re-run this whole block (duplicating catalog data) on every restart.
+        if (serviceRepository.count() == 0) {
             log.info("Seeding Database...");
 
             // 0. Global Settings
@@ -57,28 +65,15 @@ public class DatabaseSeeder implements CommandLineRunner {
                     new GlobalSettings("INSIDER_BONUS_PERCENT", "10", "Bonus percentage applied to point earnings for Insider+ tiers")
             ));
 
-            // 1. Create Default Users
-            User admin = new User();
-            admin.setEmail("admin@hyecuts.com");
-            admin.setUsername("admin");
-            admin.setPasswordHash(passwordEncoder.encode("admin123"));
-            admin.setRole("ROLE_ADMIN");
-            admin.setFullName("Studio Curator");
-            admin.setTier(Tier.PATRON);
-            admin.setLifetimePoints(1500);
-            admin.setCurrentPoints(1500);
-            userRepository.save(admin);
-
-            User user = new User();
-            user.setEmail("user@hyecuts.com");
-            user.setUsername("user");
-            user.setPasswordHash(passwordEncoder.encode("password"));
-            user.setRole("ROLE_USER");
-            user.setFullName("Hyecuts Member");
-            user = userRepository.save(user);
-
-            // Initialize user with 750 points (Connoisseur tier)
-            loyaltyService.addPoints(user.getId(), 750);
+            // 1. Demo accounts — dev profile only. A real deployment must not ship
+            // with a well-known admin/password baked into every environment (the
+            // previous behaviour let anyone log in as admin@hyecuts.com / admin123
+            // on any deployment of this codebase).
+            if (environment.acceptsProfiles(Profiles.of("dev")) && userRepository.count() == 0) {
+                seedDemoUsers();
+            } else {
+                log.info("Skipping demo admin/member account seeding (not running under the 'dev' profile).");
+            }
 
             // 2. Create Barber Services
             serviceRepository.saveAll(List.of(
@@ -161,6 +156,30 @@ public class DatabaseSeeder implements CommandLineRunner {
 
             log.info("Seeding Complete!");
         }
+    }
+
+    private void seedDemoUsers() {
+        User admin = new User();
+        admin.setEmail("admin@hyecuts.com");
+        admin.setUsername("admin");
+        admin.setPasswordHash(passwordEncoder.encode("admin123"));
+        admin.setRole("ROLE_ADMIN");
+        admin.setFullName("Studio Curator");
+        admin.setTier(Tier.PATRON);
+        admin.setLifetimePoints(1500);
+        admin.setCurrentPoints(1500);
+        userRepository.save(admin);
+
+        User user = new User();
+        user.setEmail("user@hyecuts.com");
+        user.setUsername("user");
+        user.setPasswordHash(passwordEncoder.encode("password"));
+        user.setRole("ROLE_USER");
+        user.setFullName("Hyecuts Member");
+        user = userRepository.save(user);
+
+        // Initialize user with 750 points (Connoisseur tier)
+        loyaltyService.addPoints(user.getId(), 750);
     }
 
     private BarberService createService(String name, String description, String price, int durationMinutes) {

@@ -168,6 +168,7 @@
     "delete_account_desc": "Permanently erase your profile.",
     "delete_confirm": "Are you sure you want to permanently delete your account and all associated data? This action is irreversible.",
     "delete_submitted": "Account deletion request submitted. Deletion will be completed within 30 days.",
+    "delete_error": "Failed to delete your account. Please try again or contact support.",
     "close": "Close"
   },
   "booking": {
