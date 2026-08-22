@@ -39,7 +39,7 @@ export const useBookingStore = create<BookingState>((set) => ({
 
   setStep: (step) => { set({ step }); },
   nextStep: () => { set((state) => ({ step: state.step + 1 })); },
-  prevStep: () => { set((state) => ({ step: state.step - 1 })); },
+  prevStep: () => { set((state) => ({ step: Math.max(0, state.step - 1) })); },
   setOpenCategory: (openCategory) => { set({ openCategory }); },
   setSelectedService: (selectedService) => { set({ selectedService }); },
   setSelectedStaff: (selectedStaff) => { set({ selectedStaff }); },

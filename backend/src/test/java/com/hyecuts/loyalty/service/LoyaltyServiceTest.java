@@ -45,7 +45,9 @@ public class LoyaltyServiceTest {
     @Test
     void addPoints_shouldUpdatePointsAndTier() {
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
-        when(globalSettingsService.getInsiderBonusPercent()).thenReturn(0);
+        // testUser starts at Tier.MEMBER, which never earns the Insider bonus,
+        // so addPointsToUser short-circuits past globalSettingsService and this
+        // stub is never consulted — don't declare it.
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         User updatedUser = loyaltyService.addPoints(userId, 120);
@@ -59,7 +61,7 @@ public class LoyaltyServiceTest {
     @Test
     void addPoints_shouldMoveToArtisanTier() {
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
-        when(globalSettingsService.getInsiderBonusPercent()).thenReturn(0);
+        // Same as above: MEMBER tier never reaches the bonus lookup.
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         User updatedUser = loyaltyService.addPoints(userId, 350);
@@ -82,7 +84,8 @@ public class LoyaltyServiceTest {
 
         assertEquals(127, updatedUser.getCurrentPoints());
         assertEquals(127, updatedUser.getLifetimePoints());
-        assertEquals(Tier.ARTISAN, updatedUser.getTier());
+        // 100 + 27 = 127 lifetime points is still under the Artisan threshold (350).
+        assertEquals(Tier.INSIDER, updatedUser.getTier());
     }
 
     @Test
