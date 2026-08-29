@@ -89,6 +89,12 @@ public class User {
     @Column(name = "oauth_provider")
     private String oauthProvider;
 
+    // Set when a booking is marked NO_SHOW (see cancellation-policy.md) — the
+    // booking API refuses new bookings for this user until this instant.
+    // Null (the common case) means no restriction is in effect.
+    @Column(name = "booking_restricted_until")
+    private LocalDateTime bookingRestrictedUntil;
+
     public User() {}
 
     // Special setter to handle the hairProfile object from frontend
@@ -148,4 +154,6 @@ public class User {
     public void setAvatar(String avatar) { this.avatar = avatar; }
     public String getOauthProvider() { return oauthProvider; }
     public void setOauthProvider(String oauthProvider) { this.oauthProvider = oauthProvider; }
+    public LocalDateTime getBookingRestrictedUntil() { return bookingRestrictedUntil; }
+    public void setBookingRestrictedUntil(LocalDateTime bookingRestrictedUntil) { this.bookingRestrictedUntil = bookingRestrictedUntil; }
 }

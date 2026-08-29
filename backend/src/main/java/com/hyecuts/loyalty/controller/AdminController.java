@@ -1,9 +1,11 @@
 package com.hyecuts.loyalty.controller;
 
 import com.hyecuts.loyalty.model.ActivityLog;
+import com.hyecuts.loyalty.model.AdminAuditLog;
 import com.hyecuts.loyalty.model.User;
 import com.hyecuts.loyalty.model.Voucher;
 import com.hyecuts.loyalty.repository.VoucherRepository;
+import com.hyecuts.loyalty.security.CustomUserDetails;
 import com.hyecuts.loyalty.service.GamificationService;
 import com.hyecuts.loyalty.service.LoyaltyService;
 import com.hyecuts.loyalty.service.RewardService;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -69,12 +72,24 @@ public class AdminController {
     }
 
     @PostMapping("/points/adjust/{userId}")
-    public ResponseEntity<User> adjustPoints(@PathVariable UUID userId, @RequestParam int points) {
-        return ResponseEntity.ok(loyaltyService.addPoints(userId, points));
+    public ResponseEntity<User> adjustPoints(@PathVariable UUID userId, @RequestParam int points,
+                                              @AuthenticationPrincipal CustomUserDetails principal) {
+        return ResponseEntity.ok(loyaltyService.addPoints(userId, points, principal.getId()));
     }
 
     @PostMapping("/tier/override/{userId}")
-    public ResponseEntity<User> overrideTier(@PathVariable UUID userId, @RequestParam String tier) {
-        return ResponseEntity.ok(loyaltyService.overrideTier(userId, tier));
+    public ResponseEntity<User> overrideTier(@PathVariable UUID userId, @RequestParam String tier,
+                                              @AuthenticationPrincipal CustomUserDetails principal) {
+        return ResponseEntity.ok(loyaltyService.overrideTier(userId, tier, principal.getId()));
+    }
+
+    // Actor-scoped record of who granted/adjusted points and overrode tiers —
+    // see AdminAuditLog for why this is separate from /admin/activity.
+    @GetMapping("/audit")
+    public ResponseEntity<List<AdminAuditLog>> getAuditLog(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "100") int size) {
+        Pageable pageable = PageRequest.of(page, Math.min(size, MAX_PAGE_SIZE), Sort.by(Sort.Direction.DESC, "createdAt"));
+        return ResponseEntity.ok(loyaltyService.getAuditLog(pageable));
     }
 }

@@ -35,7 +35,7 @@ public class ActivityLog {
     private LocalDateTime timestamp = LocalDateTime.now(); // renamed for repo consistency
 
     public enum TransactionType {
-        BOOKING, REWARD_REDEMPTION, REFERRAL, MISSION_COMPLETED, ADMIN_ADJUSTMENT
+        BOOKING, REWARD_REDEMPTION, REFERRAL, MISSION_COMPLETED, ADMIN_ADJUSTMENT, CANCELLATION_PENALTY
     }
 
     public ActivityLog() {}

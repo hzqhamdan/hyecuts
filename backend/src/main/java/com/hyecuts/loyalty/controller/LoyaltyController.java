@@ -5,6 +5,7 @@ import com.hyecuts.loyalty.security.AuthorizationUtil;
 import com.hyecuts.loyalty.security.CustomUserDetails;
 import com.hyecuts.loyalty.service.LoyaltyService;
 import com.hyecuts.loyalty.web.UpdateProfileRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +29,7 @@ public class LoyaltyController {
     }
 
     @PutMapping("/profile/{userId}")
-    public ResponseEntity<?> updateProfile(@PathVariable UUID userId, @RequestBody UpdateProfileRequest request, @AuthenticationPrincipal CustomUserDetails principal) {
+    public ResponseEntity<?> updateProfile(@PathVariable UUID userId, @Valid @RequestBody UpdateProfileRequest request, @AuthenticationPrincipal CustomUserDetails principal) {
         AuthorizationUtil.requireSelfOrAdmin(principal, userId);
         User u = loyaltyService.updateUser(userId, request);
         
@@ -53,14 +54,15 @@ public class LoyaltyController {
     }
 
     @PostMapping("/earn/{userId}")
-    public ResponseEntity<?> earnPoints(@PathVariable UUID userId, @RequestParam int points) {
+    public ResponseEntity<?> earnPoints(@PathVariable UUID userId, @RequestParam int points,
+                                         @AuthenticationPrincipal CustomUserDetails principal) {
         // Unlike /admin/points/adjust (intentionally bidirectional, for
         // corrections), "earning" a negative amount is never meaningful — that's
         // effectively a stealth point deduction through the wrong endpoint.
         if (points < 0) {
             return ResponseEntity.badRequest().body("Points to earn must not be negative.");
         }
-        User updatedUser = loyaltyService.addPoints(userId, points);
+        User updatedUser = loyaltyService.addPoints(userId, points, principal.getId());
         return ResponseEntity.ok(updatedUser);
     }
 

@@ -7,10 +7,12 @@ import com.hyecuts.loyalty.repository.UserRepository;
 import com.hyecuts.loyalty.security.AuthorizationUtil;
 import com.hyecuts.loyalty.security.CustomUserDetails;
 import com.hyecuts.loyalty.service.BarberServiceService;
+import com.hyecuts.loyalty.service.BookingRestrictedException;
 import com.hyecuts.loyalty.service.BookingService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -39,15 +41,34 @@ public class BookingController {
         public UUID userId;
         public Long serviceId;
         public String appointmentTime; // ISO 8601 string
+        // Only used — and required — when the caller isn't authenticated
+        // (BK-002: a real guest booking, not the fabricated-confirmation
+        // no-op this used to be).
+        public String guestName;
+        public String guestEmail;
+        public String guestPhone;
     }
 
-    // User endpoint
+    // User endpoint — also reachable by guests (see SecurityConfig: POST
+    // /api/bookings is the one unauthenticated write in this controller).
     @PostMapping
     public ResponseEntity<?> createBooking(@RequestBody CreateBookingRequest request, @AuthenticationPrincipal CustomUserDetails principal) {
-        // The booking always belongs to the caller, regardless of what userId the client sent.
-        User user = userRepository.findById(principal.getId()).orElse(null);
-        if (user == null) {
-            return ResponseEntity.badRequest().body("User not found");
+        Booking newBooking = new Booking();
+
+        if (principal != null) {
+            // The booking always belongs to the caller, regardless of what userId the client sent.
+            User user = userRepository.findById(principal.getId()).orElse(null);
+            if (user == null) {
+                return ResponseEntity.badRequest().body("User not found");
+            }
+            newBooking.setUser(user);
+        } else {
+            if (isBlank(request.guestName) || isBlank(request.guestEmail) || isBlank(request.guestPhone)) {
+                return ResponseEntity.badRequest().body("Guest bookings require a name, email, and phone number.");
+            }
+            newBooking.setGuestName(request.guestName.trim());
+            newBooking.setGuestEmail(request.guestEmail.trim());
+            newBooking.setGuestPhone(request.guestPhone.trim());
         }
 
         BarberService service = barberServiceService.getServiceById(request.serviceId).orElse(null);
@@ -55,8 +76,6 @@ public class BookingController {
             return ResponseEntity.badRequest().body("Service not found");
         }
 
-        Booking newBooking = new Booking();
-        newBooking.setUser(user);
         newBooking.setService(service);
         newBooking.setTotalPriceMyr(service.getPriceMyr());
         newBooking.setStatus(Booking.BookingStatus.PENDING);
@@ -66,6 +85,8 @@ public class BookingController {
             newBooking.setAppointmentTime(java.time.LocalDateTime.parse(request.appointmentTime));
             Booking saved = bookingService.createBooking(newBooking);
             return ResponseEntity.ok(saved);
+        } catch (BookingRestrictedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -92,8 +113,13 @@ public class BookingController {
 
     // Admin/User endpoint
     @GetMapping("/date/{date}")
-    public ResponseEntity<List<Booking>> getBookingsByDate(@PathVariable String date) {
-        java.time.LocalDate localDate = java.time.LocalDate.parse(date);
+    public ResponseEntity<?> getBookingsByDate(@PathVariable String date) {
+        java.time.LocalDate localDate;
+        try {
+            localDate = java.time.LocalDate.parse(date);
+        } catch (java.time.format.DateTimeParseException e) {
+            return ResponseEntity.badRequest().body("Malformed date, expected YYYY-MM-DD");
+        }
         java.time.LocalDateTime start = localDate.atStartOfDay();
         java.time.LocalDateTime end = localDate.atTime(java.time.LocalTime.MAX);
         return ResponseEntity.ok(bookingService.getBookingsByDateRange(start, end));
@@ -105,6 +131,19 @@ public class BookingController {
         try {
             Booking completed = bookingService.completeBooking(bookingId);
             return ResponseEntity.ok(completed);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    // Admin endpoint. There's no scheduler to detect missed appointments
+    // automatically, so staff mark a no-show explicitly; this applies the
+    // points penalty and booking restriction from cancellation-policy.md.
+    @PutMapping("/{bookingId}/no-show")
+    public ResponseEntity<?> markNoShow(@PathVariable UUID bookingId) {
+        try {
+            Booking updated = bookingService.markNoShow(bookingId);
+            return ResponseEntity.ok(updated);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -147,6 +186,18 @@ public class BookingController {
     private void requireOwnsBooking(UUID bookingId, CustomUserDetails principal) {
         Booking booking = bookingService.getBookingById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
+        if (booking.getUser() == null) {
+            // Guest booking — there's no "self" to match against, so only an
+            // admin (e.g. a call-in cancellation handled by staff) can act on it.
+            if (!AuthorizationUtil.isAdmin(principal)) {
+                throw new AccessDeniedException("Guest bookings can only be managed by an admin.");
+            }
+            return;
+        }
         AuthorizationUtil.requireSelfOrAdmin(principal, booking.getUser().getId());
+    }
+
+    private static boolean isBlank(String s) {
+        return s == null || s.isBlank();
     }
 }

@@ -2,6 +2,7 @@ package com.hyecuts.loyalty.web;
 
 import com.hyecuts.loyalty.exception.EmailAlreadyInUseException;
 import com.hyecuts.loyalty.exception.ResourceNotFoundException;
+import com.hyecuts.loyalty.exception.UsernameAlreadyInUseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EmailAlreadyInUseException.class)
     public ResponseEntity<ApiError> handleEmailInUse(EmailAlreadyInUseException ex) {
+        return build(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), null);
+    }
+
+    @ExceptionHandler(UsernameAlreadyInUseException.class)
+    public ResponseEntity<ApiError> handleUsernameInUse(UsernameAlreadyInUseException ex) {
         return build(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), null);
     }
 
@@ -68,9 +74,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleAny(Exception ex) {
         // Log unexpected failures with the full stack trace so they're not lost,
-        // but never leak internals to the client.
+        // but never leak internals to the client (API-002/003) — ex.getMessage()
+        // on a truly unanticipated exception can be a SQL constraint name, a
+        // driver error, or other implementation detail.
         log.error("Unhandled exception", ex);
-        return build(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", ex.getMessage() != null ? ex.getMessage() : "Unexpected error", null);
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "An unexpected error occurred.", null);
     }
 
     private ResponseEntity<ApiError> build(HttpStatus status, String error, String message, Map<String, String> fields) {

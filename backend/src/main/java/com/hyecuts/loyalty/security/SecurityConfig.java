@@ -64,13 +64,18 @@ public class SecurityConfig {
 
                 // Public catalog data needed before/without login
                 .requestMatchers(HttpMethod.GET, "/api/services/active").permitAll()
+                // Guest bookings (BK-002) — BookingController branches on
+                // whether a principal is present; a valid JWT still resolves
+                // normally here, this just also lets an unauthenticated
+                // caller through with guest contact details instead.
+                .requestMatchers(HttpMethod.POST, "/api/bookings").permitAll()
 
                 // Admin-only surface: user management, points/tier grants, economy
                 // settings, redemption fulfilment, catalog writes, and analytics.
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .requestMatchers("/api/analytics/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/bookings/all").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/bookings/*/complete").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/bookings/*/complete", "/api/bookings/*/no-show").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/services", "/api/rewards", "/api/gamification/badges", "/api/gamification/missions").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/services/*/deactivate").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/services/all").hasRole("ADMIN")

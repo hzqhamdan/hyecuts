@@ -5,7 +5,9 @@ import com.hyecuts.loyalty.repository.UserRepository;
 import com.hyecuts.loyalty.security.JwtUtil;
 import com.hyecuts.loyalty.security.OAuth2CodeExchangeService;
 import com.hyecuts.loyalty.security.TokenRevocationService;
+import com.hyecuts.loyalty.web.RegisterRequest;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -47,8 +49,18 @@ public class AuthController {
         this.tokenRevocationService = tokenRevocationService;
     }
 
+    /**
+     * Login payload only. Kept intentionally permissive — see
+     * {@link com.hyecuts.loyalty.web.RegisterRequest} for why the registration
+     * rules must not be applied here. {@code @NotBlank} is safe because blank
+     * credentials can never authenticate regardless of which accounts exist,
+     * so it discloses nothing.
+     */
     public static class AuthRequest {
+        @jakarta.validation.constraints.NotBlank
         public String username;
+
+        @jakarta.validation.constraints.NotBlank
         public String password;
     }
 
@@ -62,7 +74,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<?> login(@Valid @RequestBody AuthRequest authRequest) {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.username, authRequest.password)
@@ -88,20 +100,24 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody AuthRequest authRequest) {
-        if (userRepository.findByEmailOrUsername(authRequest.username, authRequest.username).isPresent()) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
+        // Already trimmed by RegisterRequest's constructor (AUTH-021), so
+        // " a@b.c " and "a@b.c" collide here rather than creating two accounts.
+        String identifier = request.username();
+
+        if (userRepository.findByEmailOrUsername(identifier, identifier).isPresent()) {
             return ResponseEntity.badRequest().body("Email or Username is already taken");
         }
 
         User newUser = new User();
         // Default both to the identifier provided
-        newUser.setEmail(authRequest.username);
-        newUser.setUsername(authRequest.username);
-        newUser.setPasswordHash(passwordEncoder.encode(authRequest.password));
+        newUser.setEmail(identifier);
+        newUser.setUsername(identifier);
+        newUser.setPasswordHash(passwordEncoder.encode(request.password()));
         newUser.setRole("ROLE_USER");
         User savedUser = userRepository.save(newUser);
 
-        final String jwt = jwtUtil.generateToken(authRequest.username, savedUser.getId().toString());
+        final String jwt = jwtUtil.generateToken(identifier, savedUser.getId().toString());
         Map<String, Object> response = new HashMap<>();
         response.put("token", jwt);
         response.put("userId", savedUser.getId().toString());

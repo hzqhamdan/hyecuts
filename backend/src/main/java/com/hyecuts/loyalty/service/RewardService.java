@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -81,7 +82,7 @@ public class RewardService {
 
         // Create Voucher
         Voucher voucher = new Voucher();
-        voucher.setId("V-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        voucher.setId(generateUniqueVoucherId("V-"));
         voucher.setUser(user);
         voucher.setReward(reward);
         voucher.setStatus(Voucher.VoucherStatus.ACTIVE);
@@ -108,11 +109,34 @@ public class RewardService {
         return voucherRepository.findAllByOrderByIssuedAtDesc(pageable).getContent();
     }
 
+    @Transactional
     public Voucher fulfillVoucher(String voucherId) {
         Voucher voucher = voucherRepository.findById(voucherId)
                 .orElseThrow(() -> new RuntimeException("Voucher not found"));
-        voucher.setStatus(Voucher.VoucherStatus.REDEEMED);
-        voucher.setRedeemedAt(java.time.LocalDateTime.now());
-        return voucherRepository.save(voucher);
+
+        int updated = voucherRepository.fulfillIfActive(voucherId, LocalDateTime.now());
+        if (updated == 0) {
+            if (voucher.getStatus() == Voucher.VoucherStatus.REDEEMED) {
+                throw new RuntimeException("Voucher has already been redeemed.");
+            }
+            throw new RuntimeException("Voucher is expired or no longer active.");
+        }
+
+        return voucherRepository.findById(voucherId)
+                .orElseThrow(() -> new RuntimeException("Voucher not found"));
+    }
+
+    // RW-015: the id column is capped at 12 chars ("V-"/"Q-" + 10 hex chars),
+    // so collisions, while unlikely, aren't impossible — check-before-insert
+    // rather than let a duplicate PK blow up mid-transaction.
+    private String generateUniqueVoucherId(String prefix) {
+        for (int attempt = 0; attempt < 5; attempt++) {
+            String hex = UUID.randomUUID().toString().replace("-", "");
+            String candidate = prefix + hex.substring(0, 10).toUpperCase();
+            if (!voucherRepository.existsById(candidate)) {
+                return candidate;
+            }
+        }
+        throw new IllegalStateException("Could not generate a unique voucher ID.");
     }
 }

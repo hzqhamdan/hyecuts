@@ -97,12 +97,39 @@ class BookingServiceTest {
     }
 
     @Test
-    void createBooking_shouldThrowWhenUserNotFound() {
+    void createBooking_shouldThrowWhenNoUserAndNoGuestDetails() {
         testBooking.setUser(null);
 
         RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> bookingService.createBooking(testBooking));
-        assertEquals("User not found", ex.getMessage());
+        assertTrue(ex.getMessage().toLowerCase().contains("guest"));
+    }
+
+    @Test
+    void createBooking_shouldSucceedForGuestWithContactDetails() {
+        testBooking.setUser(null);
+        testBooking.setGuestName("Jane Guest");
+        testBooking.setGuestEmail("jane@example.com");
+        testBooking.setGuestPhone("+60123456789");
+        when(bookingRepository.save(any(Booking.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Booking saved = bookingService.createBooking(testBooking);
+
+        assertNotNull(saved);
+        assertNull(saved.getUser());
+        assertEquals("Jane Guest", saved.getGuestName());
+        verify(bookingRepository).save(testBooking);
+    }
+
+    @Test
+    void createBooking_shouldThrowWhenGuestDetailsIncomplete() {
+        testBooking.setUser(null);
+        testBooking.setGuestName("Jane Guest");
+        testBooking.setGuestEmail(""); // missing email
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> bookingService.createBooking(testBooking));
+        assertTrue(ex.getMessage().toLowerCase().contains("guest"));
     }
 
     @Test
@@ -148,6 +175,27 @@ class BookingServiceTest {
         RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> bookingService.createBooking(testBooking));
         assertTrue(ex.getMessage().toLowerCase().contains("active"));
+    }
+
+    @Test
+    void createBooking_shouldThrowBookingRestrictedExceptionWhenUnderActiveRestriction() {
+        testUser.setBookingRestrictedUntil(LocalDateTime.now().plusDays(3));
+
+        BookingRestrictedException ex = assertThrows(BookingRestrictedException.class,
+                () -> bookingService.createBooking(testBooking));
+        assertNotNull(ex.getRestrictedUntil());
+        verify(bookingRepository, never()).save(any(Booking.class));
+    }
+
+    @Test
+    void createBooking_shouldAllowWhenRestrictionHasExpired() {
+        testUser.setBookingRestrictedUntil(LocalDateTime.now().minusDays(1));
+        when(bookingRepository.save(any(Booking.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Booking saved = bookingService.createBooking(testBooking);
+
+        assertNotNull(saved);
+        verify(bookingRepository).save(testBooking);
     }
 
     // =============== rescheduleBooking() ===============
@@ -214,6 +262,30 @@ class BookingServiceTest {
         verify(bookingRepository).save(testBooking);
     }
 
+    @Test
+    void rescheduleBooking_shouldIncrementRescheduleCount() {
+        LocalDateTime newTime = LocalDateTime.now().plusDays(2);
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(testBooking));
+        when(bookingRepository.save(any(Booking.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Booking updated = bookingService.rescheduleBooking(bookingId, newTime);
+
+        assertEquals(1, updated.getRescheduleCount());
+    }
+
+    @Test
+    void rescheduleBooking_shouldThrowWhenLimitReached() {
+        // BK-047: reschedule count already at the cap — the next attempt
+        // must be rejected instead of silently allowed forever.
+        testBooking.setRescheduleCount(3);
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(testBooking));
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> bookingService.rescheduleBooking(bookingId, LocalDateTime.now().plusDays(2)));
+        assertTrue(ex.getMessage().toLowerCase().contains("maximum"));
+        verify(bookingRepository, never()).save(any(Booking.class));
+    }
+
     // =============== cancelBooking() ===============
 
     @Test
@@ -255,6 +327,107 @@ class BookingServiceTest {
         assertTrue(ex.getMessage().toLowerCase().contains("complet"));
     }
 
+    @Test
+    void cancelBooking_shouldApplyPenaltyWhenWithinLateCancellationWindow() {
+        testBooking.setAppointmentTime(LocalDateTime.now().plusHours(2));
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(testBooking));
+        when(bookingRepository.save(any(Booking.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        bookingService.cancelBooking(bookingId);
+
+        verify(loyaltyService).applyPointsPenalty(testUser, 10);
+        verify(activityLogRepository).save(argThat(log ->
+                log.getActionType() == ActivityLog.TransactionType.CANCELLATION_PENALTY
+                        && log.getPointsEarned() == -10));
+    }
+
+    @Test
+    void cancelBooking_shouldNotApplyPenaltyWhenMoreThan24HoursOut() {
+        testBooking.setAppointmentTime(LocalDateTime.now().plusDays(3));
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(testBooking));
+        when(bookingRepository.save(any(Booking.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        bookingService.cancelBooking(bookingId);
+
+        verifyNoInteractions(loyaltyService);
+        verify(activityLogRepository, never()).save(any(ActivityLog.class));
+    }
+
+    @Test
+    void cancelBooking_shouldNotPenalizeGuestBookingEvenWhenLate() {
+        // Guest bookings (BK-002) have no points balance to deduct from.
+        testBooking.setUser(null);
+        testBooking.setGuestName("Jane Guest");
+        testBooking.setGuestEmail("jane@example.com");
+        testBooking.setGuestPhone("+60123456789");
+        testBooking.setAppointmentTime(LocalDateTime.now().plusHours(2));
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(testBooking));
+        when(bookingRepository.save(any(Booking.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Booking cancelled = bookingService.cancelBooking(bookingId);
+
+        assertEquals(Booking.BookingStatus.CANCELLED, cancelled.getStatus());
+        verifyNoInteractions(loyaltyService);
+    }
+
+    // =============== markNoShow() ===============
+
+    @Test
+    void markNoShow_shouldMarkPenalizeAndRestrict() {
+        LocalDateTime appointmentTime = testBooking.getAppointmentTime();
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(testBooking));
+        when(bookingRepository.save(any(Booking.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Booking result = bookingService.markNoShow(bookingId);
+
+        assertEquals(Booking.BookingStatus.NO_SHOW, result.getStatus());
+        verify(loyaltyService).applyPointsPenalty(testUser, 20);
+        verify(activityLogRepository).save(argThat(log ->
+                log.getActionType() == ActivityLog.TransactionType.CANCELLATION_PENALTY
+                        && log.getPointsEarned() == -20));
+        assertEquals(appointmentTime.plusDays(7), testUser.getBookingRestrictedUntil());
+        verify(userRepository).save(testUser);
+    }
+
+    @Test
+    void markNoShow_shouldMarkGuestBookingWithoutPenalizingOrRestricting() {
+        testBooking.setUser(null);
+        testBooking.setGuestName("Jane Guest");
+        testBooking.setGuestEmail("jane@example.com");
+        testBooking.setGuestPhone("+60123456789");
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(testBooking));
+        when(bookingRepository.save(any(Booking.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Booking result = bookingService.markNoShow(bookingId);
+
+        assertEquals(Booking.BookingStatus.NO_SHOW, result.getStatus());
+        verifyNoInteractions(loyaltyService);
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void markNoShow_shouldThrowWhenBookingNotFound() {
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.empty());
+
+        assertThrows(RuntimeException.class, () -> bookingService.markNoShow(bookingId));
+    }
+
+    @Test
+    void markNoShow_shouldThrowWhenAlreadyCancelled() {
+        testBooking.setStatus(Booking.BookingStatus.CANCELLED);
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(testBooking));
+
+        assertThrows(RuntimeException.class, () -> bookingService.markNoShow(bookingId));
+    }
+
+    @Test
+    void markNoShow_shouldThrowWhenAlreadyCompleted() {
+        testBooking.setStatus(Booking.BookingStatus.COMPLETED);
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(testBooking));
+
+        assertThrows(RuntimeException.class, () -> bookingService.markNoShow(bookingId));
+    }
+
     // =============== completeBooking() ===============
 
     @Test
@@ -269,6 +442,23 @@ class BookingServiceTest {
         assertEquals(300, completed.getPointsAwarded());
         verify(loyaltyService).addPointsToUser(testUser, 300);
         verify(activityLogRepository).save(any(ActivityLog.class));
+    }
+
+    @Test
+    void completeBooking_shouldCompleteGuestBookingWithoutAwardingPoints() {
+        testBooking.setUser(null);
+        testBooking.setGuestName("Jane Guest");
+        testBooking.setGuestEmail("jane@example.com");
+        testBooking.setGuestPhone("+60123456789");
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(testBooking));
+        when(bookingRepository.save(any(Booking.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Booking completed = bookingService.completeBooking(bookingId);
+
+        assertEquals(Booking.BookingStatus.COMPLETED, completed.getStatus());
+        assertEquals(0, completed.getPointsAwarded());
+        verifyNoInteractions(loyaltyService);
+        verify(activityLogRepository, never()).save(any(ActivityLog.class));
     }
 
     @Test
@@ -297,6 +487,46 @@ class BookingServiceTest {
         RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> bookingService.completeBooking(bookingId));
         assertTrue(ex.getMessage().toLowerCase().contains("cancell"));
+    }
+
+    @Test
+    void completeBooking_shouldRoundFractionalPointsInsteadOfTruncating() {
+        testBooking.setTotalPriceMyr(BigDecimal.valueOf(25.90));
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(testBooking));
+        when(globalSettingsService.getPointsPerMyr()).thenReturn(10);
+        when(bookingRepository.save(any(Booking.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Booking completed = bookingService.completeBooking(bookingId);
+
+        // RM 25.90 * 10 = 259, rounded — not `.intValue()`-truncated to 250.
+        assertEquals(259, completed.getPointsAwarded());
+    }
+
+    @Test
+    void completeBooking_shouldClampInsteadOfOverflowingOnHugePointsPerMyr() {
+        testBooking.setTotalPriceMyr(BigDecimal.valueOf(999_999));
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(testBooking));
+        when(globalSettingsService.getPointsPerMyr()).thenReturn(Integer.MAX_VALUE);
+        when(bookingRepository.save(any(Booking.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Booking completed = bookingService.completeBooking(bookingId);
+
+        assertEquals(Integer.MAX_VALUE, completed.getPointsAwarded());
+    }
+
+    @Test
+    void completeBooking_shouldThrowFriendlyErrorOnConcurrentCompletion() {
+        // Simulates two /complete requests racing on the same PENDING booking:
+        // both pass the status guards, but the @Version-backed save() only
+        // lets one of them win (BK-032).
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(testBooking));
+        when(globalSettingsService.getPointsPerMyr()).thenReturn(10);
+        when(bookingRepository.save(any(Booking.class)))
+                .thenThrow(new org.springframework.dao.OptimisticLockingFailureException("stale version"));
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> bookingService.completeBooking(bookingId));
+        assertTrue(ex.getMessage().toLowerCase().contains("already completed"));
     }
 
     @Test

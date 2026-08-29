@@ -1,7 +1,9 @@
 package com.hyecuts.loyalty.service;
 
+import com.hyecuts.loyalty.model.AdminAuditLog;
 import com.hyecuts.loyalty.model.Tier;
 import com.hyecuts.loyalty.model.User;
+import com.hyecuts.loyalty.repository.AdminAuditLogRepository;
 import com.hyecuts.loyalty.repository.UserRepository;
 import com.hyecuts.loyalty.web.AdminUserSummary;
 import com.hyecuts.loyalty.web.UpdateProfileRequest;
@@ -20,11 +22,14 @@ public class LoyaltyService {
     private final UserRepository userRepository;
     private final GlobalSettingsService globalSettingsService;
     private final PasswordEncoder passwordEncoder;
+    private final AdminAuditLogRepository adminAuditLogRepository;
 
-    public LoyaltyService(UserRepository userRepository, GlobalSettingsService globalSettingsService, PasswordEncoder passwordEncoder) {
+    public LoyaltyService(UserRepository userRepository, GlobalSettingsService globalSettingsService,
+                           PasswordEncoder passwordEncoder, AdminAuditLogRepository adminAuditLogRepository) {
         this.userRepository = userRepository;
         this.globalSettingsService = globalSettingsService;
         this.passwordEncoder = passwordEncoder;
+        this.adminAuditLogRepository = adminAuditLogRepository;
     }
 
     public User getUser(UUID userId) {
@@ -43,22 +48,25 @@ public class LoyaltyService {
         User user = getUser(userId);
 
         if (req.fullName() != null) user.setFullName(req.fullName());
-        
-        if (req.email() != null) {
+
+        // Blank means "do not change" (per UpdateProfileRequest's contract) —
+        // email/username gate login, so silently wiping one to "" locks the
+        // user out with no way back in.
+        if (req.email() != null && !req.email().isBlank()) {
             String newEmail = req.email().trim();
             if (!newEmail.equalsIgnoreCase(user.getEmail())) {
                 if (userRepository.findByEmail(newEmail).isPresent()) {
-                    throw new RuntimeException("Email already taken");
+                    throw new com.hyecuts.loyalty.exception.EmailAlreadyInUseException(newEmail);
                 }
                 user.setEmail(newEmail);
             }
         }
 
-        if (req.username() != null) {
+        if (req.username() != null && !req.username().isBlank()) {
             String newUsername = req.username().trim();
             if (!newUsername.equalsIgnoreCase(user.getUsername())) {
                 if (userRepository.findByUsername(newUsername).isPresent()) {
-                    throw new RuntimeException("Username already taken");
+                    throw new com.hyecuts.loyalty.exception.UsernameAlreadyInUseException(newUsername);
                 }
                 user.setUsername(newUsername);
             }
@@ -89,27 +97,62 @@ public class LoyaltyService {
     }
 
     @Transactional
-    public User overrideTier(UUID userId, String tierName) {
+    public User overrideTier(UUID userId, String tierName, UUID actorId) {
         User user = getUser(userId);
+        Tier previousTier = user.getTier();
         Tier tier;
         try {
             tier = Tier.valueOf(tierName.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Invalid tier: " + tierName);
         }
-        
+
+        // LOY-014: tier is set directly and lifetimePoints is left untouched.
+        // Inflating lifetimePoints to match used to corrupt the user's real
+        // earned total — and a later demotion couldn't undo it, since the next
+        // earn recomputed tier from that still-inflated number and silently
+        // re-promoted the user right back.
         user.setTier(tier);
-        if (user.getLifetimePoints() < tier.getMinPoints()) {
-            user.setLifetimePoints(tier.getMinPoints());
-        }
-        
-        return userRepository.save(user);
+
+        User saved = userRepository.save(user);
+        logAdminAction(actorId, saved, AdminAuditLog.AdminAction.TIER_OVERRIDE,
+                previousTier + " -> " + tier);
+        return saved;
+    }
+
+    // Internal/system callers (e.g. dev-data seeding) that have no logged-in
+    // admin behind them — logged with a null actor rather than skipping the
+    // audit trail entirely.
+    @Transactional
+    public User addPoints(UUID userId, int points) {
+        return addPoints(userId, points, null);
     }
 
     @Transactional
-    public User addPoints(UUID userId, int points) {
+    public User addPoints(UUID userId, int points, UUID actorId) {
         User user = getUser(userId);
-        return addPointsToUser(user, points);
+        User updated = addPointsToUser(user, points);
+        logAdminAction(actorId, updated, AdminAuditLog.AdminAction.POINTS_ADJUSTMENT,
+                (points >= 0 ? "+" : "") + points + " points (balance now " + updated.getCurrentPoints() + ")");
+        return updated;
+    }
+
+    private void logAdminAction(UUID actorId, User target, AdminAuditLog.AdminAction action, String details) {
+        AdminAuditLog log = new AdminAuditLog();
+        log.setActorId(actorId);
+        log.setActorEmail(actorId != null
+                ? userRepository.findById(actorId).map(User::getEmail).orElse("unknown")
+                : "system");
+        log.setTargetUserId(target.getId());
+        log.setTargetEmail(target.getEmail());
+        log.setAction(action);
+        log.setDetails(details);
+        adminAuditLogRepository.save(log);
+    }
+
+    // Was an unbounded findAll() — same rationale as getAllUsers/getAllVouchers.
+    public List<AdminAuditLog> getAuditLog(Pageable pageable) {
+        return adminAuditLogRepository.findAllByOrderByCreatedAtDesc(pageable).getContent();
     }
 
     @Transactional
@@ -131,14 +174,33 @@ public class LoyaltyService {
         user.setCurrentPoints((int) newCurrent);
         user.setLifetimePoints((int) newLifetime);
 
-        Tier newTier = Tier.forLifetimePoints(user.getLifetimePoints());
-        user.setTier(newTier);
+        // Promote-only (pairs with LOY-014 above): earning points can raise a
+        // tier an admin override left lower than lifetimePoints would justify,
+        // but never automatically drops a tier the admin set — same
+        // never-auto-demote rule normal earning already followed.
+        Tier naturalTier = Tier.forLifetimePoints(user.getLifetimePoints());
+        if (user.getTier() == null || naturalTier.ordinal() > user.getTier().ordinal()) {
+            user.setTier(naturalTier);
+        }
 
         return userRepository.save(user);
     }
 
     private static long clampToInt(long value) {
         return Math.max(Integer.MIN_VALUE, Math.min(Integer.MAX_VALUE, value));
+    }
+
+    /**
+     * Deducts a fixed cancellation/no-show penalty (cancellation-policy.md).
+     * Unlike {@link #addPointsToUser}, this only ever touches the spendable
+     * currentPoints balance: lifetimePoints (and therefore tier) must never
+     * move because of a cancellation, and the balance floors at 0 instead of
+     * going negative.
+     */
+    @Transactional
+    public void applyPointsPenalty(User user, int penaltyPoints) {
+        user.setCurrentPoints(Math.max(0, user.getCurrentPoints() - penaltyPoints));
+        userRepository.save(user);
     }
 
     /**

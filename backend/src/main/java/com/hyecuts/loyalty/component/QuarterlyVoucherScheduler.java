@@ -49,27 +49,26 @@ public class QuarterlyVoucherScheduler {
             return;
         }
 
-        List<User> patrons = userRepository.findAll().stream()
-                .filter(u -> u.getTier() == Tier.PATRON)
-                .toList();
+        List<User> patrons = userRepository.findByTier(Tier.PATRON);
 
         int issued = 0;
         for (User patron : patrons) {
-            if (quarterKey.equals(patron.getLastQuarterlyVoucherQuarter())) {
+            // Atomic conditional UPDATE (SCH-004): if two scheduler replicas
+            // fire this job at the same tick, only one wins this row and
+            // issues a voucher for the quarter — the other sees 0 rows
+            // updated and skips.
+            if (userRepository.markQuarterlyVoucherIssued(patron.getId(), quarterKey) == 0) {
                 continue;
             }
 
             Voucher voucher = new Voucher();
-            voucher.setId("Q-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+            voucher.setId(generateUniqueVoucherId("Q-"));
             voucher.setUser(patron);
             voucher.setReward(quarterlyReward);
             voucher.setStatus(Voucher.VoucherStatus.ACTIVE);
             voucher.setExpiresAt(endOfQuarter(today));
 
             voucherRepository.save(voucher);
-
-            patron.setLastQuarterlyVoucherQuarter(quarterKey);
-            userRepository.save(patron);
 
             issued++;
         }
@@ -82,21 +81,24 @@ public class QuarterlyVoucherScheduler {
     @Scheduled(cron = "0 0 7 * * *")
     @Transactional
     public void expireStaleVouchers() {
-        LocalDateTime now = LocalDateTime.now();
-        List<Voucher> expired = voucherRepository.findAll().stream()
-                .filter(v -> v.getExpiresAt() != null)
-                .filter(v -> v.getExpiresAt().isBefore(now))
-                .filter(v -> v.getStatus() == Voucher.VoucherStatus.ACTIVE)
-                .toList();
+        int expired = voucherRepository.expireStaleVouchers(LocalDateTime.now());
 
-        for (Voucher v : expired) {
-            v.setStatus(Voucher.VoucherStatus.EXPIRED);
-            voucherRepository.save(v);
+        if (expired > 0) {
+            log.info("Expired {} stale vouchers", expired);
         }
+    }
 
-        if (!expired.isEmpty()) {
-            log.info("Expired {} stale vouchers", expired.size());
+    // RW-015: same check-before-insert as RewardService.generateUniqueVoucherId
+    // — the id column is capped at 12 chars, so collisions aren't impossible.
+    private String generateUniqueVoucherId(String prefix) {
+        for (int attempt = 0; attempt < 5; attempt++) {
+            String hex = UUID.randomUUID().toString().replace("-", "");
+            String candidate = prefix + hex.substring(0, 10).toUpperCase();
+            if (!voucherRepository.existsById(candidate)) {
+                return candidate;
+            }
         }
+        throw new IllegalStateException("Could not generate a unique voucher ID.");
     }
 
     static String quarterKey(LocalDate date) {
