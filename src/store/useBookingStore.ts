@@ -10,6 +10,9 @@ interface BookingState {
   bookingRef: string;
   isConfirming: boolean;
   clientSecret: string | null;
+  guestName: string;
+  guestEmail: string;
+  guestPhone: string;
 
   setStep: (step: number) => void;
   nextStep: () => void;
@@ -22,6 +25,9 @@ interface BookingState {
   setBookingRef: (ref: string) => void;
   setIsConfirming: (isConfirming: boolean) => void;
   setClientSecret: (secret: string | null) => void;
+  setGuestName: (name: string) => void;
+  setGuestEmail: (email: string) => void;
+  setGuestPhone: (phone: string) => void;
   prepopulate: (data: { serviceName: string; staffId: string }) => void;
   reset: () => void;
 }
@@ -36,6 +42,9 @@ export const useBookingStore = create<BookingState>((set) => ({
   bookingRef: '',
   isConfirming: false,
   clientSecret: null,
+  guestName: '',
+  guestEmail: '',
+  guestPhone: '',
 
   setStep: (step) => { set({ step }); },
   nextStep: () => { set((state) => ({ step: state.step + 1 })); },
@@ -48,6 +57,9 @@ export const useBookingStore = create<BookingState>((set) => ({
   setBookingRef: (bookingRef) => { set({ bookingRef }); },
   setIsConfirming: (isConfirming) => { set({ isConfirming }); },
   setClientSecret: (clientSecret) => { set({ clientSecret }); },
+  setGuestName: (guestName) => { set({ guestName }); },
+  setGuestEmail: (guestEmail) => { set({ guestEmail }); },
+  setGuestPhone: (guestPhone) => { set({ guestPhone }); },
   prepopulate: (data) => {
     set({
       step: 3,
@@ -63,9 +75,12 @@ export const useBookingStore = create<BookingState>((set) => ({
       selectedStaff: null, 
       selectedDate: null, 
       selectedTime: null, 
-      bookingRef: '', 
+      bookingRef: '',
       isConfirming: false,
-      clientSecret: null
-    }); 
+      clientSecret: null,
+      guestName: '',
+      guestEmail: '',
+      guestPhone: ''
+    });
   },
 }));

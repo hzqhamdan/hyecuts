@@ -1,6 +1,6 @@
-export function calculateLoyaltyPoints(spendMyr: number, _pointsPerMyr: number = 1, seasonalMultiplier: number = 1.0): number {
+export function calculateLoyaltyPoints(spendMyr: number, pointsPerMyr: number = 1, seasonalMultiplier: number = 1.0): number {
   if (spendMyr <= 0) return 0;
-  return Math.floor(spendMyr * 1 * seasonalMultiplier);
+  return Math.floor(spendMyr * pointsPerMyr * seasonalMultiplier);
 }
 
 export function determineTier(lifetimePoints: number): string {

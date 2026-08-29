@@ -4,6 +4,7 @@ import { ArrowLeft, ChevronRight, ChevronDown, Calendar, Clock, CheckCircle, Shi
 import { BOOKING_POLICIES, BUSINESS_HOURS, HYECUTS, ALL_SERVICES, SERVICE_CATEGORIES, TEAM_MEMBERS, AVAILABLE_TIMES, type ServiceItem } from '../../data/hyecuts';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../api/client';
+import { toLocalIsoString } from '../../utils/datetime';
 import { useBookingStore } from '../../store/useBookingStore';
 import { useTranslation } from 'react-i18next';
 import { PaymentStep } from './PaymentStep';
@@ -13,6 +14,8 @@ import PWAInstallPrompt from '../ui/PWAInstallPrompt';
 interface BookingResponse {
   id: number;
 }
+
+const GUEST_EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const STAFF = [
   { id: 'haiqal', name: 'Haiqal', role: 'Master Barber' },
@@ -41,8 +44,15 @@ export default function BookingFlow() {
     selectedTime, setSelectedTime,
     bookingRef, setBookingRef,
     isConfirming, setIsConfirming,
+    guestName, setGuestName,
+    guestEmail, setGuestEmail,
+    guestPhone, setGuestPhone,
     reset
   } = useBookingStore();
+
+  const isGuestDetailsValid = guestName.trim() !== ''
+    && guestPhone.trim() !== ''
+    && GUEST_EMAIL_PATTERN.test(guestEmail.trim());
 
   useEffect(() => {
     if (selectedDate) {
@@ -64,78 +74,72 @@ export default function BookingFlow() {
 
   const handleConfirm = async () => {
     setIsConfirming(true);
-    
+
     try {
-      if (token && user) {
-        let serviceId = 1;
-        try {
-          const services = await api.get<ServiceItem[]>('/services/active');
-          const matchedService = services.find((s) => s.name === selectedService);
-          if (matchedService) {
-            serviceId = matchedService.id;
-          }
-        } catch (e) {
-          console.error("Error fetching services", e);
+      let serviceId = 1;
+      try {
+        const services = await api.get<ServiceItem[]>('/services/active');
+        const matchedService = services.find((s) => s.name === selectedService);
+        if (matchedService) {
+          serviceId = matchedService.id;
         }
-
-        const dayMap: Record<string, number> = { Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6, Sunday: 0 };
-        const chosenDate = DATES.find((d) => d.id === selectedDate);
-        const now = new Date();
-        const localDate = new Date(now);
-        if (chosenDate) {
-          const targetDay = dayMap[chosenDate.day];
-          // Next occurrence of the selected weekday (today only if picked and still upcoming).
-          localDate.setDate(now.getDate() + ((targetDay + 7 - now.getDay()) % 7));
-        } else {
-          // No date was actually selected (shouldn't happen — Confirm is disabled
-          // without one) — fall back to tomorrow rather than silently booking "today".
-          localDate.setDate(now.getDate() + 1);
-        }
-        let hours = 12, mins = 0;
-        if (selectedTime) {
-          const match = /(\d+):(\d+)\s*(AM|PM)/i.exec(selectedTime);
-          if (match) {
-            hours = parseInt(match[1]);
-            mins = parseInt(match[2]);
-            if (match[3].toUpperCase() === 'PM' && hours < 12) hours += 12;
-            if (match[3].toUpperCase() === 'AM' && hours === 12) hours = 0;
-          }
-        }
-        localDate.setHours(hours, mins, 0, 0);
-
-        // Format as YYYY-MM-DDTHH:mm:ss manually to keep local time
-        const pad = (n: number) => n.toString().padStart(2, '0');
-        const localIso = `${localDate.getFullYear()}-${pad(localDate.getMonth() + 1)}-${pad(localDate.getDate())}T${pad(localDate.getHours())}:${pad(localDate.getMinutes())}:${pad(localDate.getSeconds())}`;
-
-        const bookingReq = {
-          userId: user.id,
-          serviceId: serviceId,
-          appointmentTime: localIso
-        };
-
-        try {
-          const data = await api.post<BookingResponse>('/bookings', {
-            body: bookingReq,
-            token
-          });
-          setBookingRef(`HYC-${data.id.toString().slice(-4)}`);
-        } catch (e) {
-          const message = e instanceof Error ? e.message : 'Booking failed';
-          console.error("Booking failed:", message);
-          alert(`Booking failed: ${message}`);
-          setBookingRef(`HYC-${Date.now().toString().slice(-4)}`);
-        }
-      } else {
-        // Guest flow
-        setBookingRef(`HYC-${Date.now().toString().slice(-4)}`);
+      } catch (e) {
+        console.error("Error fetching services", e);
       }
-    } catch (error) {
-      console.error(error);
-      setBookingRef(`HYC-${Date.now().toString().slice(-4)}`);
-    }
 
-    setIsConfirming(false);
-    setStep(6);
+      const dayMap: Record<string, number> = { Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6, Sunday: 0 };
+      const chosenDate = DATES.find((d) => d.id === selectedDate);
+      const now = new Date();
+      const localDate = new Date(now);
+      if (chosenDate) {
+        const targetDay = dayMap[chosenDate.day];
+        // Next occurrence of the selected weekday (today only if picked and still upcoming).
+        localDate.setDate(now.getDate() + ((targetDay + 7 - now.getDay()) % 7));
+      } else {
+        // No date was actually selected (shouldn't happen — Confirm is disabled
+        // without one) — fall back to tomorrow rather than silently booking "today".
+        localDate.setDate(now.getDate() + 1);
+      }
+      let hours = 12, mins = 0;
+      if (selectedTime) {
+        const match = /(\d+):(\d+)\s*(AM|PM)/i.exec(selectedTime);
+        if (match) {
+          hours = parseInt(match[1]);
+          mins = parseInt(match[2]);
+          if (match[3].toUpperCase() === 'PM' && hours < 12) hours += 12;
+          if (match[3].toUpperCase() === 'AM' && hours === 12) hours = 0;
+        }
+      }
+      localDate.setHours(hours, mins, 0, 0);
+
+      // Local wall-clock, shared with the reschedule path (BK-016).
+      const localIso = toLocalIsoString(localDate);
+
+      const bookingReq = token && user
+        ? { userId: user.id, serviceId, appointmentTime: localIso }
+        : {
+            serviceId,
+            appointmentTime: localIso,
+            guestName: guestName.trim(),
+            guestEmail: guestEmail.trim(),
+            guestPhone: guestPhone.trim(),
+          };
+
+      const data = await api.post<BookingResponse>('/bookings', {
+        body: bookingReq,
+        token: token ?? undefined
+      });
+      setBookingRef(`HYC-${data.id.toString().slice(-4)}`);
+      setStep(6);
+    } catch (e) {
+      // Do not fake a confirmation for a booking that was never created —
+      // stay on this step so the user can see the error and retry.
+      const message = e instanceof Error ? e.message : 'Booking failed';
+      console.error("Booking failed:", message);
+      alert(`Booking failed: ${message}`);
+    } finally {
+      setIsConfirming(false);
+    }
   };
 
   const getService = () => ALL_SERVICES.find((service) => service.name === selectedService);
@@ -451,20 +455,56 @@ export default function BookingFlow() {
                   </div>
                 </div>
 
-                  <button
-                    onClick={() => { setStep(5); }}
-                    disabled={isConfirming}
-                    className="w-full py-5 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-50 active:scale-[0.98] mb-3"
-                  >
-                    {t('booking.proceed_to_payment', { defaultValue: 'Proceed to Payment' })}
-                  </button>
+                {!token && (
+                  <div className="bg-neutral-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 sm:p-8 space-y-4 mb-6">
+                    <h3 className="text-[10px] uppercase tracking-widest font-bold text-black dark:text-white">
+                      {t('booking.guest_details_title', { defaultValue: 'Your Details' })}
+                    </h3>
+                    <input
+                      type="text"
+                      value={guestName}
+                      onChange={(e) => { setGuestName(e.target.value); }}
+                      placeholder={t('booking.guest_name', { defaultValue: 'Full Name' })}
+                      className="w-full p-3 text-sm border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1A1A1A] text-black dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
+                    />
+                    <input
+                      type="email"
+                      value={guestEmail}
+                      onChange={(e) => { setGuestEmail(e.target.value); }}
+                      placeholder={t('booking.guest_email', { defaultValue: 'Email' })}
+                      className="w-full p-3 text-sm border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1A1A1A] text-black dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
+                    />
+                    <input
+                      type="tel"
+                      value={guestPhone}
+                      onChange={(e) => { setGuestPhone(e.target.value); }}
+                      placeholder={t('booking.guest_phone', { defaultValue: 'Phone Number' })}
+                      className="w-full p-3 text-sm border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1A1A1A] text-black dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
+                    />
+                  </div>
+                )}
+
+                  {token && (
+                    <button
+                      onClick={() => { setStep(5); }}
+                      disabled={isConfirming}
+                      className="w-full py-5 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors disabled:opacity-50 active:scale-[0.98] mb-3"
+                    >
+                      {t('booking.proceed_to_payment', { defaultValue: 'Proceed to Payment' })}
+                    </button>
+                  )}
                   <button
                     onClick={handleConfirm}
-                    disabled={isConfirming}
+                    disabled={isConfirming || (!token && !isGuestDetailsValid)}
                     className="w-full py-5 border border-black/20 dark:border-white/20 text-zinc-500 hover:text-black dark:hover:text-white text-[10px] uppercase tracking-widest font-bold transition-colors disabled:opacity-50 active:scale-[0.98]"
                   >
                     {t('booking.pay_at_shop', { defaultValue: 'Pay at Shop' })}
                   </button>
+                  {!token && (
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-3 text-center italic">
+                      {t('booking.guest_pay_at_shop_note', { defaultValue: 'Guest bookings are pay-at-shop only — log in to pay a deposit online.' })}
+                    </p>
+                  )}
                 </motion.div>
               )}
 

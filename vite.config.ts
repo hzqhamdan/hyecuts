@@ -48,6 +48,10 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/setupTests.ts'],
-    include: ['src/**/*.test.ts', 'src/**/*.test.tsx']
+    include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+    // Pinned to the market's timezone so date handling is deterministic and
+    // the BK-016 local-vs-UTC guards actually bite. On a UTC runner the two
+    // are indistinguishable and those tests would pass while broken.
+    env: { TZ: 'Asia/Kuala_Lumpur' }
   }
 })

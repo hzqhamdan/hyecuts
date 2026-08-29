@@ -90,6 +90,9 @@ describe('useBookingStore', () => {
     useBookingStore.getState().setBookingRef('HYC-1234');
     useBookingStore.getState().setIsConfirming(true);
     useBookingStore.getState().setClientSecret('cs_secret');
+    useBookingStore.getState().setGuestName('Jane Guest');
+    useBookingStore.getState().setGuestEmail('jane@example.com');
+    useBookingStore.getState().setGuestPhone('+60123456789');
     useBookingStore.getState().setStep(5);
 
     useBookingStore.getState().reset();
@@ -104,6 +107,9 @@ describe('useBookingStore', () => {
     expect(state.bookingRef).toBe('');
     expect(state.isConfirming).toBe(false);
     expect(state.clientSecret).toBeNull();
+    expect(state.guestName).toBe('');
+    expect(state.guestEmail).toBe('');
+    expect(state.guestPhone).toBe('');
   });
 
   it('prepopulate() should set step 3 with service and staff', () => {

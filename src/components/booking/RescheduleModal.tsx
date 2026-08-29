@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, Clock } from 'lucide-react';
 import { api } from '../../api/client';
+import { toLocalIsoString } from '../../utils/datetime';
 import { BUSINESS_HOURS, AVAILABLE_TIMES } from '../../data/hyecuts';
 
 interface Booking {
@@ -28,8 +29,10 @@ export default function RescheduleModal({ isOpen, onClose, bookingId, onSuccess,
     if (selectedDate && isOpen) {
         // Fetch booked times for selected date
         api.get<Booking[]>(`/bookings/date/${selectedDate}`, { token: token ?? undefined }).then(bookings => {
+            // PENDING and CONFIRMED both hold the slot; CANCELLED/COMPLETED/NO_SHOW
+            // don't (BK-050 — CONFIRMED bookings used to show as free here).
             const times = bookings
-                .filter(b => b.status === 'PENDING')
+                .filter(b => b.status === 'PENDING' || b.status === 'CONFIRMED')
                 .map(b => new Date(b.appointmentTime).toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', hour12: true}));
             setBookedTimes(times);
         }).catch(console.error);
@@ -66,7 +69,10 @@ export default function RescheduleModal({ isOpen, onClose, bookingId, onSuccess,
       date.setHours(hours, minutes, 0, 0);
 
       await api.put(`/bookings/${bookingId}/reschedule`, {
-        body: { newAppointmentTime: date.toISOString() },
+        // Local wall-clock, not toISOString() (BK-016) — the backend parses
+        // this into a timezone-naive LocalDateTime, so sending UTC shifted
+        // every reschedule by the client's offset.
+        body: { newAppointmentTime: toLocalIsoString(date) },
         token: token ?? undefined
       });
       onSuccess();

@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { useBookingStore } from '../../store/useBookingStore';
+import { api } from '../../api/client';
 
 const mockNavigate = vi.fn();
 
@@ -214,13 +215,89 @@ describe('BookingFlow', () => {
     await user.click(screen.getByText('12:00 PM'));
     await user.click(screen.getByText('booking.review_booking'));
 
+    // Guest bookings require contact details (BK-002) before "Pay at Shop"
+    // enables — fill them in via their placeholder text (also defaultValue-
+    // rendered, same as the buttons below).
+    await user.type(screen.getByPlaceholderText('Full Name'), 'Jane Guest');
+    await user.type(screen.getByPlaceholderText('Email'), 'jane@example.com');
+    await user.type(screen.getByPlaceholderText('Phone Number'), '+60123456789');
+
     // Unlike the other buttons in this flow, "Pay at Shop" is rendered via
     // t('booking.pay_at_shop', { defaultValue: 'Pay at Shop' }) — the mocked
     // t() above returns the defaultValue when one is supplied, so the DOM text
     // is the English label, not the raw key.
     const payAtShopBtn = screen.getByText('Pay at Shop', { exact: false });
+    expect(payAtShopBtn.closest('button')).not.toBeDisabled();
     await user.click(payAtShopBtn);
 
     expect(screen.getByText('booking.secured')).toBeDefined();
+  });
+
+  it('should keep "Pay at Shop" disabled for a guest until contact details are valid', async () => {
+    const user = userEvent.setup();
+    renderBookingFlow();
+
+    await user.click(screen.getByText('booking.guest_cta'));
+    await user.click(screen.getByText('data.services.Adult Hair Cut'));
+    await user.click(screen.getByText('booking.continue_barber'));
+    await user.click(screen.getByText('landing.no_preference'));
+    await user.click(screen.getByText('booking.continue_schedule'));
+    await user.click(screen.getByText('data.days.Monday'));
+    await user.click(screen.getByText('12:00 PM'));
+    await user.click(screen.getByText('booking.review_booking'));
+
+    const payAtShopBtn = screen.getByText('Pay at Shop', { exact: false });
+    expect(payAtShopBtn.closest('button')).toBeDisabled();
+
+    await user.type(screen.getByPlaceholderText('Full Name'), 'Jane Guest');
+    await user.type(screen.getByPlaceholderText('Phone Number'), '+60123456789');
+    // Email left blank/invalid — still disabled.
+    expect(payAtShopBtn.closest('button')).toBeDisabled();
+
+    await user.type(screen.getByPlaceholderText('Email'), 'jane@example.com');
+    expect(payAtShopBtn.closest('button')).not.toBeDisabled();
+  });
+
+  it('should not show "Proceed to Payment" for a guest (auth required for online deposits)', async () => {
+    const user = userEvent.setup();
+    renderBookingFlow();
+
+    await user.click(screen.getByText('booking.guest_cta'));
+    await user.click(screen.getByText('data.services.Adult Hair Cut'));
+    await user.click(screen.getByText('booking.continue_barber'));
+    await user.click(screen.getByText('landing.no_preference'));
+    await user.click(screen.getByText('booking.continue_schedule'));
+    await user.click(screen.getByText('data.days.Monday'));
+    await user.click(screen.getByText('12:00 PM'));
+    await user.click(screen.getByText('booking.review_booking'));
+
+    expect(screen.queryByText('Proceed to Payment', { exact: false })).toBeNull();
+  });
+
+  it('should not show the success step when the booking API call fails (BK-003)', async () => {
+    const user = userEvent.setup();
+    vi.spyOn(window, 'alert').mockImplementation(() => undefined);
+    vi.mocked(api.post).mockRejectedValueOnce(new Error('Slot no longer available'));
+    renderBookingFlow();
+
+    await user.click(screen.getByText('booking.guest_cta'));
+    await user.click(screen.getByText('data.services.Adult Hair Cut'));
+    await user.click(screen.getByText('booking.continue_barber'));
+    await user.click(screen.getByText('landing.no_preference'));
+    await user.click(screen.getByText('booking.continue_schedule'));
+    await user.click(screen.getByText('data.days.Monday'));
+    await user.click(screen.getByText('12:00 PM'));
+    await user.click(screen.getByText('booking.review_booking'));
+
+    await user.type(screen.getByPlaceholderText('Full Name'), 'Jane Guest');
+    await user.type(screen.getByPlaceholderText('Email'), 'jane@example.com');
+    await user.type(screen.getByPlaceholderText('Phone Number'), '+60123456789');
+
+    await user.click(screen.getByText('Pay at Shop', { exact: false }));
+
+    expect(window.alert).toHaveBeenCalledWith(expect.stringContaining('Slot no longer available'));
+    expect(screen.queryByText('booking.secured')).toBeNull();
+    // Still on the review step — nothing was faked.
+    expect(screen.getByText('booking.final_review')).toBeDefined();
   });
 });

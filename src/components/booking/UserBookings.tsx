@@ -19,6 +19,17 @@ interface Booking {
   };
 }
 
+// RFC 5545 TEXT escaping (BK-057) — without this, a service name containing
+// CRLF can inject arbitrary lines (new VEVENT properties, even a second
+// event) into the exported .ics file.
+function escapeICSText(value: string): string {
+  return value
+    .replace(/\\/g, '\\\\')
+    .replace(/;/g, '\\;')
+    .replace(/,/g, '\\,')
+    .replace(/\r\n|\r|\n/g, '\\n');
+}
+
 export default function UserBookings() {
   const navigate = useNavigate();
   const { user, token } = useAuth();
@@ -91,8 +102,8 @@ export default function UserBookings() {
       `DTSTAMP:${formatDate(new Date())}`,
       `DTSTART:${formatDate(startObj)}`,
       `DTEND:${formatDate(endObj)}`,
-      `SUMMARY:${booking.service?.name || 'Appointment'} at Hyecuts`,
-      `DESCRIPTION:Your appointment for ${booking.service?.name || 'Service'} (${booking.service?.durationMinutes || 30} mins) at The Studio by Hyecuts.`,
+      `SUMMARY:${escapeICSText(booking.service?.name || 'Appointment')} at Hyecuts`,
+      `DESCRIPTION:Your appointment for ${escapeICSText(booking.service?.name || 'Service')} (${booking.service?.durationMinutes || 30} mins) at The Studio by Hyecuts.`,
       `LOCATION:3361 Jalan Sungai Penchala, Kuala Lumpur`,
       'END:VEVENT',
       'END:VCALENDAR'

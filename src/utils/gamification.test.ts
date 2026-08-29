@@ -18,6 +18,14 @@ describe('Gamification Logic', () => {
     it('should floor decimal points', () => {
       expect(calculateLoyaltyPoints(25.5, 1, 1.25)).toBe(31);
     });
+
+    it('should apply a non-1 pointsPerMyr multiplier (LOY-020)', () => {
+      expect(calculateLoyaltyPoints(25, 50)).toBe(1250);
+    });
+
+    it('should combine pointsPerMyr and seasonal multiplier', () => {
+      expect(calculateLoyaltyPoints(10, 5, 2)).toBe(100);
+    });
   });
 
   describe('determineTier', () => {
