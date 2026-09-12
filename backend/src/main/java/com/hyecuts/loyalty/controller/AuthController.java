@@ -4,6 +4,7 @@ import com.hyecuts.loyalty.model.User;
 import com.hyecuts.loyalty.repository.UserRepository;
 import com.hyecuts.loyalty.security.JwtUtil;
 import com.hyecuts.loyalty.security.OAuth2CodeExchangeService;
+import com.hyecuts.loyalty.security.RateLimitGuard;
 import com.hyecuts.loyalty.security.TokenRevocationService;
 import com.hyecuts.loyalty.web.RegisterRequest;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,6 +33,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final OAuth2CodeExchangeService oauth2CodeExchangeService;
     private final TokenRevocationService tokenRevocationService;
+    private final RateLimitGuard rateLimitGuard;
 
     public AuthController(AuthenticationManager authenticationManager,
                           UserDetailsService userDetailsService,
@@ -39,7 +41,8 @@ public class AuthController {
                           UserRepository userRepository,
                           PasswordEncoder passwordEncoder,
                           OAuth2CodeExchangeService oauth2CodeExchangeService,
-                          TokenRevocationService tokenRevocationService) {
+                          TokenRevocationService tokenRevocationService,
+                          RateLimitGuard rateLimitGuard) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
@@ -47,6 +50,7 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
         this.oauth2CodeExchangeService = oauth2CodeExchangeService;
         this.tokenRevocationService = tokenRevocationService;
+        this.rateLimitGuard = rateLimitGuard;
     }
 
     /**
@@ -74,12 +78,21 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody AuthRequest authRequest) {
+    public ResponseEntity<?> login(@Valid @RequestBody AuthRequest authRequest,
+                                   HttpServletRequest httpRequest) {
+        // getRemoteAddr() is the real client IP: server.forward-headers-strategy
+        // is set to native, so Tomcat has already resolved X-Forwarded-For.
+        String ip = httpRequest.getRemoteAddr();
+        rateLimitGuard.checkLogin(ip, authRequest.username);
+
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.username, authRequest.password)
             );
         } catch (Exception e) {
+            // Only failures cost budget — a user who signs in successfully
+            // fifty times should never be throttled for it.
+            rateLimitGuard.recordLoginFailure(ip, authRequest.username);
             return ResponseEntity.status(401).body("Invalid credentials");
         }
 
@@ -100,7 +113,10 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request,
+                                      HttpServletRequest httpRequest) {
+        rateLimitGuard.checkAndConsumeRegistration(httpRequest.getRemoteAddr());
+
         // Already trimmed by RegisterRequest's constructor (AUTH-021), so
         // " a@b.c " and "a@b.c" collide here rather than creating two accounts.
         String identifier = request.username();

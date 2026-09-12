@@ -3,6 +3,7 @@ package com.hyecuts.loyalty.controller;
 import com.hyecuts.loyalty.repository.UserRepository;
 import com.hyecuts.loyalty.security.JwtUtil;
 import com.hyecuts.loyalty.security.OAuth2CodeExchangeService;
+import com.hyecuts.loyalty.security.RateLimitGuard;
 import com.hyecuts.loyalty.security.TokenRevocationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,7 @@ class AuthControllerValidationTest {
     @MockBean private PasswordEncoder passwordEncoder;
     @MockBean private OAuth2CodeExchangeService oauth2CodeExchangeService;
     @MockBean private TokenRevocationService tokenRevocationService;
+    @MockBean private RateLimitGuard rateLimitGuard;
 
     private void postRegister(String body, int expectedStatus) throws Exception {
         mockMvc.perform(post("/api/auth/register")
