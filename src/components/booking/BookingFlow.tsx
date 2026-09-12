@@ -35,6 +35,15 @@ export default function BookingFlow() {
   const { token, user } = useAuth();
   const [bookedTimes, setBookedTimes] = useState<string[]>([]);
 
+  // BK-019/020: the picker renders hardcoded ALL_SERVICES, but a booking needs the
+  // database's id. Those two drift apart the moment an admin renames or deactivates
+  // a service. Resolving the mapping up front lets an unavailable service be
+  // disabled before the customer invests five steps in it, and guarantees we never
+  // post a guessed id.
+  const [serviceIdsByName, setServiceIdsByName] = useState<Map<string, number> | null>(null);
+  const [servicesUnavailable, setServicesUnavailable] = useState(false);
+  const [servicesReloadKey, setServicesReloadKey] = useState(0);
+
   const {
     step, setStep, nextStep, prevStep,
     openCategory, setOpenCategory,
@@ -68,6 +77,26 @@ export default function BookingFlow() {
   }, [token, step, setStep]);
 
   useEffect(() => {
+    let cancelled = false;
+    setServicesUnavailable(false);
+
+    api.get<ServiceItem[]>('/services/active')
+      .then((services) => {
+        if (cancelled) return;
+        setServiceIdsByName(new Map(services.map((s) => [s.name, s.id])));
+      })
+      .catch(() => {
+        if (cancelled) return;
+        // Deliberately no fallback id. Without this list we cannot tell which
+        // service the customer means, and guessing is the defect being fixed.
+        setServiceIdsByName(null);
+        setServicesUnavailable(true);
+      });
+
+    return () => { cancelled = true; };
+  }, [servicesReloadKey]);
+
+  useEffect(() => {
     // Clean up on unmount
     return () => { reset(); };
   }, [reset]);
@@ -76,15 +105,16 @@ export default function BookingFlow() {
     setIsConfirming(true);
 
     try {
-      let serviceId = 1;
-      try {
-        const services = await api.get<ServiceItem[]>('/services/active');
-        const matchedService = services.find((s) => s.name === selectedService);
-        if (matchedService) {
-          serviceId = matchedService.id;
-        }
-      } catch (e) {
-        console.error("Error fetching services", e);
+      // BK-019/020: this used to default to a hardcoded `serviceId = 1` and keep it
+      // whenever the name did not match or the fetch failed — booking the customer
+      // into whatever service happens to hold that id, at a different price, with no
+      // error shown. There is no safe guess here, so refuse instead. The catch below
+      // surfaces the message and leaves them on this step.
+      const serviceId = selectedService ? serviceIdsByName?.get(selectedService) : undefined;
+      if (serviceId === undefined) {
+        throw new Error(t('booking.service_unavailable', {
+          defaultValue: 'That service is no longer available. Please go back and choose another.',
+        }));
       }
 
       const dayMap: Record<string, number> = { Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6, Sunday: 0 };
@@ -237,6 +267,25 @@ export default function BookingFlow() {
                 <h2 className="font-serif text-2xl sm:text-3xl uppercase tracking-tighter mb-2 text-black dark:text-white">{t('booking.select_service')}</h2>
                 <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mb-8 font-light italic">{t('booking.service_note')}</p>
 
+                {servicesUnavailable && (
+                  // Surfaced here rather than at Confirm (BK-020): if we cannot load
+                  // the list, nothing is bookable, and the customer should learn that
+                  // before filling in five steps of detail.
+                  <div className="mb-6 p-4 border border-red-300 bg-red-50 dark:bg-red-900/10 text-xs sm:text-sm text-red-700 flex items-center justify-between gap-4">
+                    <span>
+                      {t('booking.services_load_failed', {
+                        defaultValue: 'Could not load available services. Booking is unavailable until this loads.',
+                      })}
+                    </span>
+                    <button
+                      onClick={() => { setServicesReloadKey((k) => k + 1); }}
+                      className="px-4 py-2 border border-red-400 text-[10px] uppercase tracking-widest font-bold whitespace-nowrap"
+                    >
+                      {t('booking.retry', { defaultValue: 'Retry' })}
+                    </button>
+                  </div>
+                )}
+
                   <div className="space-y-4">
                     {SERVICE_CATEGORIES.map((categoryGroup) => {
                       const isOpen = openCategory === categoryGroup.category;
@@ -262,14 +311,22 @@ export default function BookingFlow() {
                                 className="overflow-hidden"
                               >
                                 <div className="px-4 pb-4 pt-1 md:px-6 md:pb-6 space-y-3 border-t border-zinc-100 dark:border-zinc-800">
-                                  {categoryGroup.services.map((service) => (
+                                  {categoryGroup.services.map((service) => {
+                                    // Unknown until the list loads; unavailable if the
+                                    // database doesn't have it (BK-019). Either way it
+                                    // cannot be selected, because its id is unresolvable.
+                                    const isSelectable = serviceIdsByName?.has(service.name) ?? false;
+                                    return (
                                     <div
                                       key={service.name}
-                                      onClick={() => { setSelectedService(service.name); }}
-                                      className={`p-4 border-2 cursor-pointer transition-all duration-300 ${
-                                        selectedService === service.name 
-                                          ? '!border-[#B8A070] bg-white dark:bg-[#1A1A1A]' 
-                                          : 'border-transparent dark:border-transparent hover:border-zinc-300 dark:hover:border-zinc-700'
+                                      onClick={() => { if (isSelectable) setSelectedService(service.name); }}
+                                      aria-disabled={!isSelectable}
+                                      className={`p-4 border-2 transition-all duration-300 ${
+                                        !isSelectable
+                                          ? 'opacity-40 cursor-not-allowed border-transparent'
+                                          : selectedService === service.name
+                                          ? '!border-[#B8A070] bg-white dark:bg-[#1A1A1A] cursor-pointer'
+                                          : 'border-transparent dark:border-transparent hover:border-zinc-300 dark:hover:border-zinc-700 cursor-pointer'
                                       }`}
                                     >
                                       <div className="flex justify-between items-start mb-1 gap-4">
@@ -284,9 +341,15 @@ export default function BookingFlow() {
                                       </div>
                                       <div className="flex gap-4 text-[9px] sm:text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 font-bold">
                                         <span>{service.duration}</span>
+                                        {!isSelectable && (
+                                          <span>
+                                            {t('booking.service_unavailable_badge', { defaultValue: 'Unavailable' })}
+                                          </span>
+                                        )}
                                       </div>
                                     </div>
-                                  ))}
+                                    );
+                                  })}
                                 </div>
                               </motion.div>
                             )}

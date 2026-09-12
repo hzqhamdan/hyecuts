@@ -41,9 +41,19 @@ vi.mock('../../context/AuthContext', () => ({
   }),
 }));
 
+// Mirrors what GET /services/active really returns. This used to be `[]`,
+// which meant no service ever matched and every booking in this suite went
+// through the `serviceId = 1` fallback (BK-019). The suite passed *because of*
+// the bug — and only because 'Adult Hair Cut' happens to be id 1, so the wrong
+// answer looked like the right one.
 vi.mock('../../api/client', () => ({
   api: {
-    get: vi.fn().mockResolvedValue([]),
+    get: vi.fn().mockResolvedValue([
+      { id: 1, name: 'Adult Hair Cut', price: 'RM 25', duration: '30 mins' },
+      { id: 4, name: 'Teenager Hair Cut', price: 'RM 20', duration: '30 mins' },
+      { id: 2, name: 'Adult Cut & Shave', price: 'RM 30', duration: '30 mins' },
+      { id: 8, name: 'Beard Trim/Shape', price: 'RM 10', duration: '10 mins' },
+    ]),
     post: vi.fn().mockResolvedValue({ id: 12345 }),
     put: vi.fn().mockResolvedValue(undefined),
     del: vi.fn().mockResolvedValue(undefined),
@@ -299,5 +309,107 @@ describe('BookingFlow', () => {
     expect(screen.queryByText('booking.secured')).toBeNull();
     // Still on the review step — nothing was faked.
     expect(screen.getByText('booking.final_review')).toBeDefined();
+  });
+
+  // =============== BK-019/020: no silent serviceId = 1 fallback ===============
+
+  /** Drives the flow from the service step through to a completed booking. */
+  async function bookService(user: ReturnType<typeof userEvent.setup>, serviceName: string) {
+    await user.click(screen.getByText('booking.guest_cta'));
+    await user.click(screen.getByText(`data.services.${serviceName}`));
+    await user.click(screen.getByText('booking.continue_barber'));
+    await user.click(screen.getByText('landing.no_preference'));
+    await user.click(screen.getByText('booking.continue_schedule'));
+    await user.click(screen.getByText('data.days.Monday'));
+    await user.click(screen.getByText('12:00 PM'));
+    await user.click(screen.getByText('booking.review_booking'));
+    await user.type(screen.getByPlaceholderText('Full Name'), 'Jane Guest');
+    await user.type(screen.getByPlaceholderText('Email'), 'jane@example.com');
+    await user.type(screen.getByPlaceholderText('Phone Number'), '+60123456789');
+    await user.click(screen.getByText('Pay at Shop', { exact: false }));
+  }
+
+  it('books the id the customer actually chose, not the fallback (BK-019)', async () => {
+    // 'Teenager Hair Cut' is id 4. The old fallback was a hardcoded 1, which is
+    // 'Adult Hair Cut' — a different service at a different price. Asserting on a
+    // service whose id is NOT 1 is the whole point: with id 1 the bug is invisible.
+    const user = userEvent.setup();
+    renderBookingFlow();
+
+    await bookService(user, 'Teenager Hair Cut');
+
+    const [path, options] = vi.mocked(api.post).mock.calls[0];
+    expect(path).toBe('/bookings');
+    expect((options as { body: { serviceId: number } }).body.serviceId).toBe(4);
+  });
+
+  it('cannot select a service the database does not have (BK-019)', async () => {
+    // The picker is driven by hardcoded data; the id comes from the DB. When an
+    // admin deactivates or renames a service the two disagree, and the customer
+    // used to be booked into whatever service happens to be id 1.
+    const user = userEvent.setup();
+    vi.mocked(api.get).mockResolvedValueOnce([
+      { id: 4, name: 'Teenager Hair Cut', price: 'RM 20', duration: '30 mins' },
+      { id: 2, name: 'Adult Cut & Shave', price: 'RM 30', duration: '30 mins' },
+    ]);
+    renderBookingFlow();
+
+    await user.click(screen.getByText('booking.guest_cta'));
+    await screen.findByText('data.services.Adult Hair Cut');
+    await user.click(screen.getByText('data.services.Adult Hair Cut'));
+
+    // Not selectable, so the flow cannot advance past the service step.
+    expect(screen.getByText('booking.continue_barber').closest('button')?.disabled).toBe(true);
+    expect(api.post).not.toHaveBeenCalled();
+  });
+
+  it('does not book anything when the service list cannot be loaded (BK-020)', async () => {
+    // Previously the fetch error was swallowed with console.error and the booking
+    // proceeded on the fallback id. If we cannot resolve the service we must not guess.
+    const user = userEvent.setup();
+    vi.mocked(api.get).mockRejectedValueOnce(new Error('network down'));
+    renderBookingFlow();
+
+    await user.click(screen.getByText('booking.guest_cta'));
+
+    // Surfaced at the service step, not after five steps of data entry.
+    expect(await screen.findByText(/Could not load available services/i)).toBeDefined();
+
+    // With no list, no id is resolvable, so nothing is selectable and the flow
+    // cannot advance. The customer never reaches Confirm to lose work there.
+    await user.click(screen.getByText('data.services.Adult Hair Cut'));
+    expect(screen.getByText('booking.continue_barber').closest('button')?.disabled).toBe(true);
+    expect(api.post).not.toHaveBeenCalled();
+    expect(screen.queryByText('booking.secured')).toBeNull();
+  });
+
+  it('never falls back to serviceId 1 for an unresolvable selection (BK-019)', async () => {
+    // Backstop for a selection that goes stale mid-flow — an admin deactivates the
+    // service while the customer is on the date step. Set directly on the store
+    // because the picker itself now prevents reaching this state.
+    const user = userEvent.setup();
+    vi.spyOn(window, 'alert').mockImplementation(() => undefined);
+    vi.mocked(api.get).mockResolvedValueOnce([
+      { id: 4, name: 'Teenager Hair Cut', price: 'RM 20', duration: '30 mins' },
+      { id: 2, name: 'Adult Cut & Shave', price: 'RM 30', duration: '30 mins' },
+    ]);
+    renderBookingFlow();
+
+    await user.click(screen.getByText('booking.guest_cta'));
+    await screen.findByText('data.services.Adult Hair Cut');
+    useBookingStore.setState({ selectedService: 'Some Retired Service' });
+
+    await user.click(screen.getByText('booking.continue_barber'));
+    await user.click(screen.getByText('landing.no_preference'));
+    await user.click(screen.getByText('booking.continue_schedule'));
+    await user.click(screen.getByText('data.days.Monday'));
+    await user.click(screen.getByText('12:00 PM'));
+    await user.click(screen.getByText('booking.review_booking'));
+    await user.type(screen.getByPlaceholderText('Full Name'), 'Jane Guest');
+    await user.type(screen.getByPlaceholderText('Email'), 'jane@example.com');
+    await user.type(screen.getByPlaceholderText('Phone Number'), '+60123456789');
+    await user.click(screen.getByText('Pay at Shop', { exact: false }));
+
+    expect(api.post).not.toHaveBeenCalled();
   });
 });
