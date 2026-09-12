@@ -62,6 +62,7 @@ public class AuthController {
      */
     public static class AuthRequest {
         @jakarta.validation.constraints.NotBlank
+        @jakarta.validation.constraints.Size(max = 255)
         public String username;
 
         @jakarta.validation.constraints.NotBlank

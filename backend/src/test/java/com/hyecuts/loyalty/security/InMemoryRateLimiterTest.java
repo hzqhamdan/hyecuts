@@ -124,12 +124,46 @@ class InMemoryRateLimiterTest {
     }
 
     @Test
-    void evictsWhenEntryCapIsReached() {
-        RateLimitPolicy shortLived = new RateLimitPolicy("short", 1, Duration.ofSeconds(1));
-        for (int i = 0; i < InMemoryRateLimiter.MAX_ENTRIES + 100; i++) {
-            limiter.tryAcquire("key-" + i, shortLived);
+    void retryAfterIsClampedWhenTheClockJumpsBackwards() {
+        // Clock.systemUTC() is wall-clock, so a backwards NTP step makes
+        // (now - startMillis) negative. Unclamped that emits a Retry-After far
+        // longer than the policy window, which is nonsense to a client.
+        for (int i = 0; i < 3; i++) limiter.tryAcquire("a", POLICY);
+
+        clock.advance(Duration.ofHours(-1));
+
+        RateLimiter.Decision denied = limiter.tryAcquire("a", POLICY);
+        assertFalse(denied.allowed());
+        assertTrue(denied.retryAfterSeconds() <= POLICY.window().toSeconds(),
+                "Retry-After must never exceed the window, got " + denied.retryAfterSeconds());
+    }
+
+    @Test
+    void checkAlsoClampsRetryAfterAfterABackwardsClockJump() {
+        for (int i = 0; i < 3; i++) limiter.tryAcquire("a", POLICY);
+
+        clock.advance(Duration.ofHours(-1));
+
+        RateLimiter.Decision denied = limiter.check("a", POLICY);
+        assertFalse(denied.allowed());
+        assertTrue(denied.retryAfterSeconds() <= POLICY.window().toSeconds(),
+                "Retry-After must never exceed the window, got " + denied.retryAfterSeconds());
+    }
+
+    @Test
+    void evictionReclaimsABatchRatherThanASingleEntry() {
+        // With one-entry-at-a-time eviction the map sits permanently at the cap,
+        // so every subsequent write pays a full sweep plus an O(n log n) sort —
+        // the limiter turns into a DoS amplifier exactly when it is under attack.
+        RateLimitPolicy longLived = new RateLimitPolicy("long", 1, Duration.ofHours(1));
+        for (int i = 0; i < InMemoryRateLimiter.MAX_ENTRIES; i++) {
+            limiter.tryAcquire("key-" + i, longLived);
         }
-        assertTrue(limiter.size() <= InMemoryRateLimiter.MAX_ENTRIES,
-                "a limiter that grows without bound becomes its own DoS; size was " + limiter.size());
+        assertEquals(InMemoryRateLimiter.MAX_ENTRIES, limiter.size(), "precondition: map is full");
+
+        limiter.tryAcquire("one-more", longLived);
+
+        assertTrue(limiter.size() <= (int) (InMemoryRateLimiter.MAX_ENTRIES * 0.95),
+                "a single eviction pass must leave real headroom, size was " + limiter.size());
     }
 }

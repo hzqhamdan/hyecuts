@@ -48,13 +48,43 @@ class AuthControllerRateLimitTest {
             "{\"username\":\"a@b.com\",\"password\":\"validpass123\"}";
 
     @Test
-    void loginChecksTheBudgetBeforeAuthenticating() throws Exception {
+    void loginChecksTheBudgetForTheSubmittedIdentifier() throws Exception {
+        // Ordering (check before authenticate) is covered by
+        // loginReturns429WhenTheGuardRejects, which asserts the
+        // AuthenticationManager is never reached once the guard throws.
         when(authenticationManager.authenticate(any())).thenThrow(new BadCredentialsException("bad"));
 
         mockMvc.perform(post("/api/auth/login")
                 .contentType(MediaType.APPLICATION_JSON).content(LOGIN_BODY));
 
         verify(rateLimitGuard).checkLogin(anyString(), eq("a@b.com"));
+    }
+
+    @Test
+    void loginRejectsAnOversizedUsernameBeforeItReachesTheLimiter() throws Exception {
+        // Without a maximum the identifier is retained as a rate-limiter map
+        // key, so an attacker can spend the per-IP budget on multi-megabyte
+        // strings and leave them resident. 255 matches the users.email column.
+        String oversized = "x".repeat(300) + "@b.com";
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"username\":\"" + oversized + "\",\"password\":\"validpass123\"}"))
+                .andExpect(status().isBadRequest());
+
+        verify(rateLimitGuard, never()).checkLogin(anyString(), anyString());
+    }
+
+    @Test
+    void loginStillAcceptsAShortPassword() throws Exception {
+        // AuthRequest stays deliberately permissive: a minimum-length rule here
+        // would lock out every account whose password predates the policy.
+        when(authenticationManager.authenticate(any())).thenThrow(new BadCredentialsException("bad"));
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"username\":\"a@b.com\",\"password\":\"x\"}"))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

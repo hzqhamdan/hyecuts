@@ -7,6 +7,8 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -125,5 +127,64 @@ class RateLimitGuardTest {
     void nullIdentifierDoesNotBlowUp() {
         assertDoesNotThrow(() -> guard.checkLogin("1.1.1.1", null));
         assertDoesNotThrow(() -> guard.recordLoginFailure("1.1.1.1", null));
+    }
+
+    @Test
+    void oversizedIdentifierIsNeverRetainedAsAKey() {
+        // The limiter keeps keys in a map, and the entry cap counts entries, not
+        // bytes. A handful of multi-megabyte identifiers would therefore sit in
+        // memory indefinitely without ever approaching the cap.
+        CapturingLimiter capturing = new CapturingLimiter();
+        RateLimitGuard g = new RateLimitGuard(capturing, defaultProps());
+
+        String huge = "x".repeat(10_000_000) + "@b.com";
+        g.checkLogin("1.1.1.1", huge);
+        g.recordLoginFailure("1.1.1.1", huge);
+
+        assertFalse(capturing.keys.isEmpty());
+        for (String key : capturing.keys) {
+            assertTrue(key.length() <= 256,
+                    "an attacker-controlled key must be truncated before storage, was " + key.length());
+        }
+    }
+
+    @Test
+    void truncationStillNormalisesCaseAndWhitespace() {
+        CapturingLimiter capturing = new CapturingLimiter();
+        RateLimitGuard g = new RateLimitGuard(capturing, defaultProps());
+
+        g.recordLoginFailure("1.1.1.1", "  A@B.COM  ");
+
+        assertEquals("a@b.com", capturing.keys.get(0),
+                "truncation must happen after trimming and lowercasing, not instead of it");
+    }
+
+    @Test
+    void ordinaryIdentifiersAreLeftIntact() {
+        CapturingLimiter capturing = new CapturingLimiter();
+        RateLimitGuard g = new RateLimitGuard(capturing, defaultProps());
+
+        g.recordLoginFailure("1.1.1.1", "someone@example.com");
+
+        assertEquals("someone@example.com", capturing.keys.get(0));
+    }
+
+    private static RateLimitProperties defaultProps() {
+        return new RateLimitProperties(null, null, null, null);
+    }
+
+    /** Records every key the guard hands to the limiter. */
+    private static final class CapturingLimiter implements RateLimiter {
+        private final List<String> keys = new ArrayList<>();
+
+        @Override public Decision tryAcquire(String key, RateLimitPolicy policy) {
+            keys.add(key);
+            return new Decision(true, 0L);
+        }
+
+        @Override public Decision check(String key, RateLimitPolicy policy) {
+            keys.add(key);
+            return new Decision(true, 0L);
+        }
     }
 }

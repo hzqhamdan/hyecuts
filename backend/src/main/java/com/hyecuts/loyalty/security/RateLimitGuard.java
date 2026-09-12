@@ -1,5 +1,7 @@
 package com.hyecuts.loyalty.security;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
@@ -14,6 +16,16 @@ import java.util.Locale;
  */
 @Service
 public class RateLimitGuard {
+
+    private static final Logger log = LoggerFactory.getLogger(RateLimitGuard.class);
+
+    /**
+     * Caps how much of an attacker-controlled identifier is retained as a map
+     * key in the limiter. Without this, an unbounded username would sit in
+     * memory indefinitely without ever approaching the limiter's entry cap,
+     * which counts entries, not bytes.
+     */
+    private static final int MAX_ACCOUNT_KEY_LENGTH = 256;
 
     private final RateLimiter limiter;
     private final RateLimitPolicy loginPerAccount;
@@ -35,8 +47,8 @@ public class RateLimitGuard {
      * heavy use starts to look like an attack.
      */
     public void checkLogin(String ip, String identifier) {
-        denyIfExhausted(limiter.check(accountKey(identifier), loginPerAccount));
-        denyIfExhausted(limiter.check(ipKey(ip), loginPerIp));
+        denyIfExhausted(ip, "login-per-account", limiter.check(accountKey(identifier), loginPerAccount));
+        denyIfExhausted(ip, "login-per-ip", limiter.check(ipKey(ip), loginPerIp));
     }
 
     /**
@@ -49,26 +61,43 @@ public class RateLimitGuard {
     }
 
     public void checkAndConsumeRegistration(String ip) {
-        denyIfExhausted(limiter.tryAcquire(ipKey(ip), registerPerIp));
+        denyIfExhausted(ip, "register-per-ip", limiter.tryAcquire(ipKey(ip), registerPerIp));
     }
 
     public void checkAndConsumeGuestBooking(String ip) {
-        denyIfExhausted(limiter.tryAcquire(ipKey(ip), guestBookingPerIp));
+        denyIfExhausted(ip, "guest-booking-per-ip", limiter.tryAcquire(ipKey(ip), guestBookingPerIp));
     }
 
     private static RateLimitPolicy policy(String name, RateLimitProperties.Limit limit) {
         return new RateLimitPolicy(name, limit.max(), limit.window());
     }
 
-    private static void denyIfExhausted(RateLimiter.Decision decision) {
+    /**
+     * Logs at DEBUG on rejection so a proxy misconfiguration (Railway's proxy
+     * falling outside Tomcat's internalProxies range, collapsing every client
+     * into one IP bucket) can be diagnosed. Deliberately never logs the
+     * account identifier: the HTTP response already hides which budget was
+     * exhausted to avoid confirming an account exists, and logging it here
+     * would undo that.
+     */
+    private static void denyIfExhausted(String ip, String policyName, RateLimiter.Decision decision) {
         if (!decision.allowed()) {
+            log.debug("Rate limit exceeded for policy '{}' from ip {}", policyName, ip);
             throw new RateLimitExceededException(decision.retryAfterSeconds());
         }
     }
 
-    /** Normalised so casing or stray whitespace cannot buy a fresh budget. */
+    /**
+     * Normalised so casing or stray whitespace cannot buy a fresh budget, then
+     * truncated so an attacker-controlled identifier is never retained as an
+     * unbounded map key in the limiter (the entry cap there counts entries,
+     * not bytes).
+     */
     private static String accountKey(String identifier) {
-        return identifier == null ? "" : identifier.trim().toLowerCase(Locale.ROOT);
+        String normalised = identifier == null ? "" : identifier.trim().toLowerCase(Locale.ROOT);
+        return normalised.length() > MAX_ACCOUNT_KEY_LENGTH
+                ? normalised.substring(0, MAX_ACCOUNT_KEY_LENGTH)
+                : normalised;
     }
 
     private static String ipKey(String ip) {

@@ -71,13 +71,13 @@ hyecuts:
     # login budget is the tight one, and CGNAT cannot dilute it.
     login-per-account:
       max: ${RATELIMIT_LOGIN_ACCOUNT_MAX:10}
-      window: PT15M
+      window: ${RATELIMIT_LOGIN_ACCOUNT_WINDOW:PT15M}
     login-per-ip:
       max: ${RATELIMIT_LOGIN_IP_MAX:100}
-      window: PT15M
+      window: ${RATELIMIT_LOGIN_IP_WINDOW:PT15M}
     register-per-ip:
       max: ${RATELIMIT_REGISTER_IP_MAX:30}
-      window: PT1H
+      window: ${RATELIMIT_REGISTER_IP_WINDOW:PT1H}
     guest-booking-per-ip:
       max: ${RATELIMIT_GUEST_BOOKING_IP_MAX:20}
-      window: PT1H
+      window: ${RATELIMIT_GUEST_BOOKING_IP_WINDOW:PT1H}

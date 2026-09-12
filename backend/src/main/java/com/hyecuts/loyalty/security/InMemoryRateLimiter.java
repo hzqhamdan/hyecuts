@@ -1,5 +1,6 @@
 package com.hyecuts.loyalty.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
@@ -22,18 +23,45 @@ import java.util.concurrent.ConcurrentHashMap;
 public class InMemoryRateLimiter implements RateLimiter {
 
     /**
-     * Hard ceiling on tracked keys. A rate limiter that grows without bound is
-     * itself a denial-of-service, so past this point the oldest windows are
+     * Soft ceiling on tracked keys. A rate limiter that grows without bound is
+     * itself a denial-of-service, so around this point the oldest windows are
      * evicted rather than failing open (which would disable enforcement at
      * exactly the moment it matters).
+     *
+     * <p>Soft, not hard: the size check and the insert are not performed under a
+     * single lock, so concurrent writers can briefly carry the map past this
+     * number. The overshoot is bounded by the number of threads in flight, which
+     * is what makes the unsynchronised check acceptable — a real lock on every
+     * write would cost far more than the few extra entries it would save.
      */
     static final int MAX_ENTRIES = 100_000;
 
+    /**
+     * How far below the cap one eviction pass reclaims. Evicting a single entry
+     * would leave the map permanently full, so every subsequent write would pay
+     * another full sweep and sort. Batching means one caller in roughly
+     * {@code MAX_ENTRIES / 10} pays that cost and every other caller
+     * short-circuits on the size check.
+     */
+    private static final double EVICTION_TARGET_RATIO = 0.9;
+
     private final ConcurrentHashMap<String, Window> windows = new ConcurrentHashMap<>();
     private final Clock clock;
+    private final int maxEntries;
 
+    // Explicit, because a second (package-private) constructor exists below for
+    // tests. With two declared constructors and neither marked, Spring cannot
+    // infer which one to autowire and falls back to a no-arg constructor that
+    // does not exist, failing at startup.
+    @Autowired
     public InMemoryRateLimiter(Clock clock) {
+        this(clock, MAX_ENTRIES);
+    }
+
+    /** Visible for testing: a small cap keeps eviction tests fast. */
+    InMemoryRateLimiter(Clock clock, int maxEntries) {
         this.clock = clock;
+        this.maxEntries = maxEntries;
     }
 
     @Override
@@ -81,7 +109,13 @@ public class InMemoryRateLimiter implements RateLimiter {
     private static long retryAfterSeconds(Window window, long now) {
         long remainingMillis = (window.startMillis + window.windowMillis) - now;
         // Round up, and never report 0 — a client told to retry after 0 retries immediately.
-        return Math.max(1L, (remainingMillis + 999L) / 1000L);
+        long seconds = Math.max(1L, (remainingMillis + 999L) / 1000L);
+        // Clock.systemUTC() is wall-clock: a backwards NTP step can make `now`
+        // precede startMillis, which would otherwise inflate remainingMillis far
+        // past the window. Shared by both tryAcquire and check, since both route
+        // through this method.
+        long windowSeconds = window.windowMillis / 1000L;
+        return Math.min(seconds, windowSeconds);
     }
 
     /**
@@ -90,12 +124,13 @@ public class InMemoryRateLimiter implements RateLimiter {
      * few stale entries.
      */
     private void evictIfFull(long now) {
-        if (windows.size() < MAX_ENTRIES) {
+        if (windows.size() < maxEntries) {
             return;
         }
         windows.entrySet().removeIf(e -> now - e.getValue().startMillis >= e.getValue().windowMillis);
 
-        int overflow = windows.size() - MAX_ENTRIES + 1;
+        int target = (int) (maxEntries * EVICTION_TARGET_RATIO);
+        int overflow = windows.size() - target;
         if (overflow > 0) {
             windows.entrySet().stream()
                     .sorted(Comparator.comparingLong(e -> e.getValue().startMillis))
