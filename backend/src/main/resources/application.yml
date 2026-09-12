@@ -62,3 +62,22 @@ stripe:
 
 frontend:
   base-url: ${FRONTEND_BASE_URL:http://localhost:5173}
+
+hyecuts:
+  rate-limit:
+    # Estimates, tunable by environment variable without a redeploy.
+    # IP budgets are loose on purpose: Malaysian mobile carriers use CGNAT, so
+    # one address can front thousands of unrelated subscribers. The per-account
+    # login budget is the tight one, and CGNAT cannot dilute it.
+    login-per-account:
+      max: ${RATELIMIT_LOGIN_ACCOUNT_MAX:10}
+      window: PT15M
+    login-per-ip:
+      max: ${RATELIMIT_LOGIN_IP_MAX:100}
+      window: PT15M
+    register-per-ip:
+      max: ${RATELIMIT_REGISTER_IP_MAX:30}
+      window: PT1H
+    guest-booking-per-ip:
+      max: ${RATELIMIT_GUEST_BOOKING_IP_MAX:20}
+      window: PT1H
