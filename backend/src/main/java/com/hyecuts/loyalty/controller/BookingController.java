@@ -6,9 +6,11 @@ import com.hyecuts.loyalty.model.User;
 import com.hyecuts.loyalty.repository.UserRepository;
 import com.hyecuts.loyalty.security.AuthorizationUtil;
 import com.hyecuts.loyalty.security.CustomUserDetails;
+import com.hyecuts.loyalty.security.RateLimitGuard;
 import com.hyecuts.loyalty.service.BarberServiceService;
 import com.hyecuts.loyalty.service.BookingRestrictedException;
 import com.hyecuts.loyalty.service.BookingService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -28,13 +30,16 @@ public class BookingController {
     private final BookingService bookingService;
     private final UserRepository userRepository;
     private final BarberServiceService barberServiceService;
+    private final RateLimitGuard rateLimitGuard;
 
-    public BookingController(BookingService bookingService, 
-                             UserRepository userRepository, 
-                             BarberServiceService barberServiceService) {
+    public BookingController(BookingService bookingService,
+                             UserRepository userRepository,
+                             BarberServiceService barberServiceService,
+                             RateLimitGuard rateLimitGuard) {
         this.bookingService = bookingService;
         this.userRepository = userRepository;
         this.barberServiceService = barberServiceService;
+        this.rateLimitGuard = rateLimitGuard;
     }
 
     public static class CreateBookingRequest {
@@ -52,7 +57,9 @@ public class BookingController {
     // User endpoint — also reachable by guests (see SecurityConfig: POST
     // /api/bookings is the one unauthenticated write in this controller).
     @PostMapping
-    public ResponseEntity<?> createBooking(@RequestBody CreateBookingRequest request, @AuthenticationPrincipal CustomUserDetails principal) {
+    public ResponseEntity<?> createBooking(@RequestBody CreateBookingRequest request,
+                                           @AuthenticationPrincipal CustomUserDetails principal,
+                                           HttpServletRequest httpRequest) {
         Booking newBooking = new Booking();
 
         if (principal != null) {
@@ -63,6 +70,13 @@ public class BookingController {
             }
             newBooking.setUser(user);
         } else {
+            // Guests only. An authenticated caller is accountable and traceable,
+            // so their bookings are not limited. Using the resolved principal
+            // rather than the presence of an Authorization header matters: a
+            // request carrying a garbage token arrives here with principal ==
+            // null, and must be limited exactly like any other guest.
+            rateLimitGuard.checkAndConsumeGuestBooking(httpRequest.getRemoteAddr());
+
             if (isBlank(request.guestName) || isBlank(request.guestEmail) || isBlank(request.guestPhone)) {
                 return ResponseEntity.badRequest().body("Guest bookings require a name, email, and phone number.");
             }
