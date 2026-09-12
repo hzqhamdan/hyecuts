@@ -1,5 +1,6 @@
 package com.hyecuts.loyalty.web;
 
+import com.hyecuts.loyalty.security.RateLimitExceededException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,5 +25,30 @@ public class GlobalExceptionHandlerTest {
         assertNotNull(response.getBody());
         assertFalse(response.getBody().message().contains("constraint"));
         assertEquals("An unexpected error occurred.", response.getBody().message());
+    }
+
+    @Test
+    void handleRateLimit_shouldReturn429WithRetryAfterHeader() {
+        RateLimitExceededException ex = new RateLimitExceededException(42L);
+
+        ResponseEntity<ApiError> response = handler.handleRateLimit(ex);
+
+        assertEquals(HttpStatus.TOO_MANY_REQUESTS, response.getStatusCode());
+        assertEquals("42", response.getHeaders().getFirst("Retry-After"));
+        assertNotNull(response.getBody());
+        assertEquals(429, response.getBody().status());
+    }
+
+    @Test
+    void handleRateLimit_shouldNotRevealWhichBudgetWasExhausted() {
+        // Saying "this account is throttled" would confirm the account exists
+        // (compare AUTH-014). The body must stay generic.
+        ResponseEntity<ApiError> response =
+                handler.handleRateLimit(new RateLimitExceededException(42L));
+
+        String message = response.getBody().message().toLowerCase();
+        assertFalse(message.contains("account"));
+        assertFalse(message.contains("ip"));
+        assertFalse(message.contains("email"));
     }
 }

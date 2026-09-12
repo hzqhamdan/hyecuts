@@ -3,8 +3,10 @@ package com.hyecuts.loyalty.web;
 import com.hyecuts.loyalty.exception.EmailAlreadyInUseException;
 import com.hyecuts.loyalty.exception.ResourceNotFoundException;
 import com.hyecuts.loyalty.exception.UsernameAlreadyInUseException;
+import com.hyecuts.loyalty.security.RateLimitExceededException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -69,6 +71,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ApiError> handleAuthentication(AuthenticationException ex) {
         return build(HttpStatus.UNAUTHORIZED, "Unauthorized", "Authentication required", null);
+    }
+
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ResponseEntity<ApiError> handleRateLimit(RateLimitExceededException ex) {
+        // Built directly rather than through build(), which cannot set headers.
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+            .header(HttpHeaders.RETRY_AFTER, Long.toString(ex.getRetryAfterSeconds()))
+            .body(new ApiError(
+                Instant.now(),
+                HttpStatus.TOO_MANY_REQUESTS.value(),
+                "Too Many Requests",
+                ex.getMessage(),
+                null));
     }
 
     @ExceptionHandler(Exception.class)
