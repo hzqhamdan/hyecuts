@@ -2,11 +2,14 @@ package com.hyecuts.loyalty.controller;
 
 import com.hyecuts.loyalty.model.BarberService;
 import com.hyecuts.loyalty.model.Booking;
+import com.hyecuts.loyalty.model.User;
 import com.hyecuts.loyalty.repository.UserRepository;
+import com.hyecuts.loyalty.security.CustomUserDetails;
 import com.hyecuts.loyalty.security.RateLimitExceededException;
 import com.hyecuts.loyalty.security.RateLimitGuard;
 import com.hyecuts.loyalty.service.BarberServiceService;
 import com.hyecuts.loyalty.service.BookingService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +19,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -56,6 +62,14 @@ class BookingControllerRateLimitTest {
         when(bookingService.createBooking(any())).thenAnswer(inv -> inv.getArgument(0));
     }
 
+    @AfterEach
+    void clearSecurityContext() {
+        // Defensive: SecurityContextHolder is a ThreadLocal, so a test that sets
+        // it must not leak an authenticated principal into whichever test runs
+        // next on this thread.
+        SecurityContextHolder.clearContext();
+    }
+
     @Test
     void guestBookingConsumesTheBudget() throws Exception {
         mockMvc.perform(post("/api/bookings")
@@ -87,5 +101,45 @@ class BookingControllerRateLimitTest {
                 .contentType(MediaType.APPLICATION_JSON).content(GUEST_BODY));
 
         verify(barberServiceService, never()).getServiceById(any());
+    }
+
+    @Test
+    void authenticatedBookingIsNotLimited() throws Exception {
+        UUID userId = UUID.randomUUID();
+        User user = new User();
+        user.setId(userId);
+        user.setEmail("auth@example.com");
+        user.setRole("ROLE_USER");
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        CustomUserDetails principal = new CustomUserDetails(user);
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities()));
+
+        // No guest fields at all — this only succeeds via the authenticated branch.
+        String authBody = """
+                {"serviceId":1,"appointmentTime":"2026-12-01T10:00:00"}
+                """;
+
+        mockMvc.perform(post("/api/bookings")
+                        .contentType(MediaType.APPLICATION_JSON).content(authBody))
+                .andExpect(status().isOk());
+
+        verify(rateLimitGuard, never()).checkAndConsumeGuestBooking(anyString());
+    }
+
+    @Test
+    void garbageBearerTokenIsStillTreatedAsGuestAndLimited() throws Exception {
+        // addFilters = false means no JwtRequestFilter runs here, so no
+        // SecurityContext is ever populated for this request — exactly what
+        // happens in production once the filter discards an invalid token.
+        // principal == null must still route through the guest branch and
+        // still get rate-limited; a header-presence check would skip it.
+        mockMvc.perform(post("/api/bookings")
+                        .header("Authorization", "Bearer not-a-real-token")
+                        .contentType(MediaType.APPLICATION_JSON).content(GUEST_BODY))
+                .andExpect(status().isOk());
+
+        verify(rateLimitGuard).checkAndConsumeGuestBooking(anyString());
     }
 }
