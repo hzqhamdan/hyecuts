@@ -73,4 +73,14 @@ class IdentifierAvailabilityTest {
 
         assertTrue(availability.isTakenByAnotherUser("alice@x.com", malloryId));
     }
+
+    @Test
+    void isTakenByAnotherUser_detectsACollisionWithAnotherUsersUsername() {
+        // The reverse direction: Mallory setting her email (or username) to a value that
+        // is Alice's username. "alice" is not Alice's email, so only the username clause
+        // can catch this.
+        UUID malloryId = UUID.randomUUID();
+
+        assertTrue(availability.isTakenByAnotherUser("ALICE", malloryId));
+    }
 }
