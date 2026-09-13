@@ -14,7 +14,7 @@ import jakarta.validation.constraints.Size;
  *   <li>a minimum-length rule on login locks out every existing account whose
  *       password predates the policy — they could never authenticate again;</li>
  *   <li>{@code @Email} on login breaks sign-in by username, which is a supported
- *       path ({@code findByEmailOrUsername}, AUTH-002);</li>
+ *       path (ordered email-then-username resolution, AUTH-002);</li>
  *   <li>validation failures on login disclose the password policy to anyone
  *       probing the endpoint.</li>
  * </ul>

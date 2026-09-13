@@ -1,10 +1,12 @@
 package com.hyecuts.loyalty.controller;
 
 import com.hyecuts.loyalty.repository.UserRepository;
+import com.hyecuts.loyalty.security.CustomUserDetails;
 import com.hyecuts.loyalty.security.JwtUtil;
 import com.hyecuts.loyalty.security.OAuth2CodeExchangeService;
 import com.hyecuts.loyalty.security.RateLimitGuard;
 import com.hyecuts.loyalty.security.TokenRevocationService;
+import com.hyecuts.loyalty.service.IdentifierAvailability;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,6 +17,7 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
@@ -43,6 +46,7 @@ class AuthControllerRateLimitTest {
     @MockBean private OAuth2CodeExchangeService oauth2CodeExchangeService;
     @MockBean private TokenRevocationService tokenRevocationService;
     @MockBean private RateLimitGuard rateLimitGuard;
+    @MockBean private IdentifierAvailability identifierAvailability;
 
     private static final String LOGIN_BODY =
             "{\"username\":\"a@b.com\",\"password\":\"validpass123\"}";
@@ -106,12 +110,9 @@ class AuthControllerRateLimitTest {
         user.setEmail("a@b.com");
         user.setRole("ROLE_USER");
 
-        when(authenticationManager.authenticate(any())).thenReturn(null);
-        when(userDetailsService.loadUserByUsername(anyString()))
-                .thenReturn(new org.springframework.security.core.userdetails.User(
-                        "a@b.com", "x", java.util.List.of()));
-        when(userRepository.findByEmailOrUsername(anyString(), anyString()))
-                .thenReturn(java.util.Optional.of(user));
+        when(authenticationManager.authenticate(any())).thenReturn(
+                new UsernamePasswordAuthenticationToken(new CustomUserDetails(user), null, java.util.List.of()));
+        when(userRepository.findById(user.getId())).thenReturn(java.util.Optional.of(user));
         when(jwtUtil.generateToken(anyString(), anyString())).thenReturn("a.jwt.token");
 
         mockMvc.perform(post("/api/auth/login")
@@ -137,8 +138,7 @@ class AuthControllerRateLimitTest {
 
     @Test
     void registerConsumesTheBudget() throws Exception {
-        when(userRepository.findByEmailOrUsername(anyString(), anyString()))
-                .thenReturn(java.util.Optional.empty());
+        when(identifierAvailability.isTaken(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("hashed");
         when(userRepository.save(any())).thenAnswer(inv -> {
             com.hyecuts.loyalty.model.User u = inv.getArgument(0);

@@ -6,14 +6,15 @@ import com.hyecuts.loyalty.security.JwtUtil;
 import com.hyecuts.loyalty.security.OAuth2CodeExchangeService;
 import com.hyecuts.loyalty.security.RateLimitGuard;
 import com.hyecuts.loyalty.security.TokenRevocationService;
+import com.hyecuts.loyalty.security.CustomUserDetails;
+import com.hyecuts.loyalty.service.IdentifierAvailability;
 import com.hyecuts.loyalty.web.RegisterRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,30 +28,30 @@ import java.util.UUID;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final UserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final OAuth2CodeExchangeService oauth2CodeExchangeService;
     private final TokenRevocationService tokenRevocationService;
     private final RateLimitGuard rateLimitGuard;
+    private final IdentifierAvailability identifierAvailability;
 
     public AuthController(AuthenticationManager authenticationManager,
-                          UserDetailsService userDetailsService,
                           JwtUtil jwtUtil,
                           UserRepository userRepository,
                           PasswordEncoder passwordEncoder,
                           OAuth2CodeExchangeService oauth2CodeExchangeService,
                           TokenRevocationService tokenRevocationService,
-                          RateLimitGuard rateLimitGuard) {
+                          RateLimitGuard rateLimitGuard,
+                          IdentifierAvailability identifierAvailability) {
         this.authenticationManager = authenticationManager;
-        this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.oauth2CodeExchangeService = oauth2CodeExchangeService;
         this.tokenRevocationService = tokenRevocationService;
         this.rateLimitGuard = rateLimitGuard;
+        this.identifierAvailability = identifierAvailability;
     }
 
     /**
@@ -86,8 +87,9 @@ public class AuthController {
         String ip = httpRequest.getRemoteAddr();
         rateLimitGuard.checkLogin(ip, authRequest.username);
 
+        Authentication authentication;
         try {
-            authenticationManager.authenticate(
+            authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.username, authRequest.password)
             );
         } catch (Exception e) {
@@ -97,12 +99,22 @@ public class AuthController {
             return ResponseEntity.status(401).body("Invalid credentials");
         }
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.username);
-        Optional<User> optUser = userRepository.findByEmailOrUsername(authRequest.username, authRequest.username);
-        
+        // AUTH-027: use the account authentication just resolved. This used to look
+        // the identifier up a second time, and that repeat lookup failed whenever the
+        // identifier had become ambiguous.
+        Object principalObject = authentication == null ? null : authentication.getPrincipal();
+        if (!(principalObject instanceof CustomUserDetails principal)) {
+            return ResponseEntity.status(401).body("Invalid credentials");
+        }
+
+        Optional<User> optUser = userRepository.findById(principal.getId());
         if (optUser.isPresent()) {
             User user = optUser.get();
-            final String jwt = jwtUtil.generateToken(userDetails.getUsername(), user.getId().toString());
+            // The subject must be the stored email, never the identifier as typed:
+            // JwtUtil.validateToken compares it to the account's current email on
+            // every request, so "ALICE@X.COM" here would sign the user in and then
+            // reject every request they make.
+            final String jwt = jwtUtil.generateToken(principal.getUsername(), user.getId().toString());
             Map<String, Object> response = new HashMap<>();
             response.put("token", jwt);
             response.put("userId", user.getId().toString());
@@ -122,7 +134,10 @@ public class AuthController {
         // " a@b.c " and "a@b.c" collide here rather than creating two accounts.
         String identifier = request.username();
 
-        if (userRepository.findByEmailOrUsername(identifier, identifier).isPresent()) {
+        // AUTH-022/027: case-insensitive, against both email and username. A
+        // case-variant of an existing email, or somebody's username, would create an
+        // account that sign-in can no longer tell apart from theirs.
+        if (identifierAvailability.isTaken(identifier)) {
             return ResponseEntity.badRequest().body("Email or Username is already taken");
         }
 

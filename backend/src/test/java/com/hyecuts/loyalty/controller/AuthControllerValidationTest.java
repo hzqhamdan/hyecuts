@@ -5,6 +5,7 @@ import com.hyecuts.loyalty.security.JwtUtil;
 import com.hyecuts.loyalty.security.OAuth2CodeExchangeService;
 import com.hyecuts.loyalty.security.RateLimitGuard;
 import com.hyecuts.loyalty.security.TokenRevocationService;
+import com.hyecuts.loyalty.service.IdentifierAvailability;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -54,6 +55,7 @@ class AuthControllerValidationTest {
     @MockBean private OAuth2CodeExchangeService oauth2CodeExchangeService;
     @MockBean private TokenRevocationService tokenRevocationService;
     @MockBean private RateLimitGuard rateLimitGuard;
+    @MockBean private IdentifierAvailability identifierAvailability;
 
     private void postRegister(String body, int expectedStatus) throws Exception {
         mockMvc.perform(post("/api/auth/register")
@@ -151,7 +153,7 @@ class AuthControllerValidationTest {
 
     @Test
     void login_shouldStillAcceptANonEmailUsername() throws Exception {
-        // Sign-in by username is supported (findByEmailOrUsername, AUTH-002);
+        // Sign-in by username is supported (ordered email-then-username resolution, AUTH-002);
         // an @Email rule on the shared DTO would have broken it outright.
         when(authenticationManager.authenticate(any()))
                 .thenThrow(new org.springframework.security.authentication.BadCredentialsException("bad"));
@@ -178,8 +180,7 @@ class AuthControllerValidationTest {
 
     @Test
     void register_shouldAcceptAValidPayload() throws Exception {
-        when(userRepository.findByEmailOrUsername(anyString(), anyString()))
-                .thenReturn(java.util.Optional.empty());
+        when(identifierAvailability.isTaken(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("hashed");
         when(userRepository.save(any())).thenAnswer(inv -> {
             com.hyecuts.loyalty.model.User u = inv.getArgument(0);
@@ -196,8 +197,7 @@ class AuthControllerValidationTest {
     void register_shouldTrimTheIdentifierBeforePersisting() throws Exception {
         // AUTH-021: profile update trimmed but register did not, so " a@b.com "
         // created an account its owner could never match afterwards.
-        when(userRepository.findByEmailOrUsername(anyString(), anyString()))
-                .thenReturn(java.util.Optional.empty());
+        when(identifierAvailability.isTaken(anyString())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("hashed");
         when(userRepository.save(any())).thenAnswer(inv -> {
             com.hyecuts.loyalty.model.User u = inv.getArgument(0);

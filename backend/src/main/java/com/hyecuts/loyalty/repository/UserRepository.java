@@ -13,7 +13,6 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmail(String email);
     Optional<User> findByUsername(String username);
-    Optional<User> findByEmailOrUsername(String email, String username);
     List<User> findByTier(Tier tier);
 
     // Account resolution (AUTH-022/027). Every lookup returns a List — the exact
