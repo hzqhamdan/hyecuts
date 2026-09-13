@@ -16,6 +16,24 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmailOrUsername(String email, String username);
     List<User> findByTier(Tier tier);
 
+    // Account resolution (AUTH-022/027). Every lookup returns a List — the exact
+    // ones included — so callers can detect two or more matches and fail closed.
+    // Exact email is unique by V1's constraint, but exact username is only unique
+    // if V11's index exists in a given database; treating all four the same means
+    // resolution never depends on which constraints happen to be present.
+    List<User> findAllByEmail(String email);
+    List<User> findAllByEmailIgnoreCase(String email);
+    List<User> findAllByUsername(String username);
+    List<User> findAllByUsernameIgnoreCase(String username);
+
+    // Identifier availability (see IdentifierAvailability): a value is taken if it
+    // matches any email or any username, ignoring case. The IdNot forms exclude the
+    // caller's own row, so a user can set their username back to their own email.
+    boolean existsByEmailIgnoreCase(String email);
+    boolean existsByUsernameIgnoreCase(String username);
+    boolean existsByEmailIgnoreCaseAndIdNot(String email, UUID id);
+    boolean existsByUsernameIgnoreCaseAndIdNot(String username, UUID id);
+
     // Atomic spend: the WHERE currentPoints >= :cost makes this a single
     // conditional UPDATE the DB serializes per row, so two concurrent
     // redemptions racing for the same balance can't both succeed (unlike a
