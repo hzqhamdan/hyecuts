@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -41,8 +42,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 && SecurityContextHolder.getContext().getAuthentication() == null) {
             String jwt = authorizationHeader.substring(7);
             try {
-                String username = jwtUtil.extractUsername(jwt);
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+                // AUTH-027: resolve by the token's userId claim, never its email subject.
+                // An email can become ambiguous — a squatted username, a case-variant
+                // pair — and resolving by it meant one user's profile edit could leave
+                // another user's every request silently unauthenticated. A primary key
+                // cannot be ambiguous. A missing or malformed claim throws here and is
+                // handled below by leaving the request unauthenticated.
+                UUID userId = UUID.fromString(jwtUtil.extractUserId(jwt));
+                UserDetails userDetails = this.userDetailsService.loadUserById(userId);
 
                 if (jwtUtil.validateToken(jwt, userDetails) && !tokenRevocationService.isRevoked(jwtUtil.extractJti(jwt))) {
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
