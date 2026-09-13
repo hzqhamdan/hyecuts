@@ -23,13 +23,16 @@ public class LoyaltyService {
     private final GlobalSettingsService globalSettingsService;
     private final PasswordEncoder passwordEncoder;
     private final AdminAuditLogRepository adminAuditLogRepository;
+    private final IdentifierAvailability identifierAvailability;
 
     public LoyaltyService(UserRepository userRepository, GlobalSettingsService globalSettingsService,
-                           PasswordEncoder passwordEncoder, AdminAuditLogRepository adminAuditLogRepository) {
+                           PasswordEncoder passwordEncoder, AdminAuditLogRepository adminAuditLogRepository,
+                           IdentifierAvailability identifierAvailability) {
         this.userRepository = userRepository;
         this.globalSettingsService = globalSettingsService;
         this.passwordEncoder = passwordEncoder;
         this.adminAuditLogRepository = adminAuditLogRepository;
+        this.identifierAvailability = identifierAvailability;
     }
 
     public User getUser(UUID userId) {
@@ -55,7 +58,9 @@ public class LoyaltyService {
         if (req.email() != null && !req.email().isBlank()) {
             String newEmail = req.email().trim();
             if (!newEmail.equalsIgnoreCase(user.getEmail())) {
-                if (userRepository.findByEmail(newEmail).isPresent()) {
+                // AUTH-027: against every email AND username, ignoring case, excluding
+                // this user. An email equal to someone's username captures their sign-in.
+                if (identifierAvailability.isTakenByAnotherUser(newEmail, userId)) {
                     throw new com.hyecuts.loyalty.exception.EmailAlreadyInUseException(newEmail);
                 }
                 user.setEmail(newEmail);
@@ -65,7 +70,9 @@ public class LoyaltyService {
         if (req.username() != null && !req.username().isBlank()) {
             String newUsername = req.username().trim();
             if (!newUsername.equalsIgnoreCase(user.getUsername())) {
-                if (userRepository.findByUsername(newUsername).isPresent()) {
+                // AUTH-027: this used to compare only against other usernames, so a user
+                // could take somebody's email as their username and lock them out.
+                if (identifierAvailability.isTakenByAnotherUser(newUsername, userId)) {
                     throw new com.hyecuts.loyalty.exception.UsernameAlreadyInUseException(newUsername);
                 }
                 user.setUsername(newUsername);

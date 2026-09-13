@@ -34,6 +34,9 @@ public class LoyaltyServiceTest {
     @Mock
     private AdminAuditLogRepository adminAuditLogRepository;
 
+    @Mock
+    private IdentifierAvailability identifierAvailability;
+
     @InjectMocks
     private LoyaltyService loyaltyService;
 
@@ -292,7 +295,7 @@ public class LoyaltyServiceTest {
     @Test
     void updateUser_shouldThrowEmailAlreadyInUseWhenEmailTaken() {
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
-        when(userRepository.findByEmail("taken@hyecuts.com")).thenReturn(Optional.of(new User()));
+        when(identifierAvailability.isTakenByAnotherUser("taken@hyecuts.com", userId)).thenReturn(true);
         UpdateProfileRequest req = new UpdateProfileRequest(null, null, "taken@hyecuts.com", null, null, null, null);
 
         assertThrows(EmailAlreadyInUseException.class, () -> loyaltyService.updateUser(userId, req));
@@ -301,7 +304,7 @@ public class LoyaltyServiceTest {
     @Test
     void updateUser_shouldThrowUsernameAlreadyInUseWhenUsernameTaken() {
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
-        when(userRepository.findByUsername("taken")).thenReturn(Optional.of(new User()));
+        when(identifierAvailability.isTakenByAnotherUser("taken", userId)).thenReturn(true);
         UpdateProfileRequest req = new UpdateProfileRequest(null, "taken", null, null, null, null, null);
 
         assertThrows(UsernameAlreadyInUseException.class, () -> loyaltyService.updateUser(userId, req));
@@ -310,8 +313,6 @@ public class LoyaltyServiceTest {
     @Test
     void updateUser_shouldUpdateEmailAndUsernameWhenAvailable() {
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
-        when(userRepository.findByEmail("new@hyecuts.com")).thenReturn(Optional.empty());
-        when(userRepository.findByUsername("newname")).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
         UpdateProfileRequest req = new UpdateProfileRequest(null, "newname", "new@hyecuts.com", null, null, null, null);
 
@@ -319,5 +320,45 @@ public class LoyaltyServiceTest {
 
         assertEquals("new@hyecuts.com", updated.getEmail());
         assertEquals("newname", updated.getUsername());
+    }
+
+    // =============== identifier collisions (AUTH-027) ===============
+
+    @Test
+    void updateUser_rejectsAUsernameThatSquatsAnotherUsersEmail() {
+        // AUTH-027: taking someone's email as your username was allowed, because the
+        // check compared only against other usernames — and it locked them out.
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+        when(identifierAvailability.isTakenByAnotherUser("alice@x.com", userId)).thenReturn(true);
+        UpdateProfileRequest req = new UpdateProfileRequest(null, "alice@x.com", null, null, null, null, null);
+
+        assertThrows(UsernameAlreadyInUseException.class, () -> loyaltyService.updateUser(userId, req));
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void updateUser_rejectsAnEmailThatCollidesWithAnotherUsersUsername() {
+        // The reverse direction: an email equal to someone's username captures their sign-in.
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+        when(identifierAvailability.isTakenByAnotherUser("bob@x.com", userId)).thenReturn(true);
+        UpdateProfileRequest req = new UpdateProfileRequest(null, null, "bob@x.com", null, null, null, null);
+
+        assertThrows(EmailAlreadyInUseException.class, () -> loyaltyService.updateUser(userId, req));
+    }
+
+    @Test
+    void updateUser_checksAvailabilityExcludingTheUsersOwnRow() {
+        // Setting your username to your own email, in any casing, must be allowed.
+        // isTaken(...) would match the user's own row and refuse them; the check must
+        // be isTakenByAnotherUser with the user's own id.
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        UpdateProfileRequest req = new UpdateProfileRequest(null, "ORIGINAL@HYECUTS.COM", null, null, null, null, null);
+
+        User updated = loyaltyService.updateUser(userId, req);
+
+        assertEquals("ORIGINAL@HYECUTS.COM", updated.getUsername());
+        verify(identifierAvailability).isTakenByAnotherUser("ORIGINAL@HYECUTS.COM", userId);
+        verify(identifierAvailability, never()).isTaken(anyString());
     }
 }
