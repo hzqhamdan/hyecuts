@@ -133,6 +133,17 @@ class CustomUserDetailsServiceTest {
     }
 
     @Test
+    void ambiguousCaseInsensitiveUsernameFailsClosed() {
+        // Step 4: the last step in the chain. Ambiguity here must still throw
+        // rather than pick one of the matches.
+        User bobLower = user("bob1@x.com", "bob");
+        User bobUpper = user("bob2@x.com", "BOB");
+        when(userRepository.findAllByUsernameIgnoreCase("bob")).thenReturn(List.of(bobLower, bobUpper));
+
+        assertThrows(UsernameNotFoundException.class, () -> service.loadUserByUsername("bob"));
+    }
+
+    @Test
     void notFoundWhenNothingMatches() {
         assertThrows(UsernameNotFoundException.class, () -> service.loadUserByUsername("ghost@x.com"));
     }
