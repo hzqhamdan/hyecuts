@@ -1,5 +1,6 @@
 package com.hyecuts.loyalty.repository;
 
+import com.hyecuts.loyalty.model.Tier;
 import com.hyecuts.loyalty.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -101,5 +104,20 @@ class UserRepositoryTest {
         assertTrue(userRepository.existsByEmailIgnoreCaseAndIdNot("ALICE@X.COM", bob.getId()));
         assertFalse(userRepository.existsByUsernameIgnoreCaseAndIdNot("ALICE", alice.getId()));
         assertTrue(userRepository.existsByUsernameIgnoreCaseAndIdNot("ALICE", bob.getId()));
+    }
+
+    @Test
+    void countByTier_countsUsersPerTierInTheDatabase() {
+        // ADM-010: replaces streaming findAll() over every user.
+        persist("a@x.com", "a");
+        persist("b@x.com", "b");
+        User patron = persist("c@x.com", "c");
+        patron.setTier(Tier.PATRON);
+        entityManager.flush();
+
+        Map<Tier, Long> counts = userRepository.countByTier().stream()
+                .collect(Collectors.toMap(TierCount::tier, TierCount::users));
+
+        assertEquals(Map.of(Tier.MEMBER, 2L, Tier.PATRON, 1L), counts);
     }
 }

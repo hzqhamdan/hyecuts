@@ -14,6 +14,10 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmail(String email);
     List<User> findByTier(Tier tier);
 
+    // Admin analytics (ADM-010): counted in the database, not by streaming findAll().
+    @Query("SELECT new com.hyecuts.loyalty.repository.TierCount(u.tier, COUNT(u)) FROM User u GROUP BY u.tier")
+    List<TierCount> countByTier();
+
     // Account resolution (AUTH-022/027). Every lookup returns a List — the exact
     // ones included — so callers can detect two or more matches and fail closed.
     // Exact email is unique by V1's constraint, but exact username is only unique
