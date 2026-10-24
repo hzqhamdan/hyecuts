@@ -147,6 +147,20 @@ class BenefitsServiceTest {
     }
 
     @Test
+    void awardBirthdayBonus_doesNotDemoteATierAnAdminSetAboveThePoints() {
+        // An admin made this member PATRON with only 800 lifetime points; the
+        // bonus (800 -> 900) must not knock them down to CONNOISSEUR.
+        user.setTier(Tier.PATRON);
+        userExists();
+        when(globalSettingsService.getBirthdayBonusPoints()).thenReturn(100);
+
+        benefitsService.awardBirthdayBonus(userId);
+
+        assertEquals(900, user.getLifetimePoints());
+        assertEquals(Tier.PATRON, user.getTier());
+    }
+
+    @Test
     void awardBirthdayBonus_canPromoteATier() {
         user.setLifetimePoints(1450);
         userExists();
