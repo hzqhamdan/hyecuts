@@ -86,6 +86,33 @@ export const AVAILABLE_TIMES = [
   '09:00 PM', '09:30 PM'
 ];
 
+// "2:30 PM" / "02:30 PM" -> minutes since midnight; null if unparseable.
+function minutesOfDay(time: string): number | null {
+  const match = /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i.exec(time.trim());
+  if (!match) return null;
+  let hours = parseInt(match[1], 10) % 12;
+  if (match[3].toUpperCase() === 'PM') hours += 12;
+  return hours * 60 + parseInt(match[2], 10);
+}
+
+/**
+ * The AVAILABLE_TIMES slots that start while the shop is open on `day`,
+ * per BUSINESS_HOURS. Friday opens at 2:30 PM, so its earlier slots are
+ * dropped; a closed or unknown day has none.
+ */
+export function timesForDay(day: string): string[] {
+  const slot = BUSINESS_HOURS.find((s) => s.day === day);
+  if (!slot?.open) return [];
+  const bounds = slot.hours.split('-').map((part) => minutesOfDay(part));
+  if (bounds.length !== 2) return [];
+  const [open, close] = bounds;
+  if (open === null || close === null) return [];
+  return AVAILABLE_TIMES.filter((time) => {
+    const start = minutesOfDay(time);
+    return start !== null && start >= open && start < close;
+  });
+}
+
 export const BOOKING_POLICIES = [
   'Arrive 10 minutes early so the schedule can stay on time.',
   'One slot is strictly for one person only.',

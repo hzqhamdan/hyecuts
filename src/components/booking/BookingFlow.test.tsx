@@ -194,6 +194,27 @@ describe('BookingFlow', () => {
     expect(screen.getByText('booking.final_review')).toBeDefined();
   });
 
+  it('only offers Friday slots from its 2:30 PM opening, and drops an earlier pick', async () => {
+    const user = userEvent.setup();
+    renderBookingFlow();
+
+    await user.click(screen.getByText('booking.guest_cta'));
+    await user.click(screen.getByText('data.services.Adult Hair Cut'));
+    await user.click(screen.getByText('booking.continue_barber'));
+    await user.click(screen.getByText('landing.no_preference'));
+    await user.click(screen.getByText('booking.continue_schedule'));
+
+    await user.click(screen.getByText('data.days.Monday'));
+    await user.click(screen.getByText('12:00 PM'));
+    expect(screen.getByText('booking.review_booking').closest('button')).not.toBeDisabled();
+
+    await user.click(screen.getByText('data.days.Friday'));
+
+    expect(screen.queryByText('12:00 PM')).not.toBeInTheDocument();
+    expect(screen.getByText('02:30 PM')).toBeInTheDocument();
+    expect(screen.getByText('booking.review_booking').closest('button')).toBeDisabled();
+  });
+
   it('should navigate to login page when login button clicked at step 0', async () => {
     const user = userEvent.setup();
     renderBookingFlow();
