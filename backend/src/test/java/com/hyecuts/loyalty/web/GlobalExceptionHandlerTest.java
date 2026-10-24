@@ -28,6 +28,19 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
+    void handleConcurrentUpdate_shouldReturn409WithoutNamingTheEntity() {
+        var ex = new org.springframework.orm.ObjectOptimisticLockingFailureException(
+                "com.hyecuts.loyalty.model.User", "5f0c6a1e-0000-0000-0000-000000000000");
+
+        ResponseEntity<ApiError> response = handler.handleConcurrentUpdate(ex);
+
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertFalse(response.getBody().message().contains("User"));
+        assertFalse(response.getBody().message().contains("5f0c6a1e"));
+    }
+
+    @Test
     void handleRateLimit_shouldReturn429WithRetryAfterHeader() {
         RateLimitExceededException ex = new RateLimitExceededException(42L);
 

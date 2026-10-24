@@ -20,3 +20,20 @@ export function toLocalIsoString(date: Date): string {
     `T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
   );
 }
+
+const WEEKDAY_INDEX: Record<string, number> = {
+  Sunday: 0, Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6,
+};
+
+/**
+ * The next date after `from` that falls on `weekday` (e.g. "Friday"), at local
+ * midnight. Today never counts: picking today's weekday gives next week.
+ * Returns null for an unrecognised weekday name.
+ */
+export function nextDateForWeekday(weekday: string, from: Date = new Date()): Date | null {
+  const target = WEEKDAY_INDEX[weekday] as number | undefined;
+  if (target === undefined) return null;
+  const date = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+  date.setDate(date.getDate() + ((target + 7 - date.getDay()) % 7 || 7));
+  return date;
+}

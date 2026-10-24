@@ -289,6 +289,13 @@
       "6:00 PM": "6:00 PTG",
       "8:00 PM": "8:00 MLM"
     },
+    "status": {
+      "PENDING": "Menunggu",
+      "COMPLETED": "Selesai",
+      "CANCELLED": "Dibatalkan",
+      "APPROVED": "Diluluskan",
+      "REJECTED": "Ditolak"
+    },
     "common": {
       "the_studio": "Studio"
     },

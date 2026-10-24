@@ -48,6 +48,16 @@ public class User {
     @Column(name = "last_quarterly_voucher_quarter", length = 10)
     private String lastQuarterlyVoucherQuarter;
 
+    // Optimistic lock (LOY-021). Points are changed both by read-modify-write
+    // (addPointsToUser, penalties, profile saves) and by atomic bulk UPDATEs
+    // (UserRepository#deductPointsIfSufficient). Without a version, a save of
+    // an entity read before a concurrent redeem silently wrote the old balance
+    // back, erasing the redeem. The bulk UPDATEs bump this column too, so that
+    // stale save now fails instead.
+    @Version
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private Long version;
+
     @Column(name = "referral_code", unique = true)
     private String referralCode;
 
@@ -128,6 +138,7 @@ public class User {
     public void setBirthMonth(Integer birthMonth) { this.birthMonth = birthMonth; }
     public Integer getBirthdayBonusYear() { return birthdayBonusYear; }
     public void setBirthdayBonusYear(Integer birthdayBonusYear) { this.birthdayBonusYear = birthdayBonusYear; }
+    public Long getVersion() { return version; }
     public String getLastQuarterlyVoucherQuarter() { return lastQuarterlyVoucherQuarter; }
     public void setLastQuarterlyVoucherQuarter(String lastQuarterlyVoucherQuarter) { this.lastQuarterlyVoucherQuarter = lastQuarterlyVoucherQuarter; }
     public String getReferralCode() { return referralCode; }

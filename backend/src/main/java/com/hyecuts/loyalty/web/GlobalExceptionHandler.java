@@ -6,6 +6,7 @@ import com.hyecuts.loyalty.exception.UsernameAlreadyInUseException;
 import com.hyecuts.loyalty.security.RateLimitExceededException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -71,6 +72,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ApiError> handleAuthentication(AuthenticationException ex) {
         return build(HttpStatus.UNAUTHORIZED, "Unauthorized", "Authentication required", null);
+    }
+
+    // A save lost an @Version race (e.g. a points change overlapping a redeem —
+    // LOY-021). The raw message names the entity and its id, so it isn't passed
+    // through; the request is safe to retry.
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    public ResponseEntity<ApiError> handleConcurrentUpdate(OptimisticLockingFailureException ex) {
+        return build(HttpStatus.CONFLICT, "Conflict",
+                "This record was changed by another request. Please try again.", null);
     }
 
     @ExceptionHandler(RateLimitExceededException.class)

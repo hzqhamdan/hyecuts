@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { toLocalIsoString } from './datetime';
+import { nextDateForWeekday, toLocalIsoString } from './datetime';
 
 describe('toLocalIsoString (BK-016)', () => {
   it('returns the local wall-clock time it was given', () => {
@@ -36,5 +36,37 @@ describe('toLocalIsoString (BK-016)', () => {
     const d = new Date(2026, 2, 3, 0, 30, 0);
     expect(toLocalIsoString(d)).toBe('2026-03-03T00:30:00');
     expect(d.toISOString().slice(8, 10)).toBe('02');
+  });
+});
+
+describe('nextDateForWeekday', () => {
+  // Wednesday 21 October 2026, mid-afternoon local time.
+  const wednesday = new Date(2026, 9, 21, 15, 45);
+  const ymd = (d: Date | null) => (d ? toLocalIsoString(d) : null);
+
+  it('returns the coming occurrence of a later weekday this week', () => {
+    expect(ymd(nextDateForWeekday('Friday', wednesday))).toBe('2026-10-23T00:00:00');
+  });
+
+  it('never returns today: today\'s weekday means next week', () => {
+    expect(ymd(nextDateForWeekday('Wednesday', wednesday))).toBe('2026-10-28T00:00:00');
+  });
+
+  it('wraps an earlier weekday into next week', () => {
+    expect(ymd(nextDateForWeekday('Monday', wednesday))).toBe('2026-10-26T00:00:00');
+  });
+
+  it('crosses a month and year boundary', () => {
+    expect(ymd(nextDateForWeekday('Friday', new Date(2026, 11, 31, 9, 0)))).toBe('2027-01-01T00:00:00');
+  });
+
+  it('returns null for an unknown weekday name', () => {
+    expect(nextDateForWeekday('Funday', wednesday)).toBeNull();
+  });
+
+  it('does not modify the date it was given', () => {
+    const from = new Date(wednesday);
+    nextDateForWeekday('Friday', from);
+    expect(from.getTime()).toBe(wednesday.getTime());
   });
 });
