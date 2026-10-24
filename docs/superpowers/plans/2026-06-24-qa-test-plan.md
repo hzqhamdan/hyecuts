@@ -3,7 +3,7 @@
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.  
 > **Session Protocol:** Read `CLAUDE.md` first for coding principles before any work.  
 > **Session 1 (2026-06-24):** Completed Tasks 1–2 (except 2c). Next session starts at Task 2c.  
-> **Checkbox sync (2026-10-24):** Re-checked every step against the code and finished the partly done test steps (Tasks 2.4, 3.3, 4.3, 10.3). Task 4.3 stays open: `createReward` needs validation before its tests can be written. Fixed along the way: LOY-021 (points lost when earn and redeem overlap) and BK-051 (reschedule booked-slot lookup). Full suites pass: backend 262 tests, frontend 105.
+> **Checkbox sync (2026-10-24):** Re-checked every step against the code and finished the partly done test steps (Tasks 2.4, 3.3, 4.3, 10.3). Task 4.3 completed after RW-030 added `createReward` validation. Fixed along the way: LOY-021 (points lost when earn and redeem overlap) and BK-051 (reschedule booked-slot lookup). Full suites pass: backend 262 tests, frontend 105.
 
 **Goal:** Generate exhaustive QA test matrices and vulnerability reports across all 10 feature modules, then implement automated tests.
 
@@ -125,7 +125,7 @@ Cover:
 
 Minimum 8 vulnerabilities.
 
-- [ ] **Step 3: Reward service tests (JUnit)** — DONE EXCEPT createReward (2026-10-24): `fulfillVoucher` and `redeemReward` covered (valid, not found, inactive, tier too low or unknown, out of stock, last unit, insufficient points, voucher-id collisions). `createReward` saves whatever it's given — no validation exists for negative cost or missing fields — so those tests need that validation added first
+- [x] **Step 3: Reward service tests (JUnit)** → (2026-10-24): `fulfillVoucher` and `redeemReward` covered (valid, not found, inactive, tier too low or unknown, out of stock, last unit, insufficient points, voucher-id collisions). `createReward` validation added (RW-030: title, cost, stock, tier; client-supplied id ignored) and tested
 
 Write RewardServiceTest:
 - redeemReward: valid, insufficient points, already redeemed, out of stock

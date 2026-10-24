@@ -28,6 +28,16 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
+    void handleInvalidRequest_shouldReturn400WithTheMessage() {
+        ResponseEntity<ApiError> response = handler.handleInvalidRequest(
+                new com.hyecuts.loyalty.exception.InvalidRequestException("Points cost must be zero or more."));
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("Points cost must be zero or more.", response.getBody().message());
+    }
+
+    @Test
     void handleConcurrentUpdate_shouldReturn409WithoutNamingTheEntity() {
         var ex = new org.springframework.orm.ObjectOptimisticLockingFailureException(
                 "com.hyecuts.loyalty.model.User", "5f0c6a1e-0000-0000-0000-000000000000");
