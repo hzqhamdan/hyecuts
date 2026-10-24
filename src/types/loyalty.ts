@@ -32,14 +32,17 @@ export interface LoyaltyProfile {
   avatar: string | null;
 }
 
+// Mirrors the backend Reward entity's JSON. The field names used to be
+// minimumTierRequired/stockAvailable, which the API never sends, so tier and
+// stock were silently missing everywhere they were read or written.
 export interface Reward {
-  id: number;
+  id: string;
   title: string;
-  description: string;
-  type: string;
+  description: string | null;
   pointsCost: number;
-  minimumTierRequired: string;
-  stockAvailable: number | null;
+  minTier: string | null;
+  stockCount: number | null; // null = unlimited
+  isActive: boolean;
 }
 
 export interface ActivityLog {
