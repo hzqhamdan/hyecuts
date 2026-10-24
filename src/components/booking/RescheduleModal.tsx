@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, Clock } from 'lucide-react';
 import { api } from '../../api/client';
-import { toLocalIsoString } from '../../utils/datetime';
+import { nextDateForWeekday, toLocalIsoString } from '../../utils/datetime';
 import { BUSINESS_HOURS, AVAILABLE_TIMES } from '../../data/hyecuts';
 
 interface Booking {
@@ -26,23 +26,33 @@ export default function RescheduleModal({ isOpen, onClose, bookingId, onSuccess,
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (selectedDate && isOpen) {
-        // Fetch booked times for selected date
-        api.get<Booking[]>(`/bookings/date/${selectedDate}`, { token: token ?? undefined }).then(bookings => {
-            // PENDING and CONFIRMED both hold the slot; CANCELLED/COMPLETED/NO_SHOW
-            // don't (BK-050 — CONFIRMED bookings used to show as free here).
-            const times = bookings
-                .filter(b => b.status === 'PENDING' || b.status === 'CONFIRMED')
-                .map(b => new Date(b.appointmentTime).toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', hour12: true}));
-            setBookedTimes(times);
-        }).catch(console.error);
-    }
+    if (!selectedDate || !isOpen) return;
+    const date = nextDateForWeekday(selectedDate);
+    if (!date) return;
+
+    // The previous day's slots don't apply to this one.
+    setBookedTimes([]);
+    let stale = false;
+    // The endpoint takes a YYYY-MM-DD date. This used to send the weekday
+    // name ("/bookings/date/Friday"), which the backend rejects, so booked
+    // slots never showed and every time looked free (BK-051).
+    api.get<Booking[]>(`/bookings/date/${toLocalIsoString(date).slice(0, 10)}`, { token: token ?? undefined }).then(bookings => {
+        if (stale) return;
+        // PENDING and CONFIRMED both hold the slot; CANCELLED/COMPLETED/NO_SHOW
+        // don't (BK-050 — CONFIRMED bookings used to show as free here).
+        const times = bookings
+            .filter(b => b.status === 'PENDING' || b.status === 'CONFIRMED')
+            .map(b => new Date(b.appointmentTime).toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', hour12: true}));
+        setBookedTimes(times);
+        setSelectedTime(current => (current && times.includes(current) ? null : current));
+    }).catch(console.error);
+    return () => { stale = true; };
   }, [selectedDate, isOpen, token]);
 
   if (!isOpen) return null;
 
   function parseTime12h(timeStr: string): { hours: number; minutes: number } {
-    const match = timeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    const match = /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i.exec(timeStr);
     if (!match) return { hours: 0, minutes: 0 };
     let h = parseInt(match[1], 10);
     const m = parseInt(match[2], 10);
@@ -57,13 +67,9 @@ export default function RescheduleModal({ isOpen, onClose, bookingId, onSuccess,
 
     setLoading(true);
     try {
-      const dayMap: Record<string, number> = { Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6, Sunday: 0 };
-      const targetDay = dayMap[selectedDate];
-      if (targetDay === undefined) throw new Error('Invalid day');
-
-      const now = new Date();
-      const date = new Date(now);
-      date.setDate(now.getDate() + ((targetDay + 7 - now.getDay()) % 7 || 7));
+      // Same date the booked-slot lookup above used.
+      const date = nextDateForWeekday(selectedDate);
+      if (!date) throw new Error('Invalid day');
 
       const { hours, minutes } = parseTime12h(selectedTime);
       date.setHours(hours, minutes, 0, 0);
@@ -112,7 +118,7 @@ export default function RescheduleModal({ isOpen, onClose, bookingId, onSuccess,
                 {BUSINESS_HOURS.map((slot) => (
                   <button
                     key={slot.day}
-                    onClick={() => setSelectedDate(slot.day)}
+                    onClick={() => { setSelectedDate(slot.day); }}
                     className={`p-3 border text-xs uppercase ${selectedDate === slot.day ? 'bg-black text-white dark:bg-white dark:text-black' : 'border-zinc-200 dark:border-zinc-800'}`}
                   >
                     {slot.day}
@@ -131,7 +137,7 @@ export default function RescheduleModal({ isOpen, onClose, bookingId, onSuccess,
                     return (
                         <button
                           key={time}
-                          onClick={() => !isBooked && setSelectedTime(time)}
+                          onClick={() => { if (!isBooked) setSelectedTime(time); }}
                           className={`p-2 border text-[10px] ${
                               isBooked ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed' :
                               selectedTime === time ? 'bg-black text-white dark:bg-white dark:text-black' : 'border-zinc-200 dark:border-zinc-800'
@@ -146,7 +152,7 @@ export default function RescheduleModal({ isOpen, onClose, bookingId, onSuccess,
             </div>
 
             <button
-              onClick={handleReschedule}
+              onClick={() => { void handleReschedule(); }}
               disabled={!selectedDate || !selectedTime || loading}
               className="w-full py-4 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:opacity-90 disabled:opacity-50"
             >
