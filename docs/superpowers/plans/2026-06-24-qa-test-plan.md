@@ -2,7 +2,8 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.  
 > **Session Protocol:** Read `CLAUDE.md` first for coding principles before any work.  
-> **Session 1 (2026-06-24):** Completed Tasks 1–2 (except 2c). Next session starts at Task 2c.
+> **Session 1 (2026-06-24):** Completed Tasks 1–2 (except 2c). Next session starts at Task 2c.  
+> **Checkbox sync (2026-10-24):** Re-checked every step against the code and finished the partly done test steps (Tasks 2.4, 3.3, 4.3, 10.3). Task 4.3 stays open: `createReward` needs validation before its tests can be written. Fixed along the way: LOY-021 (points lost when earn and redeem overlap) and BK-051 (reschedule booked-slot lookup). Full suites pass: backend 262 tests, frontend 105.
 
 **Goal:** Generate exhaustive QA test matrices and vulnerability reports across all 10 feature modules, then implement automated tests.
 
@@ -23,7 +24,7 @@
 
 - [x] **Step 1: Write Auth QA test matrix** → `docs/testing/01-auth-authorization.md` (50 test cases)
 - [x] **Step 2: Write Auth vulnerability report** → same file (20 vulnerabilities, 6 critical)
-- [x] **Step 3: Backend auth tests (JUnit)** → `JwtUtilTest.java` (17 tests, all pass)
+- [x] **Step 3: Backend auth tests (JUnit)** → `JwtUtilTest.java` (18 tests)
 - [x] **Step 4: Frontend auth tests (Vitest)** → Already existed (all pass)
 - [ ] **Step 5: Auth E2E tests (Playwright)** → NOT YET DONE
 
@@ -38,8 +39,8 @@
 
 - [x] **Step 1: Write Booking QA test matrix** → `docs/testing/02-booking-flow.md` (80 test cases)
 - [x] **Step 2: Write Booking vulnerability report** → same file (15 vulnerabilities)
-- [x] **Step 3: Backend booking tests (JUnit)** → `BookingServiceTest.java` (26 tests, also added missing validations to BookingService)
-- [ ] **Step 4: Frontend booking tests (Vitest)** — NOT YET DONE
+- [x] **Step 3: Backend booking tests (JUnit)** → `BookingServiceTest.java` (44 tests, also added missing validations to BookingService)
+- [x] **Step 4: Frontend booking tests (Vitest)** → `BookingFlow.test.tsx` (15 tests), `useBookingStore.test.ts` (20 tests), `RescheduleModal.test.tsx` (11 tests, 2026-10-24), including booked-slot greying after the BK-051 fix (the modal used to request `/bookings/date/<weekday name>`, which the backend rejects)
 - [ ] **Step 5: Booking E2E tests (Playwright)** — NOT YET DONE
 
 ---
@@ -74,7 +75,7 @@ Cover:
 
 Minimum 10 vulnerabilities.
 
-- [ ] **Step 3: Backend loyalty tests (JUnit)**
+- [x] **Step 3: Backend loyalty tests (JUnit)** → (2026-10-24): every tier edge in `LoyaltyServiceTest`; exact-cost, one-short, double and zero-cost redeems against the real query in `UserRepositoryTest`; birthday bonus in new `BenefitsServiceTest`. Concurrent earn+redeem exposed a lost-update bug (500 → redeem 200 → overlapping earn 100 ended at 600, not 400); fixed as LOY-021 with `@Version` on `User` (migration V12), and `UserRepositoryTest` now checks the stale save is rejected
 
 Add to LoyaltyServiceTest:
 - Tier progression at exact boundary values (99, 100, 349, 350, 749, 750, 1499, 1500)
@@ -85,7 +86,7 @@ Add to LoyaltyServiceTest:
 Run: `cd backend && .\gradlew test --tests "*LoyaltyService*"`
 Expected: All pass
 
-- [ ] **Step 4: Frontend loyalty tests (Vitest)**
+- [ ] **Step 4: Frontend loyalty tests (Vitest)** — NOT YET DONE: no tests for `useTierProgress` or `useLoungeData`; the `gamification.ts` item no longer applies (file deleted in `1f49646`, LOY-020)
 
 Write tests for:
 - useTierProgress: all tier boundaries, 0 points, max points
@@ -124,7 +125,7 @@ Cover:
 
 Minimum 8 vulnerabilities.
 
-- [ ] **Step 3: Reward service tests (JUnit)**
+- [ ] **Step 3: Reward service tests (JUnit)** — DONE EXCEPT createReward (2026-10-24): `fulfillVoucher` and `redeemReward` covered (valid, not found, inactive, tier too low or unknown, out of stock, last unit, insufficient points, voucher-id collisions). `createReward` saves whatever it's given — no validation exists for negative cost or missing fields — so those tests need that validation added first
 
 Write RewardServiceTest:
 - redeemReward: valid, insufficient points, already redeemed, out of stock
@@ -359,7 +360,7 @@ Cover:
 
 Minimum 8 vulnerabilities.
 
-- [ ] **Step 3: Frontend unit tests (Vitest)**
+- [x] **Step 3: Frontend unit tests (Vitest)** → `useBookingStore` (20 tests), `usePWAInstall` (7, incl. unmount cleanup), `i18n/config.test.ts` (9; added the 5 missing Malay `data.status` labels it caught), `App.test.tsx` theme toggle (4) — 2026-10-24. "System preference detection" isn't implemented (the theme only reads localStorage), so there is nothing to test there
 
 Write tests for:
 - i18n config: locale switching, fallback behavior, interpolation
@@ -454,7 +455,7 @@ Cross-cutting findings:
 ### Remaining For Next Session
 Start at **Task 2c** (Booking Frontend Tests), then continue sequentially:
 
-- [ ] **Task 2c**: Booking Frontend Tests (Vitest) — useBookingStore + BookingFlow + RescheduleModal
+- [x] **Task 2c**: Booking Frontend Tests (Vitest) — useBookingStore + BookingFlow + RescheduleModal
 - [ ] **Task 2d**: Booking E2E Tests (Playwright)
 - [ ] **Task 3**: Loyalty & Tiers — QA Matrix + Vuln Report + Tests
 - [ ] **Task 4**: Rewards & Vouchers — QA Matrix + Vuln Report + Tests

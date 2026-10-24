@@ -15,11 +15,10 @@ describe('usePWAInstall', () => {
   it('should become installable when beforeinstallprompt event is fired', () => {
     const { result } = renderHook(() => usePWAInstall());
 
-    const event = new Event('beforeinstallprompt');
-    // @ts-ignore
-    event.prompt = vi.fn();
-    // @ts-ignore
-    event.userChoice = Promise.resolve({ outcome: 'dismissed' });
+    const event = Object.assign(new Event('beforeinstallprompt'), {
+      prompt: vi.fn(),
+      userChoice: Promise.resolve({ outcome: 'dismissed' }),
+    });
     // Prevent default to simulate standard PWA behavior
     const preventDefaultSpy = vi.spyOn(event, 'preventDefault');
 
@@ -35,11 +34,10 @@ describe('usePWAInstall', () => {
     const { result } = renderHook(() => usePWAInstall());
 
     const promptMock = vi.fn().mockResolvedValue(undefined);
-    const event = new Event('beforeinstallprompt');
-    // @ts-ignore
-    event.prompt = promptMock;
-    // @ts-ignore
-    event.userChoice = Promise.resolve({ outcome: 'accepted' });
+    const event = Object.assign(new Event('beforeinstallprompt'), {
+      prompt: promptMock,
+      userChoice: Promise.resolve({ outcome: 'accepted' }),
+    });
 
     act(() => {
       window.dispatchEvent(event);
@@ -59,11 +57,10 @@ describe('usePWAInstall', () => {
     const { result } = renderHook(() => usePWAInstall());
 
     const promptMock = vi.fn().mockResolvedValue(undefined);
-    const event = new Event('beforeinstallprompt');
-    // @ts-ignore
-    event.prompt = promptMock;
-    // @ts-ignore
-    event.userChoice = Promise.resolve({ outcome: 'dismissed' });
+    const event = Object.assign(new Event('beforeinstallprompt'), {
+      prompt: promptMock,
+      userChoice: Promise.resolve({ outcome: 'dismissed' }),
+    });
 
     act(() => {
       window.dispatchEvent(event);
@@ -75,5 +72,42 @@ describe('usePWAInstall', () => {
 
     expect(promptMock).toHaveBeenCalled();
     expect(result.current.isInstallable).toBe(true);
+  });
+
+  it('should do nothing when install is called before any prompt event', async () => {
+    const { result } = renderHook(() => usePWAInstall());
+
+    await act(async () => {
+      await result.current.install();
+    });
+
+    expect(result.current.isInstallable).toBe(false);
+  });
+
+  it('should remove its beforeinstallprompt listener on unmount', () => {
+    const addSpy = vi.spyOn(window, 'addEventListener');
+    const removeSpy = vi.spyOn(window, 'removeEventListener');
+
+    const { unmount } = renderHook(() => usePWAInstall());
+    const handler = addSpy.mock.calls.find(([type]) => type === 'beforeinstallprompt')?.[1];
+    expect(handler).toBeDefined();
+
+    unmount();
+
+    expect(removeSpy).toHaveBeenCalledWith('beforeinstallprompt', handler);
+    addSpy.mockRestore();
+    removeSpy.mockRestore();
+  });
+
+  it('should ignore prompt events fired after unmount', () => {
+    const { result, unmount } = renderHook(() => usePWAInstall());
+    unmount();
+
+    const event = new Event('beforeinstallprompt');
+    const preventDefaultSpy = vi.spyOn(event, 'preventDefault');
+    window.dispatchEvent(event);
+
+    expect(preventDefaultSpy).not.toHaveBeenCalled();
+    expect(result.current.isInstallable).toBe(false);
   });
 });

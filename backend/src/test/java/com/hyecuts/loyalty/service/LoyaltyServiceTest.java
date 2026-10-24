@@ -11,6 +11,8 @@ import com.hyecuts.loyalty.web.UpdateProfileRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -360,5 +362,74 @@ public class LoyaltyServiceTest {
         assertEquals("ORIGINAL@HYECUTS.COM", updated.getUsername());
         verify(identifierAvailability).isTakenByAnotherUser("ORIGINAL@HYECUTS.COM", userId);
         verify(identifierAvailability, never()).isTaken(anyString());
+    }
+
+    // Each tier threshold and the point just below it. testUser starts as a
+    // MEMBER with 0 lifetime points, and MEMBER earns no bonus, so lifetime
+    // points land exactly on the value given.
+    @ParameterizedTest(name = "{0} lifetime points -> {1}")
+    @CsvSource({
+            "0, MEMBER",
+            "99, MEMBER",
+            "100, INSIDER",
+            "349, INSIDER",
+            "350, ARTISAN",
+            "749, ARTISAN",
+            "750, CONNOISSEUR",
+            "1499, CONNOISSEUR",
+            "1500, PATRON",
+            "1000000, PATRON"
+    })
+    void addPoints_shouldPlaceTheUserInTheTierForTheirLifetimePoints(int points, Tier expected) {
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        User updated = loyaltyService.addPoints(userId, points);
+
+        assertEquals(points, updated.getLifetimePoints());
+        assertEquals(expected, updated.getTier());
+    }
+
+    @Test
+    void addPoints_shouldCrossIntoPatronWhenTheBonusTipsLifetimePointsOver1500() {
+        // 1450 + (46 + 10% = 50) = 1500: without the Insider bonus this
+        // would stop at 1496 and stay CONNOISSEUR.
+        testUser.setTier(Tier.CONNOISSEUR);
+        testUser.setLifetimePoints(1450);
+        testUser.setCurrentPoints(1450);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+        when(globalSettingsService.getInsiderBonusPercent()).thenReturn(10);
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        User updated = loyaltyService.addPoints(userId, 46);
+
+        assertEquals(1500, updated.getLifetimePoints());
+        assertEquals(Tier.PATRON, updated.getTier());
+    }
+
+    @Test
+    void addPoints_negativeAdjustmentShouldNotDemoteATier() {
+        testUser.setTier(Tier.ARTISAN);
+        testUser.setLifetimePoints(350);
+        testUser.setCurrentPoints(350);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
+        when(globalSettingsService.getInsiderBonusPercent()).thenReturn(0);
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        User updated = loyaltyService.addPoints(userId, -1);
+
+        assertEquals(349, updated.getLifetimePoints());
+        assertEquals(Tier.ARTISAN, updated.getTier());
+    }
+
+    @Test
+    void redeemPoints_shouldPassTheExactCostToTheAtomicDeduction() {
+        // The exact-balance edge itself (balance == cost) is exercised against
+        // the real query in UserRepositoryTest.
+        when(userRepository.deductPointsIfSufficient(userId, 500)).thenReturn(1);
+
+        assertTrue(loyaltyService.redeemPoints(userId, 500));
+        verify(userRepository).deductPointsIfSufficient(userId, 500);
+        verify(userRepository, never()).save(any(User.class));
     }
 }
