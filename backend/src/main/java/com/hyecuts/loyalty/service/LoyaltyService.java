@@ -1,5 +1,6 @@
 package com.hyecuts.loyalty.service;
 
+import com.hyecuts.loyalty.exception.ResourceNotFoundException;
 import com.hyecuts.loyalty.model.AdminAuditLog;
 import com.hyecuts.loyalty.model.Tier;
 import com.hyecuts.loyalty.model.User;
@@ -37,7 +38,7 @@ public class LoyaltyService {
 
     public User getUser(UUID userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     // Was an unbounded findAll() returning the full User entity (avatar and

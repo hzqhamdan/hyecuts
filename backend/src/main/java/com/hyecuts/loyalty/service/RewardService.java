@@ -1,6 +1,7 @@
 package com.hyecuts.loyalty.service;
 
 import com.hyecuts.loyalty.exception.InvalidRequestException;
+import com.hyecuts.loyalty.exception.ResourceNotFoundException;
 import com.hyecuts.loyalty.model.*;
 import com.hyecuts.loyalty.repository.*;
 import org.springframework.data.domain.Pageable;
@@ -67,10 +68,10 @@ public class RewardService {
     @Transactional
     public String redeemReward(UUID userId, UUID rewardId) {
         Reward reward = rewardRepository.findById(rewardId)
-                .orElseThrow(() -> new RuntimeException("Reward not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Reward not found"));
 
         if (!Boolean.TRUE.equals(reward.getIsActive())) {
-            throw new RuntimeException("This reward is no longer available.");
+            throw new InvalidRequestException("This reward is no longer available.");
         }
 
         User user = loyaltyService.getUser(userId);
@@ -85,7 +86,7 @@ public class RewardService {
                 requiredTier = Tier.PATRON;
             }
             if (user.getTier() == null || user.getTier().ordinal() < requiredTier.ordinal()) {
-                throw new RuntimeException("Your tier does not qualify for this reward.");
+                throw new InvalidRequestException("Your tier does not qualify for this reward.");
             }
         }
 
@@ -94,7 +95,7 @@ public class RewardService {
         if (reward.getStockCount() != null) {
             int updated = rewardRepository.decrementStockIfAvailable(rewardId);
             if (updated == 0) {
-                throw new RuntimeException("Out of stock");
+                throw new InvalidRequestException("Out of stock");
             }
         }
 
@@ -102,7 +103,7 @@ public class RewardService {
         // the stock decrement above.
         boolean isRedeemed = loyaltyService.redeemPoints(userId, reward.getPointsCost());
         if (!isRedeemed) {
-            throw new RuntimeException("Insufficient points");
+            throw new InvalidRequestException("Insufficient points");
         }
 
         // Create Voucher
@@ -136,19 +137,23 @@ public class RewardService {
 
     @Transactional
     public Voucher fulfillVoucher(String voucherId) {
+        // Rule failures are InvalidRequestException (400 with the message) and a
+        // missing voucher is a 404. These were plain RuntimeExceptions, which the
+        // admin endpoint let through to the generic 500 handler, so staff saw
+        // "unexpected error" instead of "already redeemed".
         Voucher voucher = voucherRepository.findById(voucherId)
-                .orElseThrow(() -> new RuntimeException("Voucher not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Voucher not found"));
 
         int updated = voucherRepository.fulfillIfActive(voucherId, LocalDateTime.now());
         if (updated == 0) {
             if (voucher.getStatus() == Voucher.VoucherStatus.REDEEMED) {
-                throw new RuntimeException("Voucher has already been redeemed.");
+                throw new InvalidRequestException("Voucher has already been redeemed.");
             }
-            throw new RuntimeException("Voucher is expired or no longer active.");
+            throw new InvalidRequestException("Voucher is expired or no longer active.");
         }
 
         return voucherRepository.findById(voucherId)
-                .orElseThrow(() -> new RuntimeException("Voucher not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Voucher not found"));
     }
 
     // RW-015: the id column is capped at 12 chars ("V-"/"Q-" + 10 hex chars),
