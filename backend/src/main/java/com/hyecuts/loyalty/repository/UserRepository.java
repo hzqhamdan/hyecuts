@@ -40,9 +40,10 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     // conditional UPDATE the DB serializes per row, so two concurrent
     // redemptions racing for the same balance can't both succeed (unlike a
     // read-then-write check). Returns rows updated (0 = insufficient balance
-    // or no such user).
+    // or no such user). Bumps User.version so a concurrent read-modify-write
+    // save of the same row fails rather than overwriting this deduction.
     @Modifying
-    @Query("UPDATE User u SET u.currentPoints = u.currentPoints - :cost WHERE u.id = :id AND u.currentPoints >= :cost")
+    @Query("UPDATE User u SET u.currentPoints = u.currentPoints - :cost, u.version = u.version + 1 WHERE u.id = :id AND u.currentPoints >= :cost")
     int deductPointsIfSufficient(@Param("id") UUID id, @Param("cost") int cost);
 
     // Same pattern (SCH-004): the WHERE clause makes "has this quarter's
@@ -51,6 +52,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     // replica at once, only the first to commit wins the row and issues a
     // voucher — the second sees 0 rows updated and skips.
     @Modifying
-    @Query("UPDATE User u SET u.lastQuarterlyVoucherQuarter = :quarterKey WHERE u.id = :id AND (u.lastQuarterlyVoucherQuarter IS NULL OR u.lastQuarterlyVoucherQuarter <> :quarterKey)")
+    @Query("UPDATE User u SET u.lastQuarterlyVoucherQuarter = :quarterKey, u.version = u.version + 1 WHERE u.id = :id AND (u.lastQuarterlyVoucherQuarter IS NULL OR u.lastQuarterlyVoucherQuarter <> :quarterKey)")
     int markQuarterlyVoucherIssued(@Param("id") UUID id, @Param("quarterKey") String quarterKey);
 }

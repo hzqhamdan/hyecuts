@@ -120,4 +120,88 @@ class UserRepositoryTest {
 
         assertEquals(Map.of(Tier.MEMBER, 2L, Tier.PATRON, 1L), counts);
     }
+
+    private User withBalance(int points) {
+        User user = persist("spender@x.com", "spender");
+        user.setCurrentPoints(points);
+        entityManager.flush();
+        return user;
+    }
+
+    // deductPointsIfSufficient is a bulk UPDATE that bypasses the persistence
+    // context, so the balance is read back after clearing it.
+    private int balanceOf(User user) {
+        entityManager.clear();
+        return entityManager.find(User.class, user.getId()).getCurrentPoints();
+    }
+
+    @Test
+    void deductPointsIfSufficient_spendsABalanceThatExactlyCoversTheCost() {
+        User user = withBalance(500);
+
+        assertEquals(1, userRepository.deductPointsIfSufficient(user.getId(), 500));
+        assertEquals(0, balanceOf(user));
+    }
+
+    @Test
+    void deductPointsIfSufficient_refusesWhenOnePointShort() {
+        User user = withBalance(499);
+
+        assertEquals(0, userRepository.deductPointsIfSufficient(user.getId(), 500));
+        assertEquals(499, balanceOf(user));
+    }
+
+    @Test
+    void deductPointsIfSufficient_secondRedeemAgainstTheSameBalanceFails() {
+        // Two redeems that each fit the starting balance but not together:
+        // the WHERE clause re-checks the balance, so only the first lands.
+        User user = withBalance(500);
+
+        assertEquals(1, userRepository.deductPointsIfSufficient(user.getId(), 300));
+        assertEquals(0, userRepository.deductPointsIfSufficient(user.getId(), 300));
+        assertEquals(200, balanceOf(user));
+    }
+
+    @Test
+    void deductPointsIfSufficient_zeroCostLeavesTheBalanceAlone() {
+        User user = withBalance(0);
+
+        assertEquals(1, userRepository.deductPointsIfSufficient(user.getId(), 0));
+        assertEquals(0, balanceOf(user));
+    }
+
+    @Test
+    void deductPointsIfSufficient_unknownUserUpdatesNothing() {
+        assertEquals(0, userRepository.deductPointsIfSufficient(java.util.UUID.randomUUID(), 1));
+    }
+
+    @Test
+    void earnSavedFromAReadTakenBeforeARedeem_failsInsteadOfErasingTheRedeem() {
+        // LOY-021: an earn (read-modify-write) reads 500, a redeem deducts 200
+        // atomically, then the earn saves 500 + 100. Before User had @Version
+        // that save wrote 600 and the redeem vanished; the bulk UPDATE now
+        // bumps the version, so the stale save is rejected.
+        User user = withBalance(500);
+        User staleCopy = userRepository.findById(user.getId()).orElseThrow();
+        long versionBefore = staleCopy.getVersion();
+
+        assertEquals(1, userRepository.deductPointsIfSufficient(user.getId(), 200));
+        staleCopy.setCurrentPoints(staleCopy.getCurrentPoints() + 100);
+
+        assertThrows(org.springframework.orm.ObjectOptimisticLockingFailureException.class,
+                () -> userRepository.saveAndFlush(staleCopy));
+        assertEquals(300, balanceOf(user));
+        assertEquals(versionBefore + 1, entityManager.find(User.class, user.getId()).getVersion());
+    }
+
+    @Test
+    void markQuarterlyVoucherIssued_alsoBumpsTheVersion() {
+        User user = withBalance(0);
+        long versionBefore = user.getVersion();
+
+        assertEquals(1, userRepository.markQuarterlyVoucherIssued(user.getId(), "2026-Q4"));
+
+        entityManager.clear();
+        assertEquals(versionBefore + 1, entityManager.find(User.class, user.getId()).getVersion());
+    }
 }
