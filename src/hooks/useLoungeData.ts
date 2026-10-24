@@ -75,7 +75,9 @@ export function useLoungeData(userId: string, token?: string | null) {
           api.get<Reward[]>('/rewards', { token: authToken }),
           api.get<ActivityLog[]>(`/gamification/activity/${userId}`, { token: authToken })
         ]);
-        setRewards(rewardsData);
+        // /rewards also returns rewards an admin has switched off (the admin
+        // inventory needs them); members can't redeem those, so don't list them.
+        setRewards(rewardsData.filter((reward) => reward.isActive));
         setActivities(activitiesData);
 
         const [badgesData, userBadgesData] = await Promise.all([

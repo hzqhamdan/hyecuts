@@ -36,4 +36,9 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    // BusinessHoursParityTest reads the frontend's opening hours; declaring the
+    // file as an input makes a frontend-only hours change re-run the tests
+    // instead of Gradle reusing a stale up-to-date result.
+    inputs.files(fileTree('..') { include 'src/data/hyecuts.ts' })
+        .withPropertyName('frontendBusinessHours')
 }
