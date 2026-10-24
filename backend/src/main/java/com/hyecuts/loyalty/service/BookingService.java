@@ -55,7 +55,7 @@ public class BookingService {
         // service-level guard against a caller skipping that.
         if (booking.getUser() == null) {
             if (isBlank(booking.getGuestName()) || isBlank(booking.getGuestEmail()) || isBlank(booking.getGuestPhone())) {
-                throw new RuntimeException("Guest bookings require a name, email, and phone number.");
+                throw new BookingRuleException("Guest bookings require a name, email, and phone number.");
             }
         } else {
             LocalDateTime restrictedUntil = booking.getUser().getBookingRestrictedUntil();
@@ -64,19 +64,19 @@ public class BookingService {
             }
         }
         if (booking.getService() == null) {
-            throw new RuntimeException("Service not found");
+            throw new BookingRuleException("Service not found");
         }
         if (booking.getAppointmentTime() != null && booking.getAppointmentTime().isBefore(java.time.LocalDateTime.now())) {
-            throw new RuntimeException("Appointment time cannot be in the past");
+            throw new BookingRuleException("Appointment time cannot be in the past");
         }
         if (booking.getAppointmentTime() != null && !BusinessHours.isOpenAt(booking.getAppointmentTime())) {
-            throw new RuntimeException("That time is outside opening hours.");
+            throw new BookingRuleException("That time is outside opening hours.");
         }
         if (!Boolean.TRUE.equals(booking.getService().getIsActive())) {
-            throw new RuntimeException("Service is not active");
+            throw new BookingRuleException("Service is not active");
         }
         if (bookingRepository.existsByAppointmentTimeAndStatusNot(booking.getAppointmentTime(), Booking.BookingStatus.CANCELLED)) {
-            throw new RuntimeException("This time slot is already booked.");
+            throw new BookingRuleException("This time slot is already booked.");
         }
         try {
             return bookingRepository.save(booking);
@@ -85,7 +85,7 @@ public class BookingService {
             // writes; the unique index on (appointment_time) is what actually
             // prevents the double-booking — this just turns that race into a
             // clean error instead of a raw constraint-violation message.
-            throw new RuntimeException("This time slot is already booked.");
+            throw new BookingRuleException("This time slot is already booked.");
         }
     }
 
@@ -110,14 +110,14 @@ public class BookingService {
     @Transactional
     public Booking completeBooking(UUID bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new BookingRuleException("Booking not found"));
 
         if (booking.getStatus() == Booking.BookingStatus.COMPLETED) {
-            throw new RuntimeException("Booking is already completed.");
+            throw new BookingRuleException("Booking is already completed.");
         }
 
         if (booking.getStatus() == Booking.BookingStatus.CANCELLED) {
-            throw new RuntimeException("Cannot complete a cancelled booking.");
+            throw new BookingRuleException("Cannot complete a cancelled booking.");
         }
 
         // Guest bookings (no linked User — see BK-002) have no loyalty
@@ -149,35 +149,35 @@ public class BookingService {
             // the first save() wins here. Throwing rolls back this whole
             // transaction — including the points award and activity log just
             // above — so the loser awards nothing instead of double-paying.
-            throw new RuntimeException("This booking was already completed by another request.");
+            throw new BookingRuleException("This booking was already completed by another request.");
         }
     }
 
     @Transactional
     public Booking rescheduleBooking(UUID bookingId, java.time.LocalDateTime newTime) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new BookingRuleException("Booking not found"));
 
         if (booking.getStatus() == Booking.BookingStatus.COMPLETED || booking.getStatus() == Booking.BookingStatus.CANCELLED) {
-            throw new RuntimeException("Cannot reschedule a completed or cancelled booking.");
+            throw new BookingRuleException("Cannot reschedule a completed or cancelled booking.");
         }
 
         if (newTime != null && newTime.isBefore(java.time.LocalDateTime.now())) {
-            throw new RuntimeException("New appointment time cannot be in the past");
+            throw new BookingRuleException("New appointment time cannot be in the past");
         }
         if (newTime != null && !BusinessHours.isOpenAt(newTime)) {
-            throw new RuntimeException("That time is outside opening hours.");
+            throw new BookingRuleException("That time is outside opening hours.");
         }
 
         // BK-047: without a cap, a single booking can be rescheduled indefinitely,
         // effectively squatting on a rotating slot forever.
         if (booking.getRescheduleCount() >= MAX_RESCHEDULES) {
-            throw new RuntimeException("This booking has already been rescheduled the maximum number of times ("
+            throw new BookingRuleException("This booking has already been rescheduled the maximum number of times ("
                     + MAX_RESCHEDULES + "). Please cancel and book a new appointment.");
         }
 
         if (bookingRepository.existsByAppointmentTimeAndStatusNotAndIdNot(newTime, Booking.BookingStatus.CANCELLED, bookingId)) {
-            throw new RuntimeException("This time slot is already booked.");
+            throw new BookingRuleException("This time slot is already booked.");
         }
 
         booking.setAppointmentTime(newTime);
@@ -185,21 +185,21 @@ public class BookingService {
         try {
             return bookingRepository.save(booking);
         } catch (DataIntegrityViolationException e) {
-            throw new RuntimeException("This time slot is already booked.");
+            throw new BookingRuleException("This time slot is already booked.");
         }
     }
 
     @Transactional
     public Booking cancelBooking(UUID bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new BookingRuleException("Booking not found"));
 
         if (booking.getStatus() == Booking.BookingStatus.COMPLETED) {
-            throw new RuntimeException("Cannot cancel a completed booking.");
+            throw new BookingRuleException("Cannot cancel a completed booking.");
         }
 
         if (booking.getStatus() == Booking.BookingStatus.CANCELLED) {
-            throw new RuntimeException("Booking is already cancelled.");
+            throw new BookingRuleException("Booking is already cancelled.");
         }
 
         // cancellation-policy.md: free more than 24h out, a points penalty
@@ -231,10 +231,10 @@ public class BookingService {
     @Transactional
     public Booking markNoShow(UUID bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new BookingRuleException("Booking not found"));
 
         if (booking.getStatus() != Booking.BookingStatus.PENDING && booking.getStatus() != Booking.BookingStatus.CONFIRMED) {
-            throw new RuntimeException("Only a pending or confirmed booking can be marked as a no-show.");
+            throw new BookingRuleException("Only a pending or confirmed booking can be marked as a no-show.");
         }
 
         booking.setStatus(Booking.BookingStatus.NO_SHOW);

@@ -9,9 +9,10 @@ import com.hyecuts.loyalty.security.CustomUserDetails;
 import com.hyecuts.loyalty.security.RateLimitGuard;
 import com.hyecuts.loyalty.service.BarberServiceService;
 import com.hyecuts.loyalty.service.BookingRestrictedException;
+import com.hyecuts.loyalty.service.BookingRuleException;
 import com.hyecuts.loyalty.service.BookingService;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -21,6 +22,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.UUID;
 
@@ -95,6 +97,9 @@ public class BookingController {
         newBooking.setTotalPriceMyr(service.getPriceMyr());
         newBooking.setStatus(Booking.BookingStatus.PENDING);
 
+        if (isBlank(request.appointmentTime)) {
+            return ResponseEntity.badRequest().body(MALFORMED_TIME);
+        }
         try {
             // Using Spring's default ISO-8601 parsing for LocalDateTime
             newBooking.setAppointmentTime(java.time.LocalDateTime.parse(request.appointmentTime));
@@ -102,9 +107,11 @@ public class BookingController {
             return ResponseEntity.ok(saved);
         } catch (BookingRestrictedException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-        } catch (OptimisticLockingFailureException e) {
-            throw e; // 409 via GlobalExceptionHandler, not the raw Hibernate message
-        } catch (Exception e) {
+        } catch (DateTimeParseException e) {
+            return ResponseEntity.badRequest().body(MALFORMED_TIME);
+        } catch (DataIntegrityViolationException e) {
+            return slotTaken();
+        } catch (BookingRuleException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -148,9 +155,7 @@ public class BookingController {
         try {
             Booking completed = bookingService.completeBooking(bookingId);
             return ResponseEntity.ok(completed);
-        } catch (OptimisticLockingFailureException e) {
-            throw e; // 409 via GlobalExceptionHandler, not the raw Hibernate message
-        } catch (Exception e) {
+        } catch (BookingRuleException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -163,9 +168,7 @@ public class BookingController {
         try {
             Booking updated = bookingService.markNoShow(bookingId);
             return ResponseEntity.ok(updated);
-        } catch (OptimisticLockingFailureException e) {
-            throw e; // 409 via GlobalExceptionHandler, not the raw Hibernate message
-        } catch (Exception e) {
+        } catch (BookingRuleException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -178,16 +181,19 @@ public class BookingController {
     public ResponseEntity<?> rescheduleBooking(@PathVariable UUID bookingId, @RequestBody RescheduleRequest request, @AuthenticationPrincipal CustomUserDetails principal) {
         try {
             requireOwnsBooking(bookingId, principal);
+            if (request == null || isBlank(request.newAppointmentTime)) {
+                return ResponseEntity.badRequest().body(MALFORMED_TIME);
+            }
             java.time.LocalDateTime newTime = java.time.LocalDateTime.parse(
                 request.newAppointmentTime.replace("Z", "").replace("z", "")
             );
             Booking rescheduled = bookingService.rescheduleBooking(bookingId, newTime);
             return ResponseEntity.ok(rescheduled);
-        } catch (AccessDeniedException e) {
-            throw e;
-        } catch (OptimisticLockingFailureException e) {
-            throw e; // 409 via GlobalExceptionHandler, not the raw Hibernate message
-        } catch (Exception e) {
+        } catch (DateTimeParseException e) {
+            return ResponseEntity.badRequest().body(MALFORMED_TIME);
+        } catch (DataIntegrityViolationException e) {
+            return slotTaken();
+        } catch (BookingRuleException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -199,18 +205,14 @@ public class BookingController {
             requireOwnsBooking(bookingId, principal);
             Booking cancelled = bookingService.cancelBooking(bookingId);
             return ResponseEntity.ok(cancelled);
-        } catch (AccessDeniedException e) {
-            throw e;
-        } catch (OptimisticLockingFailureException e) {
-            throw e; // 409 via GlobalExceptionHandler, not the raw Hibernate message
-        } catch (Exception e) {
+        } catch (BookingRuleException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     private void requireOwnsBooking(UUID bookingId, CustomUserDetails principal) {
         Booking booking = bookingService.getBookingById(bookingId)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new BookingRuleException("Booking not found"));
         if (booking.getUser() == null) {
             // Guest booking — there's no "self" to match against, so only an
             // admin (e.g. a call-in cancellation handled by staff) can act on it.
@@ -220,6 +222,14 @@ public class BookingController {
             return;
         }
         AuthorizationUtil.requireSelfOrAdmin(principal, booking.getUser().getId());
+    }
+
+    private static final String MALFORMED_TIME = "Appointment time is missing or malformed; expected YYYY-MM-DDTHH:mm:ss.";
+
+    // The unique index on active appointment times (V5) fires at commit when
+    // two requests race for one slot, after BookingService's own check passed.
+    private static ResponseEntity<String> slotTaken() {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("This time slot is already booked.");
     }
 
     private static boolean isBlank(String s) {

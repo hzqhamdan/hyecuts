@@ -81,7 +81,7 @@ class ConcurrentUpdateResponseTest {
     @Test
     void ordinaryServiceErrorsStillReturn400WithTheirMessage() throws Exception {
         when(bookingService.completeBooking(any(UUID.class)))
-                .thenThrow(new RuntimeException("Booking is already completed."));
+                .thenThrow(new com.hyecuts.loyalty.service.BookingRuleException("Booking is already completed."));
 
         mockMvc.perform(put("/api/bookings/{id}/complete", UUID.randomUUID()))
                 .andExpect(status().isBadRequest())
