@@ -52,7 +52,7 @@ export const RewardPortfolio = ({ rewards, isLoading, onSelectVoucher, activitie
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-luxury-black rounded-full" />
                   <span className="text-[9px] uppercase tracking-widest font-medium">
-                    {reward.minimumTierRequired ? `${t('data.tiers.' + reward.minimumTierRequired)} ` : ''}{t('lounge.any_tier')} Tier
+                    {reward.minTier ? t(`data.tiers.${reward.minTier}`, { defaultValue: reward.minTier }) : t('lounge.any_tier')} Tier
                   </span>
                 </div>
                 <Sparkles className="w-4 h-4 opacity-20 group-hover:opacity-100 transition-opacity" />
@@ -73,7 +73,7 @@ export const RewardPortfolio = ({ rewards, isLoading, onSelectVoucher, activitie
                   {t(`data.rewards.${reward.title}.description`, { defaultValue: reward.description })}
                 </p>
                 <div className="font-mono text-[10px] tracking-widest text-luxury-slate uppercase">
-                  {reward.pointsCost.toString()} {t('lounge.pts')} {reward.stockAvailable !== null && `• ${reward.stockAvailable.toString()} ${t('lounge.left')}`}
+                  {reward.pointsCost.toString()} {t('lounge.pts')} {reward.stockCount !== null && `• ${reward.stockCount.toString()} ${t('lounge.left')}`}
                 </div>
               </div>
             </div>

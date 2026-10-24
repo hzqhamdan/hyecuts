@@ -103,10 +103,10 @@ export function useLoungeData(userId: string, token?: string | null) {
     void fetchData();
   }, [userId, authToken]);
 
-  const handleRedeem = async (rewardId: number) => {
+  const handleRedeem = async (rewardId: string) => {
     setRedemptionStatus('loading');
     try {
-      await api.post(`/rewards/redeem/${userId}/${rewardId.toString()}`, { token: authToken });
+      await api.post(`/rewards/redeem/${userId}/${rewardId}`, { token: authToken });
       setRedemptionStatus('success');
       const profileData = await api.get<LoyaltyProfile>(`/loyalty/profile/${userId}`, { token: authToken });
       setProfile(profileData);

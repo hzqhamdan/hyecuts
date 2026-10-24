@@ -51,7 +51,7 @@ const RewardPortfolio = ({ rewards, isLoading, onRedeem }: RewardPortfolioProps)
                 <div className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 bg-black dark:bg-white rounded-full" />
                   <span className="text-[9px] md:text-[10px] uppercase tracking-widest font-bold">
-                    {reward.minimumTierRequired ? `${t('data.tiers.' + reward.minimumTierRequired)} ` : ''}{t('lounge.any_tier')} Tier
+                    {reward.minTier ? t(`data.tiers.${reward.minTier}`, { defaultValue: reward.minTier }) : t('lounge.any_tier')} Tier
                   </span>
                 </div>
                 <Sparkles className="w-4 h-4 opacity-20 dark:opacity-40 group-hover:opacity-100 transition-opacity" />
@@ -72,7 +72,7 @@ const RewardPortfolio = ({ rewards, isLoading, onRedeem }: RewardPortfolioProps)
                   {t(`data.rewards.${reward.title}.description`, { defaultValue: reward.description })}
                 </p>
                 <div className="font-mono text-[9px] md:text-[10px] tracking-widest text-zinc-500 dark:text-zinc-500 uppercase font-bold">
-                  {(reward.pointsCost ?? 0).toString()} {t('lounge.pts')} {reward.stockAvailable !== null && `• ${(reward.stockAvailable ?? 0).toString()} ${t('lounge.left')}`}
+                  {(reward.pointsCost ?? 0).toString()} {t('lounge.pts')} {reward.stockCount !== null && `• ${reward.stockCount.toString()} ${t('lounge.left')}`}
                 </div>
               </div>
             </div>
