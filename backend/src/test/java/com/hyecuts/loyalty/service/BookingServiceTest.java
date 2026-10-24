@@ -56,6 +56,12 @@ class BookingServiceTest {
     private BarberService testService;
     private Booking testBooking;
 
+    // A future time inside opening hours on any weekday (Friday opens 14:30),
+    // so tests pass whatever time of day they run (BK-052).
+    private static LocalDateTime openSlot(int daysAhead) {
+        return LocalDateTime.now().plusDays(daysAhead).withHour(15).withMinute(0).withSecond(0).withNano(0);
+    }
+
     @BeforeEach
     void setUp() {
         bookingId = UUID.randomUUID();
@@ -78,7 +84,7 @@ class BookingServiceTest {
         testBooking.setId(bookingId);
         testBooking.setUser(testUser);
         testBooking.setService(testService);
-        testBooking.setAppointmentTime(LocalDateTime.now().plusDays(1));
+        testBooking.setAppointmentTime(openSlot(1));
         testBooking.setTotalPriceMyr(BigDecimal.valueOf(30));
         testBooking.setStatus(Booking.BookingStatus.PENDING);
     }
@@ -202,7 +208,7 @@ class BookingServiceTest {
 
     @Test
     void rescheduleBooking_shouldUpdateAppointmentTime() {
-        LocalDateTime newTime = LocalDateTime.now().plusDays(2);
+        LocalDateTime newTime = openSlot(2);
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(testBooking));
         when(bookingRepository.save(any(Booking.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -218,7 +224,7 @@ class BookingServiceTest {
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.empty());
 
         assertThrows(RuntimeException.class,
-                () -> bookingService.rescheduleBooking(bookingId, LocalDateTime.now().plusDays(1)));
+                () -> bookingService.rescheduleBooking(bookingId, openSlot(1)));
     }
 
     @Test
@@ -227,7 +233,7 @@ class BookingServiceTest {
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(testBooking));
 
         RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> bookingService.rescheduleBooking(bookingId, LocalDateTime.now().plusDays(1)));
+                () -> bookingService.rescheduleBooking(bookingId, openSlot(1)));
         assertTrue(ex.getMessage().toLowerCase().contains("cancell"));
     }
 
@@ -237,7 +243,7 @@ class BookingServiceTest {
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(testBooking));
 
         RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> bookingService.rescheduleBooking(bookingId, LocalDateTime.now().plusDays(1)));
+                () -> bookingService.rescheduleBooking(bookingId, openSlot(1)));
         assertTrue(ex.getMessage().toLowerCase().contains("complet"));
     }
 
@@ -264,7 +270,7 @@ class BookingServiceTest {
 
     @Test
     void rescheduleBooking_shouldIncrementRescheduleCount() {
-        LocalDateTime newTime = LocalDateTime.now().plusDays(2);
+        LocalDateTime newTime = openSlot(2);
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(testBooking));
         when(bookingRepository.save(any(Booking.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -281,7 +287,7 @@ class BookingServiceTest {
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(testBooking));
 
         RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> bookingService.rescheduleBooking(bookingId, LocalDateTime.now().plusDays(2)));
+                () -> bookingService.rescheduleBooking(bookingId, openSlot(2)));
         assertTrue(ex.getMessage().toLowerCase().contains("maximum"));
         verify(bookingRepository, never()).save(any(Booking.class));
     }
@@ -586,5 +592,36 @@ class BookingServiceTest {
         List<Booking> bookings = bookingService.getAllBookings(pageable);
 
         assertTrue(bookings.isEmpty());
+    }
+
+    @Test
+    void createBooking_shouldRejectATimeBeforeFridayOpening() {
+        testBooking.setAppointmentTime(nextFriday().atTime(12, 0));
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> bookingService.createBooking(testBooking));
+        assertTrue(ex.getMessage().contains("opening hours"));
+        verify(bookingRepository, never()).save(any(Booking.class));
+    }
+
+    @Test
+    void createBooking_shouldRejectATimeAtOrAfterClosing() {
+        testBooking.setAppointmentTime(openSlot(1).withHour(22));
+
+        assertThrows(RuntimeException.class, () -> bookingService.createBooking(testBooking));
+        verify(bookingRepository, never()).save(any(Booking.class));
+    }
+
+    @Test
+    void rescheduleBooking_shouldRejectATimeOutsideOpeningHours() {
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(testBooking));
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> bookingService.rescheduleBooking(bookingId, openSlot(2).withHour(9)));
+        assertTrue(ex.getMessage().contains("opening hours"));
+        verify(bookingRepository, never()).save(any(Booking.class));
+    }
+
+    private static java.time.LocalDate nextFriday() {
+        return java.time.LocalDate.now().with(java.time.temporal.TemporalAdjusters.next(java.time.DayOfWeek.FRIDAY));
     }
 }

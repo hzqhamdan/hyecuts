@@ -69,6 +69,9 @@ public class BookingService {
         if (booking.getAppointmentTime() != null && booking.getAppointmentTime().isBefore(java.time.LocalDateTime.now())) {
             throw new RuntimeException("Appointment time cannot be in the past");
         }
+        if (booking.getAppointmentTime() != null && !BusinessHours.isOpenAt(booking.getAppointmentTime())) {
+            throw new RuntimeException("That time is outside opening hours.");
+        }
         if (!Boolean.TRUE.equals(booking.getService().getIsActive())) {
             throw new RuntimeException("Service is not active");
         }
@@ -161,6 +164,9 @@ public class BookingService {
 
         if (newTime != null && newTime.isBefore(java.time.LocalDateTime.now())) {
             throw new RuntimeException("New appointment time cannot be in the past");
+        }
+        if (newTime != null && !BusinessHours.isOpenAt(newTime)) {
+            throw new RuntimeException("That time is outside opening hours.");
         }
 
         // BK-047: without a cap, a single booking can be rescheduled indefinitely,
