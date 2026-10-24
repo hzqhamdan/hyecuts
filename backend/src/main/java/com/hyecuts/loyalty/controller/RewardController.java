@@ -5,6 +5,7 @@ import com.hyecuts.loyalty.model.Voucher;
 import com.hyecuts.loyalty.security.AuthorizationUtil;
 import com.hyecuts.loyalty.security.CustomUserDetails;
 import com.hyecuts.loyalty.service.RewardService;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +39,8 @@ public class RewardController {
         try {
             rewardService.redeemReward(userId, rewardId);
             return ResponseEntity.ok("Reward redeemed successfully");
+        } catch (OptimisticLockingFailureException e) {
+            throw e; // 409 via GlobalExceptionHandler, not the raw Hibernate message
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

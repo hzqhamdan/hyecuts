@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ChevronRight, ChevronDown, Calendar, Clock, CheckCircle, ShieldCheck, UserCircle, UserPlus, Globe } from 'lucide-react';
-import { BOOKING_POLICIES, BUSINESS_HOURS, HYECUTS, ALL_SERVICES, SERVICE_CATEGORIES, TEAM_MEMBERS, AVAILABLE_TIMES, type ServiceItem } from '../../data/hyecuts';
+import { BOOKING_POLICIES, BUSINESS_HOURS, HYECUTS, ALL_SERVICES, SERVICE_CATEGORIES, TEAM_MEMBERS, AVAILABLE_TIMES, timesForDay, type ServiceItem } from '../../data/hyecuts';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../api/client';
 import { toLocalIsoString } from '../../utils/datetime';
@@ -58,6 +58,11 @@ export default function BookingFlow() {
     guestPhone, setGuestPhone,
     reset
   } = useBookingStore();
+
+  // Only the slots inside the chosen day's opening hours (Friday opens at
+  // 2:30 PM). Before a day is picked the greyed-out grid shows every slot.
+  const chosenDay = DATES.find((d) => d.id === selectedDate)?.day;
+  const visibleTimes = chosenDay ? timesForDay(chosenDay) : AVAILABLE_TIMES;
 
   const isGuestDetailsValid = guestName.trim() !== ''
     && guestPhone.trim() !== ''
@@ -419,7 +424,11 @@ export default function BookingFlow() {
                     {DATES.map((date) => (
                       <div
                         key={date.id}
-                        onClick={() => { setSelectedDate(date.id); }}
+                        onClick={() => {
+                          setSelectedDate(date.id);
+                          // A time picked for another day may be outside this day's hours.
+                          if (selectedTime && !timesForDay(date.day).includes(selectedTime)) setSelectedTime(null);
+                        }}
                         className={`min-w-[120px] snap-start flex-shrink-0 p-4 border-2 text-center cursor-pointer transition-all ${
                           selectedDate === date.id 
                             ? 'border-studio-black dark:border-studio-gold bg-studio-black dark:bg-studio-gold text-studio-white dark:text-studio-black font-bold' 
@@ -438,7 +447,7 @@ export default function BookingFlow() {
                     <Clock className="w-3 h-3" /> {t('booking.time')}
                   </h4>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {AVAILABLE_TIMES.map((time) => {
+                    {visibleTimes.map((time) => {
                       const isBooked = bookedTimes.includes(time);
                       return (
                         <div

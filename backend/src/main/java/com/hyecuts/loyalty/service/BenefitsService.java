@@ -101,8 +101,13 @@ public class BenefitsService {
         user.setLifetimePoints(user.getLifetimePoints() + bonusPoints);
         user.setBirthdayBonusYear(LocalDate.now().getYear());
 
-        Tier newTier = Tier.forLifetimePoints(user.getLifetimePoints());
-        user.setTier(newTier);
+        // Promote-only, like LoyaltyService#addPointsToUser (LOY-014): this
+        // used to assign the tier straight from lifetimePoints, which demoted
+        // a member an admin had placed above what their points justify.
+        Tier naturalTier = Tier.forLifetimePoints(user.getLifetimePoints());
+        if (user.getTier() == null || naturalTier.ordinal() > user.getTier().ordinal()) {
+            user.setTier(naturalTier);
+        }
 
         userRepository.save(user);
         return bonusPoints;

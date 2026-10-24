@@ -1,6 +1,7 @@
 package com.hyecuts.loyalty.web;
 
 import com.hyecuts.loyalty.exception.EmailAlreadyInUseException;
+import com.hyecuts.loyalty.exception.InvalidRequestException;
 import com.hyecuts.loyalty.exception.ResourceNotFoundException;
 import com.hyecuts.loyalty.exception.UsernameAlreadyInUseException;
 import com.hyecuts.loyalty.security.RateLimitExceededException;
@@ -57,6 +58,11 @@ public class GlobalExceptionHandler {
                 (a, b) -> a,
                 LinkedHashMap::new));
         return build(HttpStatus.BAD_REQUEST, "Bad Request", "Validation failed", fields);
+    }
+
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<ApiError> handleInvalidRequest(InvalidRequestException ex) {
+        return build(HttpStatus.BAD_REQUEST, "Bad Request", ex.getMessage(), null);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

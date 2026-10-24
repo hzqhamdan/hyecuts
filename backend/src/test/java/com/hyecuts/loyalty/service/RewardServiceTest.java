@@ -1,5 +1,6 @@
 package com.hyecuts.loyalty.service;
 
+import com.hyecuts.loyalty.exception.InvalidRequestException;
 import com.hyecuts.loyalty.model.ActivityLog;
 import com.hyecuts.loyalty.model.Reward;
 import com.hyecuts.loyalty.model.Tier;
@@ -316,5 +317,110 @@ public class RewardServiceTest {
 
         assertThrows(IllegalStateException.class, () -> rewardService.redeemReward(userId, rewardId));
         verify(voucherRepository, never()).save(any(Voucher.class));
+    }
+
+    private Reward newReward() {
+        Reward reward = new Reward();
+        reward.setTitle("Free Hair Wash");
+        reward.setPointsCost(300);
+        return reward;
+    }
+
+    private void assertRejected(Reward reward, String messageFragment) {
+        InvalidRequestException ex = assertThrows(InvalidRequestException.class,
+                () -> rewardService.createReward(reward));
+        assertTrue(ex.getMessage().contains(messageFragment), ex.getMessage());
+        verify(rewardRepository, never()).save(any(Reward.class));
+    }
+
+    @Test
+    void createReward_savesAValidReward() {
+        when(rewardRepository.save(any(Reward.class))).thenAnswer(inv -> inv.getArgument(0));
+        Reward reward = newReward();
+        reward.setTitle("  Free Hair Wash  ");
+        reward.setMinTier("artisan");
+        reward.setStockCount(10);
+
+        Reward saved = rewardService.createReward(reward);
+
+        assertEquals("Free Hair Wash", saved.getTitle());
+        assertEquals("ARTISAN", saved.getMinTier());
+        assertEquals(10, saved.getStockCount());
+        assertTrue(saved.getIsActive());
+    }
+
+    @Test
+    void createReward_allowsAFreeUnlimitedRewardWithNoTier() {
+        when(rewardRepository.save(any(Reward.class))).thenAnswer(inv -> inv.getArgument(0));
+        Reward reward = newReward();
+        reward.setPointsCost(0);
+
+        Reward saved = rewardService.createReward(reward);
+
+        assertEquals(0, saved.getPointsCost());
+        assertNull(saved.getStockCount());
+        assertNull(saved.getMinTier());
+    }
+
+    @Test
+    void createReward_ignoresAClientSuppliedIdSoItCannotOverwriteAnExistingReward() {
+        when(rewardRepository.save(any(Reward.class))).thenAnswer(inv -> inv.getArgument(0));
+        Reward reward = newReward();
+        reward.setId(rewardId);
+
+        Reward saved = rewardService.createReward(reward);
+
+        assertNull(saved.getId());
+    }
+
+    @Test
+    void createReward_keepsAnExplicitlyInactiveReward() {
+        when(rewardRepository.save(any(Reward.class))).thenAnswer(inv -> inv.getArgument(0));
+        Reward reward = newReward();
+        reward.setIsActive(false);
+
+        assertFalse(rewardService.createReward(reward).getIsActive());
+    }
+
+    @Test
+    void createReward_rejectsAMissingTitle() {
+        Reward reward = newReward();
+        reward.setTitle(null);
+        assertRejected(reward, "title");
+    }
+
+    @Test
+    void createReward_rejectsABlankTitle() {
+        Reward reward = newReward();
+        reward.setTitle("   ");
+        assertRejected(reward, "title");
+    }
+
+    @Test
+    void createReward_rejectsANegativeCost() {
+        Reward reward = newReward();
+        reward.setPointsCost(-1);
+        assertRejected(reward, "Points cost");
+    }
+
+    @Test
+    void createReward_rejectsAMissingCost() {
+        Reward reward = newReward();
+        reward.setPointsCost(null);
+        assertRejected(reward, "Points cost");
+    }
+
+    @Test
+    void createReward_rejectsNegativeStock() {
+        Reward reward = newReward();
+        reward.setStockCount(-5);
+        assertRejected(reward, "Stock");
+    }
+
+    @Test
+    void createReward_rejectsAnUnknownTier() {
+        Reward reward = newReward();
+        reward.setMinTier("GOLD");
+        assertRejected(reward, "GOLD");
     }
 }

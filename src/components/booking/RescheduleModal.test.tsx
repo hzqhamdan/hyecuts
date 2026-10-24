@@ -75,6 +75,30 @@ describe('RescheduleModal', () => {
     expect(mockedGet).toHaveBeenCalledWith('/bookings/date/2026-10-23', { token: 'jwt-token' });
   });
 
+  it('only offers Friday slots from its 2:30 PM opening', async () => {
+    const user = userEvent.setup();
+    renderModal();
+
+    await user.click(screen.getByRole('button', { name: 'Friday' }));
+
+    expect(screen.queryByRole('button', { name: /^12:00 PM/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^02:00 PM/ })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^02:30 PM/ })).toBeInTheDocument();
+  });
+
+  it('drops a noon pick when switching to Friday', async () => {
+    const user = userEvent.setup();
+    renderModal();
+
+    await user.click(screen.getByRole('button', { name: 'Monday' }));
+    await user.click(screen.getByRole('button', { name: /^12:00 PM/ }));
+    expect(confirmButton()).toBeEnabled();
+
+    await user.click(screen.getByRole('button', { name: 'Friday' }));
+
+    expect(confirmButton()).toBeDisabled();
+  });
+
   it('disables slots held by pending or confirmed bookings, and only those', async () => {
     const user = userEvent.setup();
     mockedGet.mockResolvedValue([

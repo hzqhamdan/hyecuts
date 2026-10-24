@@ -11,6 +11,7 @@ import com.hyecuts.loyalty.service.BarberServiceService;
 import com.hyecuts.loyalty.service.BookingRestrictedException;
 import com.hyecuts.loyalty.service.BookingService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -101,6 +102,8 @@ public class BookingController {
             return ResponseEntity.ok(saved);
         } catch (BookingRestrictedException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (OptimisticLockingFailureException e) {
+            throw e; // 409 via GlobalExceptionHandler, not the raw Hibernate message
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -145,6 +148,8 @@ public class BookingController {
         try {
             Booking completed = bookingService.completeBooking(bookingId);
             return ResponseEntity.ok(completed);
+        } catch (OptimisticLockingFailureException e) {
+            throw e; // 409 via GlobalExceptionHandler, not the raw Hibernate message
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -158,6 +163,8 @@ public class BookingController {
         try {
             Booking updated = bookingService.markNoShow(bookingId);
             return ResponseEntity.ok(updated);
+        } catch (OptimisticLockingFailureException e) {
+            throw e; // 409 via GlobalExceptionHandler, not the raw Hibernate message
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -178,6 +185,8 @@ public class BookingController {
             return ResponseEntity.ok(rescheduled);
         } catch (AccessDeniedException e) {
             throw e;
+        } catch (OptimisticLockingFailureException e) {
+            throw e; // 409 via GlobalExceptionHandler, not the raw Hibernate message
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -192,6 +201,8 @@ public class BookingController {
             return ResponseEntity.ok(cancelled);
         } catch (AccessDeniedException e) {
             throw e;
+        } catch (OptimisticLockingFailureException e) {
+            throw e; // 409 via GlobalExceptionHandler, not the raw Hibernate message
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

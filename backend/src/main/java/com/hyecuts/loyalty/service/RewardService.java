@@ -1,5 +1,6 @@
 package com.hyecuts.loyalty.service;
 
+import com.hyecuts.loyalty.exception.InvalidRequestException;
 import com.hyecuts.loyalty.model.*;
 import com.hyecuts.loyalty.repository.*;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +36,31 @@ public class RewardService {
         return rewardRepository.findAll();
     }
 
+    // RW-030: this used to save the request body as-is. A negative cost, a
+    // missing title or a nonsense tier went straight in, and a body carrying
+    // an existing reward's id overwrote that reward instead of creating one.
     public Reward createReward(Reward reward) {
+        if (reward.getTitle() == null || reward.getTitle().isBlank()) {
+            throw new InvalidRequestException("Reward title is required.");
+        }
+        if (reward.getPointsCost() == null || reward.getPointsCost() < 0) {
+            throw new InvalidRequestException("Points cost must be zero or more.");
+        }
+        if (reward.getStockCount() != null && reward.getStockCount() < 0) {
+            throw new InvalidRequestException("Stock count must be zero or more, or left empty for unlimited.");
+        }
+        if (reward.getMinTier() != null && !reward.getMinTier().isBlank()) {
+            try {
+                reward.setMinTier(Tier.valueOf(reward.getMinTier().trim().toUpperCase()).name());
+            } catch (IllegalArgumentException e) {
+                throw new InvalidRequestException("Unknown tier: " + reward.getMinTier());
+            }
+        }
+        reward.setId(null);
+        reward.setTitle(reward.getTitle().trim());
+        if (reward.getIsActive() == null) {
+            reward.setIsActive(true);
+        }
         return rewardRepository.save(reward);
     }
 

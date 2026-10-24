@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, Clock } from 'lucide-react';
 import { api } from '../../api/client';
 import { nextDateForWeekday, toLocalIsoString } from '../../utils/datetime';
-import { BUSINESS_HOURS, AVAILABLE_TIMES } from '../../data/hyecuts';
+import { BUSINESS_HOURS, timesForDay } from '../../data/hyecuts';
 
 interface Booking {
   id: string;
@@ -118,7 +118,11 @@ export default function RescheduleModal({ isOpen, onClose, bookingId, onSuccess,
                 {BUSINESS_HOURS.map((slot) => (
                   <button
                     key={slot.day}
-                    onClick={() => { setSelectedDate(slot.day); }}
+                    onClick={() => {
+                      setSelectedDate(slot.day);
+                      // A time picked for another day may be outside this day's hours.
+                      if (selectedTime && !timesForDay(slot.day).includes(selectedTime)) setSelectedTime(null);
+                    }}
                     className={`p-3 border text-xs uppercase ${selectedDate === slot.day ? 'bg-black text-white dark:bg-white dark:text-black' : 'border-zinc-200 dark:border-zinc-800'}`}
                   >
                     {slot.day}
@@ -132,7 +136,7 @@ export default function RescheduleModal({ isOpen, onClose, bookingId, onSuccess,
                 <Clock className="w-3 h-3" /> Select New Time
               </label>
               <div className="grid grid-cols-4 gap-2">
-                {AVAILABLE_TIMES.map((time) => {
+                {(selectedDate ? timesForDay(selectedDate) : []).map((time) => {
                     const isBooked = bookedTimes.includes(time);
                     return (
                         <button
