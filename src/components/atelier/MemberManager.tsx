@@ -166,13 +166,13 @@ export function MemberManager() {
                 </div>
                 <div className="p-8 bg-white dark:bg-[#1A1A1A] text-center">
                   <p className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2">{t('lounge.tier_label')}</p>
-                  <p className="font-serif text-3xl text-[#B8A070]">{t(`data.tiers.${selectedMember.tier ?? 'MEMBER'}`)}</p>
+                  <p className="font-serif text-3xl text-gold">{t(`data.tiers.${selectedMember.tier ?? 'MEMBER'}`)}</p>
                 </div>
               </div>
 
               <section className="space-y-8">
                 <div className="flex items-center gap-3 border-b border-black dark:border-white pb-4">
-                  <Shield size={16} className="text-[#B8A070]" />
+                  <Shield size={16} className="text-gold" />
                   <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-black dark:text-white">{t('atelier.members.adjust_points', { defaultValue: 'Manual Adjustment' })}</h4>
                 </div>
                 <div className="space-y-6">

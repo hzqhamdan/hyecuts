@@ -322,7 +322,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                           {['straight', 'wavy', 'curly', 'coily'].map((type) => (
                             <label key={type} className="flex items-center gap-3 cursor-pointer group">
                               <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ${formData.hairType === type ? 'border-black dark:border-white' : 'border-zinc-300 dark:border-zinc-700 group-hover:border-black/50 dark:group-hover:border-white/50'}`}>
-                                {formData.hairType === type && <div className="w-2 h-2 bg-black dark:bg-[#B8A070] rounded-full" />}
+                                {formData.hairType === type && <div className="w-2 h-2 bg-black dark:bg-gold rounded-full" />}
                               </div>
                               <span className="text-sm">{t(`profile_modal.hair.type_options.${type}`)}</span>
                               <input type="radio" name="hairType" value={type} checked={formData.hairType === type} onChange={() => setFormData({ ...formData, hairType: type })} className="hidden" />
@@ -337,7 +337,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                           {['short', 'medium', 'long'].map((len) => (
                             <label key={len} className="flex items-center gap-3 cursor-pointer group">
                               <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ${formData.hairLength === len ? 'border-black dark:border-white' : 'border-zinc-300 dark:border-zinc-700 group-hover:border-black/50 dark:group-hover:border-white/50'}`}>
-                                {formData.hairLength === len && <div className="w-2 h-2 bg-black dark:bg-[#B8A070] rounded-full" />}
+                                {formData.hairLength === len && <div className="w-2 h-2 bg-black dark:bg-gold rounded-full" />}
                               </div>
                               <span className="text-sm">{t(`profile_modal.hair.length_options.${len}`)}</span>
                               <input type="radio" name="hairLength" value={len} checked={formData.hairLength === len} onChange={() => setFormData({ ...formData, hairLength: len })} className="hidden" />
@@ -352,7 +352,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                           {['normal', 'dry', 'oily', 'sensitive'].map((s) => (
                             <label key={s} className="flex items-center gap-3 cursor-pointer group">
                               <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ${formData.scalp === s ? 'border-black dark:border-white' : 'border-zinc-300 dark:border-zinc-700 group-hover:border-black/50 dark:group-hover:border-white/50'}`}>
-                                {formData.scalp === s && <div className="w-2 h-2 bg-black dark:bg-[#B8A070] rounded-full" />}
+                                {formData.scalp === s && <div className="w-2 h-2 bg-black dark:bg-gold rounded-full" />}
                               </div>
                               <span className="text-sm">{t(`profile_modal.hair.scalp_options.${s}`)}</span>
                               <input type="radio" name="scalp" value={s} checked={formData.scalp === s} onChange={() => setFormData({ ...formData, scalp: s })} className="hidden" />

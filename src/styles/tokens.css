@@ -1,0 +1,134 @@
+/* Hyecuts Studio — generated from the design system's tokens.json
+ *
+ * Source of truth: https://claude.ai/artifact/FEKGTS8B1ghdDtqFcthnNA (project/tokens.json)
+ * Edit the design system, then regenerate this file. Do not hand-tune values here.
+ *
+ * Every palette colour is declared once as an unprefixed RGB triple (`--ink-rgb: 26 26 26`)
+ * and exposed as a ready colour (`--ink`). The triple is what tailwind.config.js consumes,
+ * so `text-ink/60` and the other alpha modifiers work; the ready colour is for plain CSS,
+ * SVG attributes and Recharts props. The `html.dark` block redefines only the triples, so
+ * both forms follow the theme.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Brand — tailwind.config.js `studio.*`, kept exact */
+  --studio-black-rgb: 26 26 26;
+  --studio-white-rgb: 250 250 250;
+  --studio-slate-rgb: 107 107 107;
+  --studio-gold-rgb: 184 160 112;
+  --gold-tint-rgb: 212 196 168;
+
+  /* Surfaces */
+  --surface-page-rgb: 250 250 250;
+  --surface-card-rgb: 255 255 255;
+  --surface-sunken-rgb: 244 244 245;
+
+  /* Ink */
+  --ink-rgb: 26 26 26;
+  --ink-muted-rgb: 113 113 122;
+  --ink-faint-rgb: 161 161 170;
+  --ink-inverse-rgb: 250 250 250;
+
+  /* Edges and controls */
+  --hairline-strong-rgb: 228 228 231;
+  --interactive-rgb: 26 26 26;
+  --interactive-hover-rgb: 39 39 42;
+
+  /* Status */
+  --status-success-rgb: 22 163 74;
+  --status-success-ground-rgb: 240 253 244;
+  --status-danger-rgb: 220 38 38;
+  --status-danger-ground-rgb: 254 242 242;
+
+  /* Chart series — src/components/atelier/OverviewView.tsx COLORS */
+  --chart-1-rgb: 184 160 112;
+  --chart-2-rgb: 107 107 107;
+  --chart-3-rgb: 212 196 168;
+  --chart-4-rgb: 138 138 138;
+  --chart-5-rgb: 74 74 74;
+
+  /* Alpha tokens — the 10% rule that draws nearly every edge, and the two materials */
+  --hairline: rgb(0 0 0 / 0.1);
+  --scrim: rgb(26 26 26 / 0.8);
+  --chrome-translucent: rgb(255 255 255 / 0.7);
+
+  /* Ready colours, derived from the triples above */
+  --studio-black: rgb(var(--studio-black-rgb));
+  --studio-white: rgb(var(--studio-white-rgb));
+  --studio-slate: rgb(var(--studio-slate-rgb));
+  --studio-gold: rgb(var(--studio-gold-rgb));
+  --gold-tint: rgb(var(--gold-tint-rgb));
+  --surface-page: rgb(var(--surface-page-rgb));
+  --surface-card: rgb(var(--surface-card-rgb));
+  --surface-sunken: rgb(var(--surface-sunken-rgb));
+  --ink: rgb(var(--ink-rgb));
+  --ink-muted: rgb(var(--ink-muted-rgb));
+  --ink-faint: rgb(var(--ink-faint-rgb));
+  --ink-inverse: rgb(var(--ink-inverse-rgb));
+  --hairline-strong: rgb(var(--hairline-strong-rgb));
+  --interactive: rgb(var(--interactive-rgb));
+  --interactive-hover: rgb(var(--interactive-hover-rgb));
+  --status-success: rgb(var(--status-success-rgb));
+  --status-success-ground: rgb(var(--status-success-ground-rgb));
+  --status-danger: rgb(var(--status-danger-rgb));
+  --status-danger-ground: rgb(var(--status-danger-ground-rgb));
+  --chart-1: rgb(var(--chart-1-rgb));
+  --chart-2: rgb(var(--chart-2-rgb));
+  --chart-3: rgb(var(--chart-3-rgb));
+  --chart-4: rgb(var(--chart-4-rgb));
+  --chart-5: rgb(var(--chart-5-rgb));
+
+  /* Type */
+  --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Spacing — Tailwind's scale as the app uses it, plus the studio's own measures */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --measure-lounge: 640px;
+  --measure-admin: 1200px;
+
+  /* Radius — square by default */
+  --radius-none: 0;
+  --radius-sm: 2px;
+  --radius-full: 9999px;
+
+  /* Shadow — edges, not elevation */
+  --shadow-none: none;
+  --shadow-overlay: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+}
+
+html.dark {
+  color-scheme: dark;
+
+  --surface-page-rgb: 26 26 26;
+  --surface-card-rgb: 26 26 26;
+  --surface-sunken-rgb: 24 24 27;
+
+  --ink-rgb: 244 244 245;
+  --ink-muted-rgb: 161 161 170;
+  --ink-faint-rgb: 113 113 122;
+  --ink-inverse-rgb: 26 26 26;
+
+  --hairline-strong-rgb: 63 63 70;
+  --interactive-rgb: 250 250 250;
+
+  --status-success-rgb: 74 222 128;
+  --status-success-ground-rgb: 20 83 45;
+  --status-danger-rgb: 248 113 113;
+  --status-danger-ground-rgb: 127 29 29;
+
+  --hairline: rgb(255 255 255 / 0.1);
+  --scrim: rgb(0 0 0 / 0.8);
+  --chrome-translucent: rgb(26 26 26 / 0.7);
+}

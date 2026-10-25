@@ -43,7 +43,7 @@ const MissionsPanel = ({ missions, missionProgress }: MissionsPanelProps) => {
                               initial={{ width: 0 }}
                               animate={{ width: `${Math.min(100, ((prog.currentProgress ?? 0) / (mission.requiredCount || 1)) * 100)}%` }}
                               transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
-                              className="absolute top-0 left-0 h-full bg-black dark:bg-[#B8A070]"
+                              className="absolute top-0 left-0 h-full bg-black dark:bg-gold"
                             />
                           </div>
                           <div className="text-[9px] md:text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mt-2 flex justify-between items-center font-bold">

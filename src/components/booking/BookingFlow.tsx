@@ -330,17 +330,17 @@ export default function BookingFlow() {
                                         !isSelectable
                                           ? 'opacity-40 cursor-not-allowed border-transparent'
                                           : selectedService === service.name
-                                          ? '!border-[#B8A070] bg-white dark:bg-[#1A1A1A] cursor-pointer'
+                                          ? '!border-gold bg-white dark:bg-[#1A1A1A] cursor-pointer'
                                           : 'border-transparent dark:border-transparent hover:border-zinc-300 dark:hover:border-zinc-700 cursor-pointer'
                                       }`}
                                     >
                                       <div className="flex justify-between items-start mb-1 gap-4">
                                         <div>
-                                          <h4 className={`font-serif text-base sm:text-lg uppercase tracking-tight transition-colors ${selectedService === service.name ? '!text-[#B8A070]' : 'text-black dark:text-white'}`}>
+                                          <h4 className={`font-serif text-base sm:text-lg uppercase tracking-tight transition-colors ${selectedService === service.name ? '!text-gold' : 'text-black dark:text-white'}`}>
                                             {t(`data.services.${service.name}`)}
                                           </h4>
                                         </div>
-                                        <span className={`font-mono text-[10px] sm:text-xs whitespace-nowrap font-bold transition-colors ${selectedService === service.name ? '!text-[#B8A070]' : 'text-black dark:text-white'}`}>
+                                        <span className={`font-mono text-[10px] sm:text-xs whitespace-nowrap font-bold transition-colors ${selectedService === service.name ? '!text-gold' : 'text-black dark:text-white'}`}>
                                           {service.price}
                                         </span>
                                       </div>
@@ -516,7 +516,7 @@ export default function BookingFlow() {
 
                   <div className="pt-6 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
                     <div className="flex items-center gap-2 text-black dark:text-white font-bold uppercase tracking-widest text-[9px] mb-2">
-                      <ShieldCheck className="w-4 h-4 text-black dark:text-[#B8A070]" />
+                      <ShieldCheck className="w-4 h-4 text-black dark:text-gold" />
                       {t('landing.policy_2')}
                     </div>
                     {BOOKING_POLICIES.slice(0, 3).map((policy, idx) => (

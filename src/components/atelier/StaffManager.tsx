@@ -61,7 +61,7 @@ export function StaffManager() {
             onClick={() => setSelectedStaff(member)}
           >
             <div className="absolute top-10 right-10">
-              <ShieldCheck size={16} className={member.isActive ? 'text-[#B8A070]' : 'text-zinc-200 dark:text-zinc-700'} />
+              <ShieldCheck size={16} className={member.isActive ? 'text-gold' : 'text-zinc-200 dark:text-zinc-700'} />
             </div>
             
             <div className="w-16 h-16 rounded-full bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center text-zinc-300 dark:text-zinc-600 mb-8 group-hover:bg-black dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-black transition-colors">
@@ -112,14 +112,14 @@ export function StaffManager() {
                       onChange={e => setSelectedStaff({...selectedStaff, name: e.target.value})}
                       className="font-serif text-4xl italic focus:outline-none w-full bg-transparent text-black dark:text-white border-b border-transparent focus:border-zinc-200"
                     />
-                    <p className="text-[10px] uppercase tracking-[0.3em] text-[#B8A070] font-bold">{t(`data.roles.${selectedStaff.role}`, { defaultValue: selectedStaff.role })}</p>
+                    <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-bold">{t(`data.roles.${selectedStaff.role}`, { defaultValue: selectedStaff.role })}</p>
                   </div>
                 </header>
 
                 <section className="space-y-8">
                   <div className="flex items-center justify-between">
                     <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-zinc-400 dark:text-zinc-500">{t('atelier.staff.availability', { defaultValue: 'Availability Schedule' })}</h4>
-                    <button className="text-[9px] uppercase tracking-widest text-[#B8A070] font-bold hover:underline">{t('atelier.staff.reset_default', { defaultValue: 'Reset to Studio Default' })}</button>
+                    <button className="text-[9px] uppercase tracking-widest text-gold font-bold hover:underline">{t('atelier.staff.reset_default', { defaultValue: 'Reset to Studio Default' })}</button>
                   </div>
 
                   <div className="grid grid-cols-1 gap-4">

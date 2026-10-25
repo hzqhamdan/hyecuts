@@ -195,7 +195,7 @@ export default function AtelierDashboard() {
             </button>
             <div className="flex items-center gap-4 p-4 rounded-none bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800">
               <div className="relative">
-                <div className="w-1 h-1 bg-[#B8A070] rounded-full absolute -top-1 -right-1 border border-white dark:border-black" />
+                <div className="w-1 h-1 bg-gold rounded-full absolute -top-1 -right-1 border border-white dark:border-black" />
                 <ShieldCheck size={14} className="text-zinc-400 dark:text-zinc-500" />
               </div>
               <div className="text-[10px] uppercase tracking-widest">

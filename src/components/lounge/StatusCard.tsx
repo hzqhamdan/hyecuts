@@ -33,7 +33,7 @@ const StatusCard = ({ profile, isLoading, progressData, tierLabel }: StatusCardP
             <motion.path
               d="M 24 96 A 72 72 0 0 1 168 96"
               stroke="currentColor" 
-              className="text-black dark:text-[#B8A070]"
+              className="text-black dark:text-gold"
               strokeWidth="1"
               fill="transparent"
               strokeDasharray="226.2"
