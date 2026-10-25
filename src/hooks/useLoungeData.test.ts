@@ -39,4 +39,22 @@ describe('useLoungeData', () => {
 
     expect(result.current.rewards.map((r) => r.id)).toEqual(['on']);
   });
+
+  it('lists daily, weekly and quest missions', async () => {
+    const base = { description: '', rewardPoints: 10, targetAction: 'BOOK', requiredCount: 1 };
+    mockedGet.mockImplementation((path: string) => {
+      const type = /^\/gamification\/missions\/type\/(\w+)$/.exec(path)?.[1];
+      if (type) return Promise.resolve([{ ...base, id: type.length, title: type, type }]);
+      if (path.startsWith('/loyalty/profile/')) {
+        return Promise.resolve({ id: 'u-1', email: 'member@example.com', currentPoints: 0, tier: 'MEMBER' });
+      }
+      return Promise.resolve([]);
+    });
+
+    const { result } = renderHook(() => useLoungeData('u-1', 'token'));
+
+    await waitFor(() => { expect(result.current.isLoading).toBe(false); });
+
+    expect(result.current.missions.map((m) => m.type)).toEqual(['DAILY', 'WEEKLY', 'QUEST']);
+  });
 });
