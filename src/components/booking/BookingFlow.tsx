@@ -582,7 +582,10 @@ export default function BookingFlow() {
 
               {step === 5 && (
                 <motion.div key="step5" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-                  <PaymentStep onPaymentSuccess={() => { void handleConfirm(); }} />
+                  <PaymentStep
+                    serviceId={selectedService ? serviceIdsByName?.get(selectedService) : undefined}
+                    onPaymentSuccess={() => { void handleConfirm(); }}
+                  />
                 </motion.div>
               )}
 
