@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Target } from 'lucide-react';
 import type { Mission, UserMissionProgress } from '../../types/loyalty';
+import { pickMissions } from './pickMissions';
 
 interface MissionsPanelProps {
   missions: Mission[];
@@ -25,7 +26,7 @@ const MissionsPanel = ({ missions, missionProgress }: MissionsPanelProps) => {
         {missions.length === 0 ? (
           <div className="text-[10px] md:text-xs uppercase tracking-widest text-zinc-500 dark:text-zinc-500">{t('lounge.no_directives')}</div>
         ) : (
-          missions.slice(0, 3).map(mission => {
+          pickMissions(missions, missionProgress).map(mission => {
             const prog = missionProgress.find(p => p.missionId === mission.id) ?? { currentProgress: 0, completed: false };
 
             return (
