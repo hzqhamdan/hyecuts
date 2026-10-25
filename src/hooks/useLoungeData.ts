@@ -87,12 +87,14 @@ export function useLoungeData(userId: string, token?: string | null) {
         setBadges(badgesData);
         setUserBadges(userBadgesData);
 
-        const [mDaily, mWeekly, umpData] = await Promise.all([
+        // QUEST is the third mission type; leaving it out hid the seeded quests.
+        const [mDaily, mWeekly, mQuest, umpData] = await Promise.all([
           api.get<Mission[]>('/gamification/missions/type/DAILY', { token: authToken }),
           api.get<Mission[]>('/gamification/missions/type/WEEKLY', { token: authToken }),
+          api.get<Mission[]>('/gamification/missions/type/QUEST', { token: authToken }),
           api.get<UserMissionProgress[]>(`/gamification/missions/${userId}`, { token: authToken })
         ]);
-        setMissions([...mDaily, ...mWeekly]);
+        setMissions([...mDaily, ...mWeekly, ...mQuest]);
         setMissionProgress(umpData);
 
       } catch (error) {

@@ -169,6 +169,23 @@ describe('useBookingStore', () => {
     expect(useBookingStore.getState().clientSecret).toBeNull();
   });
 
+  it('changing the service drops the payment intent made for the previous one', () => {
+    useBookingStore.getState().setSelectedService('Adult Hair Cut');
+    useBookingStore.getState().setClientSecret('pi_for_adult_cut');
+    useBookingStore.getState().setDepositAmount('12.50');
+
+    useBookingStore.getState().setSelectedService('Hair Colour');
+
+    expect(useBookingStore.getState().clientSecret).toBeNull();
+    expect(useBookingStore.getState().depositAmount).toBeNull();
+  });
+
+  it('reset() clears the deposit amount', () => {
+    useBookingStore.getState().setDepositAmount('12.50');
+    useBookingStore.getState().reset();
+    expect(useBookingStore.getState().depositAmount).toBeNull();
+  });
+
   it('setOpenCategory() should update open category', () => {
     useBookingStore.getState().setOpenCategory('Beard');
     expect(useBookingStore.getState().openCategory).toBe('Beard');

@@ -53,17 +53,17 @@ export default function ServicesSection() {
                                 onClick={() => { setSelectedService(isServiceOpen ? null : service.name); }}
                                 className={`p-4 border-2 cursor-pointer transition-all duration-300 ${
                                   isServiceOpen 
-                                    ? '!border-[#B8A070] bg-white dark:bg-[#1A1A1A]' 
+                                    ? '!border-gold bg-white dark:bg-[#1A1A1A]' 
                                     : 'border-transparent dark:border-transparent hover:border-zinc-300 dark:hover:border-zinc-700'
                                 }`}
                               >
                                 <div className="flex justify-between items-start mb-1 gap-4">
                                   <div>
-                                    <h4 className={`font-serif text-base sm:text-lg uppercase tracking-tight transition-colors ${isServiceOpen ? '!text-[#B8A070]' : 'text-black dark:text-white'}`}>
+                                    <h4 className={`font-serif text-base sm:text-lg uppercase tracking-tight transition-colors ${isServiceOpen ? '!text-gold' : 'text-black dark:text-white'}`}>
                                       {t(`data.services.${service.name}`)}
                                     </h4>
                                   </div>
-                                  <span className={`font-mono text-[10px] sm:text-xs whitespace-nowrap font-bold transition-colors ${isServiceOpen ? '!text-[#B8A070]' : 'text-black dark:text-white'}`}>
+                                  <span className={`font-mono text-[10px] sm:text-xs whitespace-nowrap font-bold transition-colors ${isServiceOpen ? '!text-gold' : 'text-black dark:text-white'}`}>
                                     {service.price}
                                   </span>
                                 </div>

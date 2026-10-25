@@ -15,7 +15,7 @@ export default function PWAInstallPrompt() {
       animate={{ opacity: 1, y: 0 }}
       className="mt-8 p-6 bg-neutral-50 dark:bg-zinc-900 border border-black/5 dark:border-white/5 text-center"
     >
-      <Smartphone className="w-8 h-8 mx-auto mb-4 text-[#B8A070]" />
+      <Smartphone className="w-8 h-8 mx-auto mb-4 text-gold" />
       <h4 className="font-serif text-lg uppercase tracking-tight mb-2">
         {t('pwa.install_title')}
       </h4>

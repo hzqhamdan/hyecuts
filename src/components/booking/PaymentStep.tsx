@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { loadStripe } from '@stripe/stripe-js';
@@ -7,7 +7,6 @@ import { ShieldCheck, Loader2 } from 'lucide-react';
 import { api } from '../../api/client';
 import { useBookingStore } from '../../store/useBookingStore';
 import { useAuth } from '../../context/AuthContext';
-import { ALL_SERVICES } from '../../data/hyecuts';
 
 // Initialize Stripe outside of component to avoid recreating the object
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder');
@@ -76,38 +75,46 @@ function CheckoutForm({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
-export function PaymentStep({ onPaymentSuccess }: { onPaymentSuccess: () => void }) {
+export function PaymentStep({ serviceId, onPaymentSuccess }: { serviceId: number | undefined; onPaymentSuccess: () => void }) {
   const { t } = useTranslation();
-  const { user, token } = useAuth();
-  const { selectedService, clientSecret, setClientSecret } = useBookingStore();
-  const [isFetching, setIsFetching] = useState(false);
+  const { token } = useAuth();
+  const { clientSecret, setClientSecret, depositAmount, setDepositAmount } = useBookingStore();
+  const [loadFailed, setLoadFailed] = useState(false);
+  // The service an intent was already requested for, so a re-render (or React's
+  // double-invoked effects in dev) can't create a second PaymentIntent.
+  const requestedFor = useRef<number | null>(null);
 
-  const service = ALL_SERVICES.find(s => s.name === selectedService);
-  // Example: require 50% deposit
-  const numericPrice = service ? parseFloat(service.price) : 0;
-  const depositAmount = (numericPrice * 0.5).toFixed(2);
-
+  // PAY-004: the deposit used to be computed here from the static price list
+  // ("RM 25", so parseFloat gave NaN) and the intent requested for
+  // `service?.id || 1`, a different service whenever the name didn't match.
+  // The service id now comes from the booking flow's database lookup, and the
+  // amount shown is the one the server actually charged.
   useEffect(() => {
-    if (!clientSecret && !isFetching && token) {
-      setIsFetching(true);
-      api.post<{ clientSecret: string }>('/payments/create-intent', {
-        body: {
-          serviceId: service?.id || 1,
-          userId: user?.id || 'guest',
-        },
-        token
-      })
+    if (clientSecret || !token || serviceId === undefined || requestedFor.current === serviceId) return;
+    requestedFor.current = serviceId;
+    api.post<{ clientSecret: string; depositAmount: string }>('/payments/create-intent', {
+      body: { serviceId },
+      token
+    })
       .then(data => {
         setClientSecret(data.clientSecret);
+        setDepositAmount(data.depositAmount);
       })
-      .catch(err => {
+      .catch((err: unknown) => {
         console.error('Failed to create payment intent', err);
-      })
-      .finally(() => {
-        setIsFetching(false);
+        setLoadFailed(true);
       });
-    }
-  }, [clientSecret, isFetching, service, user, token, setClientSecret]);
+  }, [clientSecret, serviceId, token, setClientSecret, setDepositAmount]);
+
+  if (serviceId === undefined || loadFailed) {
+    return (
+      <div role="alert" className="flex flex-col items-center justify-center h-64 space-y-4 text-center">
+        <p className="text-zinc-500 font-sans text-sm">
+          {t('booking.payment.unavailable', { defaultValue: 'We could not set up the deposit for this service. Please go back and try again.' })}
+        </p>
+      </div>
+    );
+  }
 
   if (!clientSecret) {
     return (
@@ -134,7 +141,9 @@ export function PaymentStep({ onPaymentSuccess }: { onPaymentSuccess: () => void
         <p className="text-zinc-500 dark:text-zinc-400 font-sans text-sm max-w-md mx-auto">
           {t('booking.payment.description', { defaultValue: 'A 50% deposit is required to secure your appointment. This will be deducted from your final bill.' })}
           <br/>
-          <span className="font-bold text-black dark:text-white mt-2 inline-block">Deposit: RM {depositAmount}</span>
+          {depositAmount && (
+            <span className="font-bold text-black dark:text-white mt-2 inline-block">Deposit: RM {depositAmount}</span>
+          )}
         </p>
       </div>
 

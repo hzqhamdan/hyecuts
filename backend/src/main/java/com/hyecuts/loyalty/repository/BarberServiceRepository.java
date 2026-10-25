@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface BarberServiceRepository extends JpaRepository<BarberService, Long> {
     List<BarberService> findByIsActiveTrue();
+
+    boolean existsByNameIgnoreCase(String name);
 }

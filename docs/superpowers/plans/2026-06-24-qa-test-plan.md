@@ -202,7 +202,7 @@ Cover:
 
 Minimum 5 vulnerabilities.
 
-- [ ] **Step 3: Gamification tests (JUnit)**
+- [x] **Step 3: Gamification tests (JUnit)** → `GamificationServiceTest` (10) and `GamificationControllerAuthorizationTest` (9: members can't read another member's activity, badges or missions; admins can) — 2026-10-24. No duplicate-name test: badges have no unique name rule to test
 
 Write GamificationServiceTest:
 - getUserMissions: valid, multiple missions, completed missions
@@ -280,7 +280,7 @@ Cover:
 
 Minimum 5 vulnerabilities.
 
-- [ ] **Step 3: Service tests (JUnit)**
+- [x] **Step 3: Service tests (JUnit)** → `BarberServiceServiceTest` (10) — 2026-10-24. Duplicate-name and negative-price cases are untested because `saveService` has no validation (a duplicate name only fails at the DB unique constraint)
 
 Write BarberServiceServiceTest:
 - createService: valid, duplicate name, negative price
@@ -317,7 +317,7 @@ Cover:
 
 Minimum 5 vulnerabilities.
 
-- [ ] **Step 3: Payment integration tests**
+- [x] **Step 3: Payment integration tests** → `PaymentControllerTest` (6, Stripe mocked) — 2026-10-24. Found: deposits truncate instead of rounding (RM 25.55 → 1277 sen), inactive services can still be charged, and unexpected errors return their raw message
 
 Write PaymentService tests:
 - createPaymentIntent: valid booking price, error handling

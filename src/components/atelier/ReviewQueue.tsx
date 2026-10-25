@@ -80,7 +80,7 @@ export function ReviewQueue() {
                         <p className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-tight font-bold">{review.user.email}</p>
                       </div>
                     </div>
-                    <div className="flex gap-1 text-[#B8A070]">
+                    <div className="flex gap-1 text-gold">
                       {[...Array(5)].map((_, i) => (
                         <Star key={i} size={14} fill={i < review.rating ? 'currentColor' : 'none'} />
                       ))}
@@ -95,7 +95,7 @@ export function ReviewQueue() {
                   </div>
 
                   <div className="flex items-center gap-4 text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 font-bold">
-                    <span className="flex items-center gap-2"><ShieldCheck size={12} className="text-[#B8A070]" /> {t('atelier.reviews.pending_validation', { defaultValue: 'Pending Validation' })}</span>
+                    <span className="flex items-center gap-2"><ShieldCheck size={12} className="text-gold" /> {t('atelier.reviews.pending_validation', { defaultValue: 'Pending Validation' })}</span>
                     <span>•</span>
                     <span>{new Date(review.timestamp).toLocaleDateString()}</span>
                   </div>

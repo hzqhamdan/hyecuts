@@ -10,6 +10,7 @@ interface BookingState {
   bookingRef: string;
   isConfirming: boolean;
   clientSecret: string | null;
+  depositAmount: string | null;
   guestName: string;
   guestEmail: string;
   guestPhone: string;
@@ -25,6 +26,7 @@ interface BookingState {
   setBookingRef: (ref: string) => void;
   setIsConfirming: (isConfirming: boolean) => void;
   setClientSecret: (secret: string | null) => void;
+  setDepositAmount: (amount: string | null) => void;
   setGuestName: (name: string) => void;
   setGuestEmail: (email: string) => void;
   setGuestPhone: (phone: string) => void;
@@ -42,6 +44,7 @@ export const useBookingStore = create<BookingState>((set) => ({
   bookingRef: '',
   isConfirming: false,
   clientSecret: null,
+  depositAmount: null,
   guestName: '',
   guestEmail: '',
   guestPhone: '',
@@ -50,13 +53,16 @@ export const useBookingStore = create<BookingState>((set) => ({
   nextStep: () => { set((state) => ({ step: state.step + 1 })); },
   prevStep: () => { set((state) => ({ step: Math.max(0, state.step - 1) })); },
   setOpenCategory: (openCategory) => { set({ openCategory }); },
-  setSelectedService: (selectedService) => { set({ selectedService }); },
+  // A PaymentIntent is for one service's deposit. Changing the service after
+  // reaching payment used to keep the old intent, charging the old amount.
+  setSelectedService: (selectedService) => { set({ selectedService, clientSecret: null, depositAmount: null }); },
   setSelectedStaff: (selectedStaff) => { set({ selectedStaff }); },
   setSelectedDate: (selectedDate) => { set({ selectedDate }); },
   setSelectedTime: (selectedTime) => { set({ selectedTime }); },
   setBookingRef: (bookingRef) => { set({ bookingRef }); },
   setIsConfirming: (isConfirming) => { set({ isConfirming }); },
   setClientSecret: (clientSecret) => { set({ clientSecret }); },
+  setDepositAmount: (depositAmount) => { set({ depositAmount }); },
   setGuestName: (guestName) => { set({ guestName }); },
   setGuestEmail: (guestEmail) => { set({ guestEmail }); },
   setGuestPhone: (guestPhone) => { set({ guestPhone }); },
@@ -78,6 +84,7 @@ export const useBookingStore = create<BookingState>((set) => ({
       bookingRef: '',
       isConfirming: false,
       clientSecret: null,
+      depositAmount: null,
       guestName: '',
       guestEmail: '',
       guestPhone: ''

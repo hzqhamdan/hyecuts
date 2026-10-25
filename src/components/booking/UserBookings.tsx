@@ -133,13 +133,13 @@ export default function UserBookings() {
                     <h3 className="font-serif text-2xl sm:text-3xl italic tracking-tight mb-6 text-black dark:text-white group-hover:translate-x-1 transition-transform">{booking.service?.name || 'Service'}</h3>
                     <div className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6 text-[9px] sm:text-[10px] uppercase tracking-widest font-bold text-zinc-400 dark:text-zinc-500">
                       <div className="flex items-center gap-2">
-                        <Calendar className="w-3.5 h-3.5 text-[#B8A070]" /> {dateStr}
+                        <Calendar className="w-3.5 h-3.5 text-gold" /> {dateStr}
                       </div>
                       <div className="flex items-center gap-2">
-                        <Clock className="w-3.5 h-3.5 text-[#B8A070]" /> {timeStr}
+                        <Clock className="w-3.5 h-3.5 text-gold" /> {timeStr}
                       </div>
                       <div className="flex items-center gap-2">
-                        <Scissors className="w-3.5 h-3.5 text-[#B8A070]" /> {booking.service?.durationMinutes || 0} mins
+                        <Scissors className="w-3.5 h-3.5 text-gold" /> {booking.service?.durationMinutes || 0} mins
                       </div>
                       {booking.createdAt && (
                         <div className="flex items-center gap-2 opacity-60">

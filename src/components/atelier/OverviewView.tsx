@@ -7,6 +7,7 @@ import { api } from '../../api/client';
 import type { Reward } from '../../types/loyalty';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
+import { CHART_SERIES, tokenColor } from '../../styles/tokens';
 
 interface Analytics {
   tierDistribution: Record<string, number>;
@@ -18,7 +19,7 @@ interface Analytics {
   }[];
 }
 
-const COLORS = ['#B8A070', '#6B6B6B', '#D4C4A8', '#8A8A8A', '#4A4A4A'];
+const COLORS = CHART_SERIES;
 
 export function OverviewView() {
   const { t } = useTranslation();
@@ -81,7 +82,7 @@ export function OverviewView() {
           { label: t('atelier.overview.economy_velocity'), value: '8.4x', trend: '+2.1%' },
         ].map((stat, i) => (
           <div key={i} className="p-10 bg-white dark:bg-[#1A1A1A] hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors group">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 mb-6 group-hover:text-[#B8A070] transition-colors">{stat.label}</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 mb-6 group-hover:text-gold transition-colors">{stat.label}</p>
             <div className="flex justify-between items-end">
               <h3 className="font-serif text-4xl font-light text-black dark:text-white">{stat.value}</h3>
               <span className="text-xs font-medium px-2 py-1 bg-black dark:bg-white text-white dark:text-black rounded-none">{stat.trend}</span>
@@ -99,25 +100,25 @@ export function OverviewView() {
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="text-zinc-100 dark:text-zinc-800" />
                 <XAxis 
                   dataKey="date" 
-                  tick={{fontSize: 10, fill: '#6B6B6B'}} 
+                  tick={{fontSize: 10, fill: tokenColor.slate}} 
                   axisLine={false}
                   tickLine={false}
                   tickFormatter={(val: string) => val.split('-').slice(1).join('/')}
                 />
-                <YAxis yAxisId="left" tick={{fontSize: 10, fill: '#6B6B6B'}} axisLine={false} tickLine={false} />
-                <YAxis yAxisId="right" orientation="right" tick={{fontSize: 10, fill: '#6B6B6B'}} axisLine={false} tickLine={false} />
+                <YAxis yAxisId="left" tick={{fontSize: 10, fill: tokenColor.slate}} axisLine={false} tickLine={false} />
+                <YAxis yAxisId="right" orientation="right" tick={{fontSize: 10, fill: tokenColor.slate}} axisLine={false} tickLine={false} />
                 <Tooltip 
-                  contentStyle={{borderRadius: '0', border: '1px solid #E4E4E7', backgroundColor: 'var(--tw-bg-opacity, #fff)', fontFamily: 'Inter'}}
+                  contentStyle={{borderRadius: '0', border: `1px solid ${tokenColor.hairlineStrong}`, backgroundColor: tokenColor.surfaceCard, fontFamily: 'Inter'}}
                   itemStyle={{fontSize: '12px', fontWeight: 'bold'}}
                 />
                 <Line 
                   yAxisId="left"
                   type="monotone" 
                   dataKey="revenue" 
-                  stroke="#B8A070" 
-                  strokeWidth={2} 
-                  dot={false} 
-                  activeDot={{ r: 4, stroke: '#B8A070', strokeWidth: 2, fill: 'white' }}
+                  stroke={CHART_SERIES[0]}
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 4, stroke: CHART_SERIES[0], strokeWidth: 2, fill: tokenColor.surfaceCard }}
                 />
                 <Line 
                   yAxisId="right"
@@ -127,7 +128,7 @@ export function OverviewView() {
                   className="text-black dark:text-white"
                   strokeWidth={2} 
                   dot={false} 
-                  activeDot={{ r: 4, stroke: 'currentColor', strokeWidth: 2, fill: 'white' }}
+                  activeDot={{ r: 4, stroke: 'currentColor', strokeWidth: 2, fill: tokenColor.surfaceCard }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -148,7 +149,7 @@ export function OverviewView() {
                     dataKey="value"
                     stroke="none"
                   />
-                  <Tooltip contentStyle={{borderRadius: '0', border: '1px solid #E4E4E7'}} />
+                  <Tooltip contentStyle={{borderRadius: '0', border: `1px solid ${tokenColor.hairlineStrong}`}} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -163,13 +164,13 @@ export function OverviewView() {
                   <YAxis 
                     dataKey="name" 
                     type="category" 
-                    tick={{fontSize: 10, fill: '#6B6B6B'}} 
+                    tick={{fontSize: 10, fill: tokenColor.slate}} 
                     axisLine={false} 
                     tickLine={false}
                     width={80}
                   />
-                  <Tooltip contentStyle={{borderRadius: '0', border: '1px solid #E4E4E7'}} cursor={{fill: 'currentColor', className: 'text-zinc-50 dark:text-zinc-900'}} />
-                  <Bar dataKey="value" fill="#B8A070" radius={[0, 2, 2, 0]} barSize={12} />
+                  <Tooltip contentStyle={{borderRadius: '0', border: `1px solid ${tokenColor.hairlineStrong}`}} cursor={{fill: 'currentColor', className: 'text-zinc-50 dark:text-zinc-900'}} />
+                  <Bar dataKey="value" fill={CHART_SERIES[0]} radius={[0, 2, 2, 0]} barSize={12} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
