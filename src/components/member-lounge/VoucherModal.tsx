@@ -16,11 +16,11 @@ const VoucherModal = ({ voucher, status, onClose, onConfirmRedeem }: VoucherModa
     <>
       {voucher && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-md p-6">
-          <div className="bg-[#F9F9F7] dark:bg-[#1A1A1A] w-full max-w-lg relative overflow-hidden shadow-2xl">
+          <div className="bg-[#F9F9F7] dark:bg-studio-black w-full max-w-lg relative overflow-hidden shadow-overlay">
             {/* Luxury Invitation Styling */}
             <div className="p-12 flex flex-col items-center text-center bg-repeat">
               <div className="w-full border-t border-b border-black dark:border-white py-8 mb-12">
-                <span className="font-sans text-[10px] uppercase tracking-[0.4em] text-zinc-500 dark:text-zinc-400 block mb-4">{t('lounge.exclusive_invitation')}</span>
+                <span className="font-sans text-[10px] uppercase tracking-[0.4em] text-ink-muted block mb-4">{t('lounge.exclusive_invitation')}</span>
                 <h2 className="font-serif text-4xl uppercase tracking-tighter mb-2">{t('common.the_studio')}</h2>
                 <div className="h-px w-12 bg-black dark:bg-white mx-auto mt-6" />
               </div>
@@ -33,7 +33,7 @@ const VoucherModal = ({ voucher, status, onClose, onConfirmRedeem }: VoucherModa
                   </div>
                   <div className="space-y-2">
                     <div className="font-serif text-lg uppercase tracking-tight leading-tight text-black dark:text-white">{voucher.title}</div>
-                    <div className="font-mono text-[10px] text-zinc-500 dark:text-zinc-400 tracking-widest">
+                    <div className="font-mono text-[10px] text-ink-muted tracking-widest">
                       {t('lounge.cost')}: {voucher.pointsCost.toString()} {t('lounge.pts')}
                     </div>
                   </div>
@@ -60,7 +60,7 @@ const VoucherModal = ({ voucher, status, onClose, onConfirmRedeem }: VoucherModa
                 
                 <button
                   onClick={onClose}
-                  className="text-[10px] uppercase tracking-widest text-zinc-500 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors mt-2"
+                  className="text-[10px] uppercase tracking-widest text-ink-muted hover:text-black dark:hover:text-white transition-colors mt-2"
                 >
                   {t('lounge.close_portfolio')}
                 </button>
@@ -68,10 +68,10 @@ const VoucherModal = ({ voucher, status, onClose, onConfirmRedeem }: VoucherModa
             </div>
 
             {/* Decorative Corner Elements */}
-            <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-black/10 dark:border-white/10" />
-            <div className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-black/10 dark:border-white/10" />
-            <div className="absolute bottom-0 left-0 w-12 h-12 border-b-2 border-l-2 border-black/10 dark:border-white/10" />
-            <div className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 border-black/10 dark:border-white/10" />
+            <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-hairline" />
+            <div className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-hairline" />
+            <div className="absolute bottom-0 left-0 w-12 h-12 border-b-2 border-l-2 border-hairline" />
+            <div className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 border-hairline" />
           </div>
         </div>
       )}

@@ -67,7 +67,7 @@ export default function LoginScreen() {
   return (
     <motion.div
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="min-h-screen text-black dark:text-[#FAFAFA] font-sans flex flex-col justify-center items-center p-4 sm:p-6 relative overflow-hidden transition-colors duration-500"
+      className="min-h-screen text-black dark:text-studio-white font-sans flex flex-col justify-center items-center p-4 sm:p-6 relative overflow-hidden transition-colors duration-500"
     >
       {/* WebGL smokey background (only the shader; the existing form is preserved) */}
       <div className="absolute inset-0 z-0 bg-[#0A0A0A]">
@@ -77,7 +77,7 @@ export default function LoginScreen() {
       <div className="relative z-10 absolute top-8 sm:top-12 left-6 sm:left-12 flex items-center gap-3">
         <button 
           onClick={() => { navigate('/'); }}
-          className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-bold"
+          className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-ink-faint hover:text-black dark:hover:text-white transition-colors font-bold"
         >
           <ArrowLeft className="w-3 h-3" /> {t('nav.return_facade')}
         </button>
@@ -86,7 +86,7 @@ export default function LoginScreen() {
       <div className="relative z-10 absolute top-8 sm:top-12 right-6 sm:right-12">
         <button 
           onClick={toggleLanguage}
-          className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-bold"
+          className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-ink-faint hover:text-black dark:hover:text-white transition-colors font-bold"
         >
           {i18n.language === 'en' ? <Globe className="w-3 h-3" /> : <img src="/flags/my.svg" alt="Malaysia" className="w-4 h-3 rounded-sm" />}
           {i18n.language === 'en' ? 'EN' : 'MY'}
@@ -95,12 +95,12 @@ export default function LoginScreen() {
 
       <motion.div
         initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-        className="relative z-10 w-full max-w-md bg-white/80 dark:bg-[#1A1A1A]/70 backdrop-blur-xl border border-white/30 dark:border-zinc-700/50 p-8 sm:p-12 transition-colors shadow-2xl"
+        className="relative z-10 w-full max-w-md bg-white/80 dark:bg-studio-black/70 backdrop-blur-xl border border-white/30 dark:border-zinc-700/50 p-8 sm:p-12 transition-colors shadow-overlay"
       >
         <div className="text-center mb-8 md:mb-10">
           <CustomShieldIcon className="w-8 h-8 mx-auto mb-4 text-black dark:text-white" />
           <h2 className="font-serif text-2xl md:text-3xl font-light tracking-tight text-black dark:text-white">{isRegistering ? t('login.establish_profile') : t('login.member_login')}</h2>
-          <p className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mt-2 font-bold">{isRegistering ? t('login.join_network') : t('login.welcome_back')}</p>
+          <p className="text-[10px] uppercase tracking-widest text-ink-faint mt-2 font-bold">{isRegistering ? t('login.join_network') : t('login.welcome_back')}</p>
         </div>
 
         {error && (
@@ -111,23 +111,23 @@ export default function LoginScreen() {
 
         <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
           <div>
-            <label className="block text-[10px] uppercase tracking-widest font-bold text-zinc-400 dark:text-zinc-500 mb-2">{t('login.identifier_label')}</label>
+            <label className="block text-[10px] uppercase tracking-widest font-bold text-ink-faint mb-2">{t('login.identifier_label')}</label>
             <input 
               type="text" 
               value={username}
               onChange={e => { setUsername(e.target.value); }}
-              className="w-full p-4 border border-zinc-200 dark:border-zinc-800 bg-transparent text-black dark:text-white text-sm focus:border-black dark:focus:border-white focus:outline-none transition-all placeholder:text-zinc-300 dark:placeholder:text-zinc-700 font-medium"
+              className="w-full p-4 border border-hairline-strong bg-transparent text-black dark:text-white text-sm focus:border-black dark:focus:border-white focus:outline-none transition-all placeholder:text-zinc-300 dark:placeholder:text-zinc-700 font-medium"
               placeholder={t('login.identifier_placeholder')}
               required
             />
           </div>
           <div>
-            <label className="block text-[10px] uppercase tracking-widest font-bold text-zinc-400 dark:text-zinc-500 mb-2">{t('login.sequence_label')}</label>
+            <label className="block text-[10px] uppercase tracking-widest font-bold text-ink-faint mb-2">{t('login.sequence_label')}</label>
             <input 
               type="password" 
               value={password}
               onChange={e => { setPassword(e.target.value); }}
-              className="w-full p-4 border border-zinc-200 dark:border-zinc-800 bg-transparent text-black dark:text-white text-sm focus:border-black dark:focus:border-white focus:outline-none transition-all placeholder:text-zinc-300 dark:placeholder:text-zinc-700 font-medium"
+              className="w-full p-4 border border-hairline-strong bg-transparent text-black dark:text-white text-sm focus:border-black dark:focus:border-white focus:outline-none transition-all placeholder:text-zinc-300 dark:placeholder:text-zinc-700 font-medium"
               placeholder={t('login.sequence_placeholder')}
               required
             />
@@ -142,7 +142,7 @@ export default function LoginScreen() {
                 className="mt-1 accent-black dark:accent-white w-4 h-4"
                 required
               />
-              <label htmlFor="pdpa" className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
+              <label htmlFor="pdpa" className="text-xs text-ink-muted leading-relaxed font-medium">
                 {t('login.pdpa')}
               </label>
             </div>
@@ -159,10 +159,10 @@ export default function LoginScreen() {
 
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-zinc-200 dark:border-zinc-800" />
+            <div className="w-full border-t border-hairline-strong" />
           </div>
           <div className="relative flex justify-center text-xs">
-            <span className="bg-white dark:bg-[#1A1A1A] px-3 text-zinc-400 dark:text-zinc-500 font-bold uppercase tracking-wider">
+            <span className="bg-surface-card px-3 text-ink-faint font-bold uppercase tracking-wider">
               or
             </span>
           </div>
@@ -184,7 +184,7 @@ export default function LoginScreen() {
         <div className="mt-8 text-center border-t border-zinc-100 dark:border-zinc-800 pt-8">
           <button 
             onClick={() => { setIsRegistering(!isRegistering); }}
-            className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-bold"
+            className="text-[10px] uppercase tracking-widest text-ink-faint hover:text-black dark:hover:text-white transition-colors font-bold"
           >
             {isRegistering ? t('login.login_cta') : t('login.register_cta')}
           </button>

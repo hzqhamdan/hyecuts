@@ -26,7 +26,7 @@
 - [x] **Step 2: Write Auth vulnerability report** → same file (20 vulnerabilities, 6 critical)
 - [x] **Step 3: Backend auth tests (JUnit)** → `JwtUtilTest.java` (18 tests)
 - [x] **Step 4: Frontend auth tests (Vitest)** → Already existed (all pass)
-- [ ] **Step 5: Auth E2E tests (Playwright)** → NOT YET DONE
+- [x] **Step 5: Auth E2E tests (Playwright)** → `e2e/auth.spec.ts` (13 tests, 2026-10-25). Found E2E-001: signing out lands on /login instead of the home page. Runs against a production build with the API mocked in `e2e/support/mockApi.ts`; known app bugs are `test.fail()` tests tagged E2E-00x.
 
 ---
 
@@ -41,7 +41,7 @@
 - [x] **Step 2: Write Booking vulnerability report** → same file (15 vulnerabilities)
 - [x] **Step 3: Backend booking tests (JUnit)** → `BookingServiceTest.java` (44 tests, also added missing validations to BookingService)
 - [x] **Step 4: Frontend booking tests (Vitest)** → `BookingFlow.test.tsx` (15 tests), `useBookingStore.test.ts` (20 tests), `RescheduleModal.test.tsx` (11 tests, 2026-10-24), including booked-slot greying after the BK-051 fix (the modal used to request `/bookings/date/<weekday name>`, which the backend rejects)
-- [ ] **Step 5: Booking E2E tests (Playwright)** — NOT YET DONE
+- [x] **Step 5: Booking E2E tests (Playwright)** → `e2e/booking.spec.ts` (13 tests, 2026-10-25). Found E2E-003: booked slots are hard-coded (2 PM and 4 PM), never fetched; E2E-004: picking today's weekday at a time already past books today, in the past.
 
 ---
 
@@ -165,7 +165,7 @@ Cover:
 
 Minimum 10 vulnerabilities.
 
-- [ ] **Step 3: Admin E2E tests (Playwright)**
+- [x] **Step 3: Admin E2E tests (Playwright)** → `e2e/admin.spec.ts` (9 tests, 2026-10-25). Found E2E-005: the member drawer keeps the old balance after an adjustment; E2E-006: a guest booking (user null) crashes the booking manager.
 
 Write tests for:
 - Admin login → dashboard renders
@@ -243,7 +243,7 @@ Cover:
 
 Minimum 10 vulnerabilities.
 
-- [ ] **Step 3: Profile E2E tests (Playwright)**
+- [x] **Step 3: Profile E2E tests (Playwright)** → `e2e/profile.spec.ts` (10 tests, 2026-10-25). Found E2E-007: a phone number typed with its leading 0 is saved as +60 01-… with the last digit dropped.
 
 Write tests for:
 - Profile update flow (name, email, phone)
@@ -371,7 +371,7 @@ Write tests for:
 Run: `npx vitest run --reporter=verbose`
 Expected: All pass
 
-- [ ] **Step 4: Frontend E2E tests (Playwright)**
+- [x] **Step 4: Frontend E2E tests (Playwright)** → `e2e/frontend-ui.spec.ts` (12 tests, 2026-10-25), replacing `example.spec.ts` and the broken `theme-inversion.spec.ts`. Found E2E-002: in an en-US/en-GB browser the language toggle shows MY and needs two clicks.
 
 Write tests for:
 - Route protection (unauthenticated → login)
@@ -456,7 +456,7 @@ Cross-cutting findings:
 Start at **Task 2c** (Booking Frontend Tests), then continue sequentially:
 
 - [x] **Task 2c**: Booking Frontend Tests (Vitest) — useBookingStore + BookingFlow + RescheduleModal
-- [ ] **Task 2d**: Booking E2E Tests (Playwright)
+- [x] **Task 2d**: Booking E2E Tests (Playwright)
 - [ ] **Task 3**: Loyalty & Tiers — QA Matrix + Vuln Report + Tests
 - [ ] **Task 4**: Rewards & Vouchers — QA Matrix + Vuln Report + Tests
 - [ ] **Task 5**: Admin Dashboard — QA Matrix + Vuln Report + Tests
@@ -468,7 +468,7 @@ Start at **Task 2c** (Booking Frontend Tests), then continue sequentially:
 - [ ] **Task 11**: Infrastructure & Config Security Scan
 - [ ] **Task 12**: Final Coverage Dashboard
 
-Also not done in Task 1: Step 5 (Auth E2E Playwright tests).
+Task 1 Step 5 (Auth E2E Playwright tests) is done: `e2e/auth.spec.ts`.
 
 ### Key Context for Next Session
 - **CLAUDE.md** contains coding principles — read first

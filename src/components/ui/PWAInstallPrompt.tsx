@@ -19,7 +19,7 @@ export default function PWAInstallPrompt() {
       <h4 className="font-serif text-lg uppercase tracking-tight mb-2">
         {t('pwa.install_title')}
       </h4>
-      <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-6 leading-relaxed max-w-xs mx-auto">
+      <p className="text-xs text-ink-muted mb-6 leading-relaxed max-w-xs mx-auto">
         {t('pwa.install_desc')}
       </p>
       <button

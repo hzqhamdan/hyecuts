@@ -23,12 +23,12 @@ const MobileMenu = ({ isOpen, onClose, onLogout, onToggleLanguage, onOpenSetting
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          className="fixed inset-0 z-40 bg-white dark:bg-[#1A1A1A] pt-32 px-10 flex flex-col gap-8 text-center md:hidden transition-colors"
+          className="fixed inset-0 z-40 bg-surface-card pt-32 px-10 flex flex-col gap-8 text-center md:hidden transition-colors"
         >
           <button
             onClick={onClose}
             aria-label="Close menu"
-            className="absolute top-6 right-6 p-2 text-zinc-500 dark:text-zinc-400 active:scale-90 transition-transform"
+            className="absolute top-6 right-6 p-2 text-ink-muted active:scale-90 transition-transform"
           >
             <X size={28} />
           </button>

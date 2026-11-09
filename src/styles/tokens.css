@@ -25,10 +25,18 @@
   --surface-card-rgb: 255 255 255;
   --surface-sunken-rgb: 244 244 245;
 
-  /* Ink */
+  /* Ink. Body copy with no explicit colour class inherits this pair through the
+     body rules in src/index.css (text-studio-black / text-zinc-100). Separately,
+     136 explicit text-black / bg-black utilities render pure #000 and #fff; those
+     are kept off the tokens by the owner's decision and do not read these vars.
+
+     ink-faint was zinc-400/zinc-500 and failed 4.5:1 in both themes. It now
+     passes: in Paper the threshold leaves no room above ink-muted, so the two
+     are the same value there; in Studio it stays a dimmer third tier at 4.76:1
+     against muted's 6.79:1. */
   --ink-rgb: 26 26 26;
   --ink-muted-rgb: 113 113 122;
-  --ink-faint-rgb: 161 161 170;
+  --ink-faint-rgb: 113 113 122;
   --ink-inverse-rgb: 250 250 250;
 
   /* Edges and controls */
@@ -117,7 +125,7 @@ html.dark {
 
   --ink-rgb: 244 244 245;
   --ink-muted-rgb: 161 161 170;
-  --ink-faint-rgb: 113 113 122;
+  --ink-faint-rgb: 133 133 142;
   --ink-inverse-rgb: 26 26 26;
 
   --hairline-strong-rgb: 63 63 70;

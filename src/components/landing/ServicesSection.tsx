@@ -14,7 +14,7 @@ export default function ServicesSection() {
     <section id="services" className="py-16 md:py-24 px-6 md:px-12 bg-zinc-50 dark:bg-zinc-900/50 border-y border-zinc-100 dark:border-zinc-800 transition-colors">
       <div className="max-w-7xl mx-auto">
         <div className="mb-10 md:mb-14">
-          <span className="text-[10px] md:text-xs uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4 block font-bold">{t('landing.services_pricing')}</span>
+          <span className="text-[10px] md:text-xs uppercase tracking-widest text-ink-faint mb-4 block font-bold">{t('landing.services_pricing')}</span>
           <h2 className="font-serif text-4xl sm:text-5xl md:text-7xl font-light tracking-tighter">{t('landing.services')}</h2>
         </div>
 
@@ -24,7 +24,7 @@ export default function ServicesSection() {
             {SERVICE_CATEGORIES.map((categoryGroup) => {
               const isOpen = openCategory === categoryGroup.category;
               return (
-                <div key={categoryGroup.category} className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1A1A1A] transition-colors">
+                <div key={categoryGroup.category} className="border border-hairline-strong bg-surface-card transition-colors">
                   <button
                     onClick={() => { setOpenCategory(isOpen ? null : categoryGroup.category); }}
                     className="w-full px-5 py-4 md:px-6 md:py-5 flex items-center justify-between text-left hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
@@ -53,7 +53,7 @@ export default function ServicesSection() {
                                 onClick={() => { setSelectedService(isServiceOpen ? null : service.name); }}
                                 className={`p-4 border-2 cursor-pointer transition-all duration-300 ${
                                   isServiceOpen 
-                                    ? '!border-gold bg-white dark:bg-[#1A1A1A]' 
+                                    ? '!border-gold bg-surface-card' 
                                     : 'border-transparent dark:border-transparent hover:border-zinc-300 dark:hover:border-zinc-700'
                                 }`}
                               >
@@ -67,7 +67,7 @@ export default function ServicesSection() {
                                     {service.price}
                                   </span>
                                 </div>
-                                <div className="flex gap-4 text-[9px] sm:text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 font-bold">
+                                <div className="flex gap-4 text-[9px] sm:text-[10px] uppercase tracking-widest text-ink-faint font-bold">
                                   <span>{service.duration}</span>
                                 </div>
                                 

@@ -48,10 +48,10 @@ export function OverviewView() {
     return (
       <div className="space-y-16 animate-pulse">
         <div className="h-20 bg-zinc-100 dark:bg-zinc-800 w-1/3"></div>
-        <div className="grid grid-cols-3 gap-px bg-zinc-200 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800">
-          <div className="h-40 bg-white dark:bg-[#1A1A1A]"></div>
-          <div className="h-40 bg-white dark:bg-[#1A1A1A]"></div>
-          <div className="h-40 bg-white dark:bg-[#1A1A1A]"></div>
+        <div className="grid grid-cols-3 gap-px bg-zinc-200 dark:bg-zinc-800 border border-hairline-strong">
+          <div className="h-40 bg-surface-card"></div>
+          <div className="h-40 bg-surface-card"></div>
+          <div className="h-40 bg-surface-card"></div>
         </div>
         <div className="h-96 bg-zinc-50 dark:bg-zinc-900/50"></div>
       </div>
@@ -72,17 +72,17 @@ export function OverviewView() {
     <div className="space-y-16">
       <header>
         <h2 className="font-serif text-4xl md:text-5xl mb-4 font-light tracking-tight text-black dark:text-white">{t('atelier.overview.title')}</h2>
-        <p className="text-zinc-400 dark:text-zinc-500 font-sans max-w-md leading-relaxed">{t('atelier.overview.welcome')}</p>
+        <p className="text-ink-faint font-sans max-w-md leading-relaxed">{t('atelier.overview.welcome')}</p>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-zinc-200 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-zinc-200 dark:bg-zinc-800 border border-hairline-strong">
         {[
           { label: t('atelier.overview.total_redemptions'), value: stats.redemptions.toString(), trend: '+12%' },
           { label: t('atelier.overview.active_rewards'), value: stats.activeRewards.toString(), trend: t('atelier.overview.stable') },
           { label: t('atelier.overview.economy_velocity'), value: '8.4x', trend: '+2.1%' },
         ].map((stat, i) => (
-          <div key={i} className="p-10 bg-white dark:bg-[#1A1A1A] hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors group">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 mb-6 group-hover:text-gold transition-colors">{stat.label}</p>
+          <div key={i} className="p-10 bg-surface-card hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors group">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-ink-faint mb-6 group-hover:text-gold transition-colors">{stat.label}</p>
             <div className="flex justify-between items-end">
               <h3 className="font-serif text-4xl font-light text-black dark:text-white">{stat.value}</h3>
               <span className="text-xs font-medium px-2 py-1 bg-black dark:bg-white text-white dark:text-black rounded-none">{stat.trend}</span>
@@ -92,8 +92,8 @@ export function OverviewView() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-        <div className="bg-white dark:bg-[#1A1A1A] border border-zinc-100 dark:border-zinc-800 p-8 space-y-8">
-          <h4 className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 font-bold">{t('atelier.overview.revenue_volume')}</h4>
+        <div className="bg-surface-card border border-zinc-100 dark:border-zinc-800 p-8 space-y-8">
+          <h4 className="text-[10px] uppercase tracking-[0.2em] text-ink-faint font-bold">{t('atelier.overview.revenue_volume')}</h4>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={analytics?.dailyData}>
@@ -136,8 +136,8 @@ export function OverviewView() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-white dark:bg-[#1A1A1A] border border-zinc-100 dark:border-zinc-800 p-8 space-y-8">
-            <h4 className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 font-bold">{t('atelier.overview.tier_distribution')}</h4>
+          <div className="bg-surface-card border border-zinc-100 dark:border-zinc-800 p-8 space-y-8">
+            <h4 className="text-[10px] uppercase tracking-[0.2em] text-ink-faint font-bold">{t('atelier.overview.tier_distribution')}</h4>
             <div className="h-[200px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -155,8 +155,8 @@ export function OverviewView() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-[#1A1A1A] border border-zinc-100 dark:border-zinc-800 p-8 space-y-8">
-            <h4 className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 font-bold">{t('atelier.overview.service_popularity')}</h4>
+          <div className="bg-surface-card border border-zinc-100 dark:border-zinc-800 p-8 space-y-8">
+            <h4 className="text-[10px] uppercase tracking-[0.2em] text-ink-faint font-bold">{t('atelier.overview.service_popularity')}</h4>
             <div className="h-[200px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={serviceData} layout="vertical">

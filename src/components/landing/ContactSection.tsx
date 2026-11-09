@@ -10,7 +10,7 @@ export default function ContactSection() {
     <section id="contact" className="py-16 md:py-24 px-6 md:px-12 bg-zinc-50 dark:bg-zinc-900/50 border-t border-zinc-100 dark:border-zinc-800 transition-colors">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
         <div>
-          <span className="text-[10px] md:text-xs uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4 block font-bold">{t('landing.contact_details')}</span>
+          <span className="text-[10px] md:text-xs uppercase tracking-widest text-ink-faint mb-4 block font-bold">{t('landing.contact_details')}</span>
           <h2 className="font-serif text-4xl sm:text-5xl md:text-7xl font-light tracking-tighter mb-8">{t('landing.visit_hyecuts')}</h2>
           <div className="space-y-8 text-xs md:text-sm text-zinc-600 dark:text-zinc-400">
             <div>
@@ -28,7 +28,7 @@ export default function ContactSection() {
               <div className="space-y-1">
                 {TEAM_MEMBERS.map((member) => (
                   <p key={member.name} className="font-medium">
-                    {member.name} — <span className="text-zinc-400 dark:text-zinc-500">{t(`data.roles.${member.role}`)}</span>
+                    {member.name} — <span className="text-ink-faint">{t(`data.roles.${member.role}`)}</span>
                   </p>
                 ))}
               </div>
@@ -36,13 +36,13 @@ export default function ContactSection() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#1A1A1A] border border-zinc-200 dark:border-zinc-800 p-6 md:p-8 transition-colors flex flex-col justify-between">
+        <div className="bg-surface-card border border-hairline-strong p-6 md:p-8 transition-colors flex flex-col justify-between">
           <div>
-            <span className="text-[10px] md:text-xs uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-6 block font-bold">{t('landing.social')}</span>
+            <span className="text-[10px] md:text-xs uppercase tracking-widest text-ink-faint mb-6 block font-bold">{t('landing.social')}</span>
             <div className="flex items-center gap-4">
               <a
                 aria-label="Instagram"
-                className="inline-flex items-center justify-center w-12 h-12 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+                className="inline-flex items-center justify-center w-12 h-12 border border-hairline-strong hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
                 href={HYECUTS.instagram}
                 target="_blank"
                 rel="noreferrer"
@@ -55,7 +55,7 @@ export default function ContactSection() {
               </a>
               <a
                 aria-label="Facebook"
-                className="inline-flex items-center justify-center w-12 h-12 border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+                className="inline-flex items-center justify-center w-12 h-12 border border-hairline-strong hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
                 href={HYECUTS.facebook}
                 target="_blank"
                 rel="noreferrer"

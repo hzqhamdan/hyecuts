@@ -186,7 +186,7 @@ export default function BookingFlow() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="min-h-screen bg-white dark:bg-[#1A1A1A] text-black dark:text-[#FAFAFA] font-sans flex flex-col p-4 sm:p-6 md:p-12 transition-colors duration-500"
+      className="min-h-screen bg-surface-card text-black dark:text-studio-white font-sans flex flex-col p-4 sm:p-6 md:p-12 transition-colors duration-500"
     >
       <nav className="flex flex-col sm:grid sm:grid-cols-3 items-center max-w-5xl mx-auto w-full mb-8 sm:mb-10 gap-4 sm:gap-0">
         <div className="flex justify-between items-center w-full sm:w-auto sm:justify-self-start order-2 sm:order-1">
@@ -241,7 +241,7 @@ export default function BookingFlow() {
             {step === 0 && (
               <motion.div key="step0" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="flex flex-col items-center justify-center py-6 md:py-12">
                 <h2 className="font-serif text-3xl sm:text-4xl uppercase tracking-tighter mb-4 text-center text-black dark:text-white">{t('booking.how_to_proceed')}</h2>
-                <p className="text-zinc-500 dark:text-zinc-400 mb-10 md:mb-12 text-center max-w-md leading-relaxed font-light italic text-sm md:text-base px-4">
+                <p className="text-ink-muted mb-10 md:mb-12 text-center max-w-md leading-relaxed font-light italic text-sm md:text-base px-4">
                   {t('login.join_network')}
                 </p>
 
@@ -257,11 +257,11 @@ export default function BookingFlow() {
 
                   <button
                     onClick={() => { setStep(1); }}
-                    className="p-6 md:p-8 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1A1A1A] hover:border-black dark:hover:border-white transition-all flex flex-col items-center text-center group active:scale-[0.98]"
+                    className="p-6 md:p-8 border border-hairline-strong bg-surface-card hover:border-black dark:hover:border-white transition-all flex flex-col items-center text-center group active:scale-[0.98]"
                   >
                     <UserPlus className="w-8 h-8 mb-4 text-zinc-400 dark:text-zinc-600 group-hover:text-black dark:group-hover:text-white transition-colors" />
                     <span className="text-[10px] uppercase tracking-widest font-bold mb-2 text-black dark:text-white">{t('booking.guest_cta')}</span>
-                    <span className="text-xs text-zinc-500 dark:text-zinc-400 font-light">{t('booking.guest_desc')}</span>
+                    <span className="text-xs text-ink-muted font-light">{t('booking.guest_desc')}</span>
                   </button>
                 </div>
               </motion.div>
@@ -270,7 +270,7 @@ export default function BookingFlow() {
             {step === 1 && (
               <motion.div key="step1" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="px-1 sm:px-0">
                 <h2 className="font-serif text-2xl sm:text-3xl uppercase tracking-tighter mb-2 text-black dark:text-white">{t('booking.select_service')}</h2>
-                <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mb-8 font-light italic">{t('booking.service_note')}</p>
+                <p className="text-xs sm:text-sm text-ink-muted mb-8 font-light italic">{t('booking.service_note')}</p>
 
                 {servicesUnavailable && (
                   // Surfaced here rather than at Confirm (BK-020): if we cannot load
@@ -295,7 +295,7 @@ export default function BookingFlow() {
                     {SERVICE_CATEGORIES.map((categoryGroup) => {
                       const isOpen = openCategory === categoryGroup.category;
                       return (
-                        <div key={categoryGroup.category} className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1A1A1A] transition-colors">
+                        <div key={categoryGroup.category} className="border border-hairline-strong bg-surface-card transition-colors">
                           <button
                             onClick={() => { setOpenCategory(isOpen ? null : categoryGroup.category); }}
                             className="w-full px-5 py-4 md:px-6 md:py-5 flex items-center justify-between text-left hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors"
@@ -330,7 +330,7 @@ export default function BookingFlow() {
                                         !isSelectable
                                           ? 'opacity-40 cursor-not-allowed border-transparent'
                                           : selectedService === service.name
-                                          ? '!border-gold bg-white dark:bg-[#1A1A1A] cursor-pointer'
+                                          ? '!border-gold bg-surface-card cursor-pointer'
                                           : 'border-transparent dark:border-transparent hover:border-zinc-300 dark:hover:border-zinc-700 cursor-pointer'
                                       }`}
                                     >
@@ -344,7 +344,7 @@ export default function BookingFlow() {
                                           {service.price}
                                         </span>
                                       </div>
-                                      <div className="flex gap-4 text-[9px] sm:text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 font-bold">
+                                      <div className="flex gap-4 text-[9px] sm:text-[10px] uppercase tracking-widest text-ink-faint font-bold">
                                         <span>{service.duration}</span>
                                         {!isSelectable && (
                                           <span>
@@ -377,7 +377,7 @@ export default function BookingFlow() {
             {step === 2 && (
               <motion.div key="step2" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="px-1 sm:px-0">
                 <h2 className="font-serif text-2xl sm:text-3xl uppercase tracking-tighter mb-2 text-black dark:text-white">{t('booking.select_barber')}</h2>
-                <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mb-8 font-light italic">{t('booking.barber_note')}</p>
+                <p className="text-xs sm:text-sm text-ink-muted mb-8 font-light italic">{t('booking.barber_note')}</p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                   {STAFF.map((staff) => (
@@ -387,7 +387,7 @@ export default function BookingFlow() {
                       className={`p-6 border-2 cursor-pointer text-center transition-all duration-300 ${
                         selectedStaff === staff.id 
                           ? 'border-studio-black dark:border-studio-gold bg-neutral-50 dark:bg-studio-gold/10' 
-                          : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-600'
+                          : 'border-hairline-strong hover:border-zinc-400 dark:hover:border-zinc-600'
                       }`}
                     >
                       <div className={`w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center font-bold transition-colors ${selectedStaff === staff.id ? 'bg-studio-black dark:bg-studio-gold text-studio-white dark:text-studio-black' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-500'}`}>
@@ -414,10 +414,10 @@ export default function BookingFlow() {
             {step === 3 && (
               <motion.div key="step3" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="px-1 sm:px-0">
                 <h2 className="font-serif text-2xl sm:text-3xl uppercase tracking-tighter mb-2 text-black dark:text-white">{t('booking.select_schedule')}</h2>
-                <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mb-8 font-light italic">{t('booking.closed_note')}</p>
+                <p className="text-xs sm:text-sm text-ink-muted mb-8 font-light italic">{t('booking.closed_note')}</p>
 
                 <div className="mb-8">
-                  <h4 className="text-[10px] uppercase tracking-widest font-bold mb-4 flex items-center gap-2 text-zinc-400 dark:text-zinc-500">
+                  <h4 className="text-[10px] uppercase tracking-widest font-bold mb-4 flex items-center gap-2 text-ink-faint">
                     <Calendar className="w-3 h-3" /> {t('booking.day')}
                   </h4>
                   <div className="flex gap-3 overflow-x-auto pb-4 -mx-1 px-1 snap-x">
@@ -432,7 +432,7 @@ export default function BookingFlow() {
                         className={`min-w-[120px] snap-start flex-shrink-0 p-4 border-2 text-center cursor-pointer transition-all ${
                           selectedDate === date.id 
                             ? 'border-studio-black dark:border-studio-gold bg-studio-black dark:bg-studio-gold text-studio-white dark:text-studio-black font-bold' 
-                            : 'border-zinc-200 dark:border-zinc-800 text-black dark:text-white hover:border-black dark:hover:border-white'
+                            : 'border-hairline-strong text-black dark:text-white hover:border-black dark:hover:border-white'
                         }`}
                       >
                         <div className={`text-[10px] uppercase tracking-widest mb-1 font-bold ${selectedDate === date.id ? 'opacity-100' : 'opacity-60'}`}>{t(`data.days.${date.day}`)}</div>
@@ -443,7 +443,7 @@ export default function BookingFlow() {
                 </div>
 
                 <div className={`transition-opacity duration-300 ${selectedDate ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
-                  <h4 className="text-[10px] uppercase tracking-widest font-bold mb-4 flex items-center gap-2 text-zinc-400 dark:text-zinc-500">
+                  <h4 className="text-[10px] uppercase tracking-widest font-bold mb-4 flex items-center gap-2 text-ink-faint">
                     <Clock className="w-3 h-3" /> {t('booking.time')}
                   </h4>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -455,10 +455,10 @@ export default function BookingFlow() {
                           onClick={() => { if (!isBooked) setSelectedTime(time); }}
                           className={`p-3 border-2 text-center cursor-pointer text-xs font-mono transition-all ${
                             isBooked 
-                              ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 border-zinc-200 dark:border-zinc-800 cursor-not-allowed'
+                              ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-600 border-hairline-strong cursor-not-allowed'
                               : selectedTime === time 
                                 ? 'border-studio-black dark:border-studio-gold bg-studio-black dark:bg-studio-gold text-studio-white dark:text-studio-black font-bold' 
-                                : 'border-zinc-200 dark:border-zinc-800 text-black dark:text-white hover:border-black dark:hover:border-white'
+                                : 'border-hairline-strong text-black dark:text-white hover:border-black dark:hover:border-white'
                           }`}
                         >
                           {time} {isBooked && '(Booked)'}
@@ -481,40 +481,40 @@ export default function BookingFlow() {
             {step === 4 && (
               <motion.div key="step4" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="px-1 sm:px-0">
                 <h2 className="font-serif text-2xl sm:text-3xl uppercase tracking-tighter mb-2 text-black dark:text-white">{t('booking.final_review')}</h2>
-                <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mb-8 font-light italic">{t('booking.policy_note')}</p>
+                <p className="text-xs sm:text-sm text-ink-muted mb-8 font-light italic">{t('booking.policy_note')}</p>
 
-                <div className="bg-neutral-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 sm:p-8 space-y-6 mb-10 transition-colors">
-                  <div className="flex justify-between border-b border-zinc-200 dark:border-zinc-800 pb-6 gap-6">
+                <div className="bg-neutral-50 dark:bg-zinc-900 border border-hairline-strong p-6 sm:p-8 space-y-6 mb-10 transition-colors">
+                  <div className="flex justify-between border-b border-hairline-strong pb-6 gap-6">
                     <div>
-                      <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1 font-bold">{t('nav.services')}</div>
+                      <div className="text-[10px] uppercase tracking-widest text-ink-faint mb-1 font-bold">{t('nav.services')}</div>
                       <div className="font-serif text-lg sm:text-xl uppercase tracking-tight text-black dark:text-white">{getService() ? t(`data.services.${getService()!.name}`) : ''}</div>
                     </div>
                     <div className="text-right">
-                      <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1 font-bold">{t('booking.total')}</div>
+                      <div className="text-[10px] uppercase tracking-widest text-ink-faint mb-1 font-bold">{t('booking.total')}</div>
                       <div className="font-mono text-black dark:text-white font-bold">{getService()?.price}</div>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-y-6 gap-x-4">
                     <div>
-                      <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1 font-bold">{t('booking.select_barber').split(' ')[1] || 'Barber'}</div>
+                      <div className="text-[10px] uppercase tracking-widest text-ink-faint mb-1 font-bold">{t('booking.select_barber').split(' ')[1] || 'Barber'}</div>
                       <div className="text-xs sm:text-sm text-black dark:text-white font-medium">{getStaff()?.id === 'any' ? t('landing.no_preference') : getStaff()?.name}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1 font-bold">{t('booking.duration')}</div>
+                      <div className="text-[10px] uppercase tracking-widest text-ink-faint mb-1 font-bold">{t('booking.duration')}</div>
                       <div className="text-xs sm:text-sm text-black dark:text-white font-medium">{getService()?.duration}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1 font-bold">{t('booking.day')}</div>
+                      <div className="text-[10px] uppercase tracking-widest text-ink-faint mb-1 font-bold">{t('booking.day')}</div>
                       <div className="text-xs sm:text-sm text-black dark:text-white font-medium">{getDate() ? t(`data.days.${getDate()!.day}`) : ''}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1 font-bold">{t('booking.time')}</div>
+                      <div className="text-[10px] uppercase tracking-widest text-ink-faint mb-1 font-bold">{t('booking.time')}</div>
                       <div className="text-xs sm:text-sm text-black dark:text-white font-medium">{selectedTime ? t(`data.times.${selectedTime}`, { defaultValue: selectedTime }) : ''}</div>
                     </div>
                   </div>
 
-                  <div className="pt-6 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
+                  <div className="pt-6 border-t border-hairline-strong space-y-3">
                     <div className="flex items-center gap-2 text-black dark:text-white font-bold uppercase tracking-widest text-[9px] mb-2">
                       <ShieldCheck className="w-4 h-4 text-black dark:text-gold" />
                       {t('landing.policy_2')}
@@ -528,7 +528,7 @@ export default function BookingFlow() {
                 </div>
 
                 {!token && (
-                  <div className="bg-neutral-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 sm:p-8 space-y-4 mb-6">
+                  <div className="bg-neutral-50 dark:bg-zinc-900 border border-hairline-strong p-6 sm:p-8 space-y-4 mb-6">
                     <h3 className="text-[10px] uppercase tracking-widest font-bold text-black dark:text-white">
                       {t('booking.guest_details_title', { defaultValue: 'Your Details' })}
                     </h3>
@@ -537,21 +537,21 @@ export default function BookingFlow() {
                       value={guestName}
                       onChange={(e) => { setGuestName(e.target.value); }}
                       placeholder={t('booking.guest_name', { defaultValue: 'Full Name' })}
-                      className="w-full p-3 text-sm border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1A1A1A] text-black dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
+                      className="w-full p-3 text-sm border border-hairline-strong bg-surface-card text-black dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
                     />
                     <input
                       type="email"
                       value={guestEmail}
                       onChange={(e) => { setGuestEmail(e.target.value); }}
                       placeholder={t('booking.guest_email', { defaultValue: 'Email' })}
-                      className="w-full p-3 text-sm border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1A1A1A] text-black dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
+                      className="w-full p-3 text-sm border border-hairline-strong bg-surface-card text-black dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
                     />
                     <input
                       type="tel"
                       value={guestPhone}
                       onChange={(e) => { setGuestPhone(e.target.value); }}
                       placeholder={t('booking.guest_phone', { defaultValue: 'Phone Number' })}
-                      className="w-full p-3 text-sm border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#1A1A1A] text-black dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
+                      className="w-full p-3 text-sm border border-hairline-strong bg-surface-card text-black dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
                     />
                   </div>
                 )}
@@ -573,7 +573,7 @@ export default function BookingFlow() {
                     {t('booking.pay_at_shop', { defaultValue: 'Pay at Shop' })}
                   </button>
                   {!token && (
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-3 text-center italic">
+                    <p className="text-xs text-ink-muted mt-3 text-center italic">
                       {t('booking.guest_pay_at_shop_note', { defaultValue: 'Guest bookings are pay-at-shop only — log in to pay a deposit online.' })}
                     </p>
                   )}
@@ -595,10 +595,10 @@ export default function BookingFlow() {
                   <CheckCircle className="w-8 h-8" />
                 </div>
                 <h2 className="font-serif text-4xl uppercase tracking-tighter mb-4 text-black dark:text-white">{t('booking.secured')}</h2>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-2">{t('booking.appointment_confirmed')}</p>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-12 font-light italic">{t('booking.arrive_early')}</p>
+                <p className="text-sm text-ink-muted mb-2">{t('booking.appointment_confirmed')}</p>
+                <p className="text-sm text-ink-muted mb-12 font-light italic">{t('booking.arrive_early')}</p>
 
-                <div className="font-mono text-xs bg-neutral-50 dark:bg-zinc-900 p-4 border border-zinc-200 dark:border-zinc-800 mb-12 inline-block text-black dark:text-white font-bold">
+                <div className="font-mono text-xs bg-neutral-50 dark:bg-zinc-900 p-4 border border-hairline-strong mb-12 inline-block text-black dark:text-white font-bold">
                   {t('booking.ref_label')}: {bookingRef || 'HYC-0000'}
                 </div>
 
@@ -626,7 +626,7 @@ export default function BookingFlow() {
         </div>
 
         <aside className="w-full lg:sticky lg:top-6 h-fit bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 p-6 self-start transition-colors">
-          <span className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4 block font-bold">{t('booking.notes')}</span>
+          <span className="text-[10px] uppercase tracking-widest text-ink-faint mb-4 block font-bold">{t('booking.notes')}</span>
           <h3 className="font-serif text-2xl italic mb-6 text-black dark:text-white">{HYECUTS.name}</h3>
           <div className="space-y-4 text-sm text-zinc-600 dark:text-zinc-400 font-light">
             <div>

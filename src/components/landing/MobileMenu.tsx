@@ -21,7 +21,7 @@ export default function MobileMenu({ isOpen, onClose, token, onToggleLanguage, i
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="fixed inset-0 z-40 bg-white dark:bg-[#1A1A1A] pt-24 px-10 flex flex-col gap-8 text-center"
+      className="fixed inset-0 z-40 bg-surface-card pt-24 px-10 flex flex-col gap-8 text-center"
     >
       {['services', 'hours', 'contact'].map((item) => (
         <motion.a

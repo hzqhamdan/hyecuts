@@ -42,7 +42,7 @@ export function StaffManager() {
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
         <div>
           <h2 className="font-serif text-5xl mb-4 font-light text-black dark:text-white">{t('atelier.nav.staff_manager', { defaultValue: 'Staff Roster' })}</h2>
-          <p className="text-zinc-400 dark:text-zinc-500 font-sans uppercase tracking-widest text-[11px]">{t('atelier.staff.subtitle', { defaultValue: 'Team & Availability Roster' })}</p>
+          <p className="text-ink-faint font-sans uppercase tracking-widest text-[11px]">{t('atelier.staff.subtitle', { defaultValue: 'Team & Availability Roster' })}</p>
         </div>
         <button 
           onClick={() => setIsAdding(true)}
@@ -57,7 +57,7 @@ export function StaffManager() {
           <motion.div 
             key={member.id}
             whileHover={{ y: -4 }}
-            className="group relative bg-white dark:bg-[#1A1A1A] border border-zinc-100 dark:border-zinc-800 p-10 hover:border-black dark:hover:border-white transition-all cursor-pointer"
+            className="group relative bg-surface-card border border-zinc-100 dark:border-zinc-800 p-10 hover:border-black dark:hover:border-white transition-all cursor-pointer"
             onClick={() => setSelectedStaff(member)}
           >
             <div className="absolute top-10 right-10">
@@ -70,10 +70,10 @@ export function StaffManager() {
 
             <div className="space-y-2">
               <h3 className="font-serif text-2xl italic text-black dark:text-white">{member.name}</h3>
-              <p className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 font-bold">{t(`data.roles.${member.role}`, { defaultValue: member.role })}</p>
+              <p className="text-[10px] uppercase tracking-widest text-ink-faint font-bold">{t(`data.roles.${member.role}`, { defaultValue: member.role })}</p>
             </div>
 
-            <div className="mt-8 pt-8 border-t border-zinc-50 dark:border-zinc-800 flex justify-between items-center text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500">
+            <div className="mt-8 pt-8 border-t border-zinc-50 dark:border-zinc-800 flex justify-between items-center text-[10px] uppercase tracking-widest text-ink-faint">
               <span className="flex items-center gap-2"><Clock size={12} /> {t('atelier.staff.schedule', { defaultValue: 'Schedule' })}</span>
               <span className="text-black dark:text-white font-bold">7 {t('data.days.Days', { defaultValue: 'Days' })}</span>
             </div>
@@ -91,7 +91,7 @@ export function StaffManager() {
             />
             <motion.div 
               initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-2xl bg-white dark:bg-[#1A1A1A] shadow-2xl p-12 overflow-y-auto max-h-[90vh]"
+              className="relative w-full max-w-2xl bg-surface-card shadow-overlay p-12 overflow-y-auto max-h-[90vh]"
             >
               <button 
                 onClick={() => setSelectedStaff(null)}
@@ -118,7 +118,7 @@ export function StaffManager() {
 
                 <section className="space-y-8">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-zinc-400 dark:text-zinc-500">{t('atelier.staff.availability', { defaultValue: 'Availability Schedule' })}</h4>
+                    <h4 className="text-[10px] uppercase tracking-[0.2em] font-bold text-ink-faint">{t('atelier.staff.availability', { defaultValue: 'Availability Schedule' })}</h4>
                     <button className="text-[9px] uppercase tracking-widest text-gold font-bold hover:underline">{t('atelier.staff.reset_default', { defaultValue: 'Reset to Studio Default' })}</button>
                   </div>
 
@@ -150,7 +150,7 @@ export function StaffManager() {
                   </button>
                   <button 
                     onClick={() => setSelectedStaff(null)}
-                    className="px-8 py-4 border border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 text-[10px] uppercase tracking-widest font-bold hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-all"
+                    className="px-8 py-4 border border-hairline-strong text-ink-faint text-[10px] uppercase tracking-widest font-bold hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-all"
                   >
                     {t('atelier.loyalty.cancel')}
                   </button>

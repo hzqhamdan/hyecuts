@@ -30,15 +30,15 @@ export default function AtelierDashboard() {
   const isStaff = user?.role === 'junior' || isMasterBarber;
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-white dark:bg-[#1A1A1A] text-black dark:text-[#FAFAFA] font-sans selection:bg-black selection:text-white transition-colors duration-500">
-      <aside className="w-full md:w-72 border-b md:border-r border-zinc-100 dark:border-zinc-800 flex flex-col h-auto md:h-screen md:sticky top-0 bg-white dark:bg-[#1A1A1A] z-20 transition-colors">
+    <div className="flex flex-col md:flex-row min-h-screen bg-surface-card text-black dark:text-studio-white font-sans selection:bg-black selection:text-white transition-colors duration-500">
+      <aside className="w-full md:w-72 border-b md:border-r border-zinc-100 dark:border-zinc-800 flex flex-col h-auto md:h-screen md:sticky top-0 bg-surface-card z-20 transition-colors">
         <div className="p-6 sm:p-10 mb-2 md:mb-8">
           <button 
             onClick={() => { navigate('/'); }}
             className="text-left hover:opacity-70 transition-opacity focus:outline-none group"
           >
             <h1 className="font-serif text-2xl sm:text-3xl tracking-tighter font-light uppercase italic group-hover:tracking-normal transition-all duration-500">
-              Hyecuts <span className="font-sans text-[9px] sm:text-[10px] not-italic tracking-[0.3em] block text-zinc-400 dark:text-zinc-500 uppercase mt-1 font-bold">{t('atelier.title')}</span>
+              Hyecuts <span className="font-sans text-[9px] sm:text-[10px] not-italic tracking-[0.3em] block text-ink-faint uppercase mt-1 font-bold">{t('atelier.title')}</span>
             </h1>
           </button>
         </div>
@@ -51,7 +51,7 @@ export default function AtelierDashboard() {
                 `flex items-center justify-between px-4 py-3 transition-all duration-300 group whitespace-nowrap ${
                   isActive
                     ? 'bg-black dark:bg-white text-white dark:text-black'
-                    : 'text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900'
+                    : 'text-ink-faint hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900'
                 }`
               }
             >
@@ -73,7 +73,7 @@ export default function AtelierDashboard() {
                 `flex items-center justify-between px-4 py-3 transition-all duration-300 group whitespace-nowrap ${
                   isActive
                     ? 'bg-black dark:bg-white text-white dark:text-black'
-                    : 'text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900'
+                    : 'text-ink-faint hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900'
                 }`
               }
             >
@@ -95,7 +95,7 @@ export default function AtelierDashboard() {
                 `flex items-center justify-between px-4 py-3 transition-all duration-300 group whitespace-nowrap ${
                   isActive
                     ? 'bg-black dark:bg-white text-white dark:text-black'
-                    : 'text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900'
+                    : 'text-ink-faint hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900'
                 }`
               }
             >
@@ -117,7 +117,7 @@ export default function AtelierDashboard() {
                 `flex items-center justify-between px-4 py-3 transition-all duration-300 group whitespace-nowrap ${
                   isActive
                     ? 'bg-black dark:bg-white text-white dark:text-black'
-                    : 'text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900'
+                    : 'text-ink-faint hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900'
                 }`
               }
             >
@@ -139,7 +139,7 @@ export default function AtelierDashboard() {
                 `flex items-center justify-between px-4 py-3 transition-all duration-300 group whitespace-nowrap ${
                   isActive
                     ? 'bg-black dark:bg-white text-white dark:text-black'
-                    : 'text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900'
+                    : 'text-ink-faint hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900'
                 }`
               }
             >
@@ -161,7 +161,7 @@ export default function AtelierDashboard() {
                 `flex items-center justify-between px-4 py-3 transition-all duration-300 group whitespace-nowrap ${
                   isActive
                     ? 'bg-black dark:bg-white text-white dark:text-black'
-                    : 'text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900'
+                    : 'text-ink-faint hover:text-black dark:hover:text-white hover:bg-zinc-50 dark:hover:bg-zinc-900'
                 }`
               }
             >
@@ -187,7 +187,7 @@ export default function AtelierDashboard() {
               }}
               className="flex items-center gap-4 p-4 rounded-none bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all"
             >
-              {i18n.language === 'en' ? <Globe size={14} className="text-zinc-400 dark:text-zinc-500" /> : <img src="/flags/my.svg" alt="Malaysia" className="w-4 h-3 rounded-sm" />}
+              {i18n.language === 'en' ? <Globe size={14} className="text-ink-faint" /> : <img src="/flags/my.svg" alt="Malaysia" className="w-4 h-3 rounded-sm" />}
               <div className="flex justify-between items-center w-full">
                 <span>{i18n.language === 'en' ? 'English' : 'Bahasa Malaysia'}</span>
                 <span className="text-zinc-300 dark:text-zinc-600 ml-auto">{i18n.language === 'en' ? 'EN' : 'MY'}</span>
@@ -196,11 +196,11 @@ export default function AtelierDashboard() {
             <div className="flex items-center gap-4 p-4 rounded-none bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800">
               <div className="relative">
                 <div className="w-1 h-1 bg-gold rounded-full absolute -top-1 -right-1 border border-white dark:border-black" />
-                <ShieldCheck size={14} className="text-zinc-400 dark:text-zinc-500" />
+                <ShieldCheck size={14} className="text-ink-faint" />
               </div>
               <div className="text-[10px] uppercase tracking-widest">
                 <p className="font-bold text-black dark:text-white">{t('atelier.session_active')}</p>
-                <p className="text-zinc-400 dark:text-zinc-500 font-bold">
+                <p className="text-ink-faint font-bold">
                   {user?.role === 'owner' ? t('atelier.owner_access') : user?.role?.replace('_', ' ') || 'Staff Access'}
                 </p>
               </div>
@@ -227,7 +227,7 @@ export default function AtelierDashboard() {
           >
             {i18n.language === 'en' ? 'EN' : 'MY'}
           </button>
-          <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest text-zinc-400 font-bold">
+          <div className="flex items-center gap-2 text-[9px] uppercase tracking-widest text-ink-faint font-bold">
             <ShieldCheck size={12} /> {user?.role === 'owner' ? 'Owner' : 'Staff'}
           </div>
           <button 

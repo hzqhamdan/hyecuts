@@ -7,10 +7,10 @@ export default function HoursSection() {
   const { t } = useTranslation();
 
   return (
-    <section id="hours" className="py-16 md:py-24 px-6 md:px-12 bg-white dark:bg-[#1A1A1A] transition-colors">
+    <section id="hours" className="py-16 md:py-24 px-6 md:px-12 bg-surface-card transition-colors">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
         <div>
-          <span className="text-[10px] md:text-xs uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4 block font-bold">{t('landing.business_hours')}</span>
+          <span className="text-[10px] md:text-xs uppercase tracking-widest text-ink-faint mb-4 block font-bold">{t('landing.business_hours')}</span>
           <h2 className="font-serif text-4xl sm:text-5xl md:text-7xl font-light tracking-tighter mb-8">{t('landing.weekly_schedule')}</h2>
           <div className="space-y-4">
             {BUSINESS_HOURS.map((slot) => (
@@ -23,7 +23,7 @@ export default function HoursSection() {
         </div>
 
         <div className="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 p-6 md:p-8 transition-colors">
-          <span className="text-[10px] md:text-xs uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4 block font-bold">{t('landing.booking_policies')}</span>
+          <span className="text-[10px] md:text-xs uppercase tracking-widest text-ink-faint mb-4 block font-bold">{t('landing.booking_policies')}</span>
           <h3 className="font-serif text-2xl md:text-3xl italic mb-6">{t('landing.arrive_prepared')}</h3>
           <div className="space-y-4">
             {BOOKING_POLICIES.map((policy, idx) => (

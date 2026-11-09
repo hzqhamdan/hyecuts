@@ -29,28 +29,28 @@ export function BookingsManager() {
     <div className="space-y-16">
       <header>
         <h2 className="font-serif text-5xl mb-4 font-light text-black dark:text-white">{t('atelier.bookings.active_title')}</h2>
-        <p className="text-zinc-400 dark:text-zinc-500 font-sans uppercase tracking-widest text-[11px]">{t('atelier.bookings.management_subtitle')}</p>
+        <p className="text-ink-faint font-sans uppercase tracking-widest text-[11px]">{t('atelier.bookings.management_subtitle')}</p>
       </header>
 
-      <div className="grid grid-cols-1 gap-px bg-zinc-200 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800">
+      <div className="grid grid-cols-1 gap-px bg-zinc-200 dark:bg-zinc-800 border border-hairline-strong">
         {isLoading ? (
-          <div className="p-20 bg-white dark:bg-[#1A1A1A] text-center text-zinc-400 dark:text-zinc-500 uppercase tracking-widest text-xs">{t('atelier.bookings.accessing')}</div>
+          <div className="p-20 bg-surface-card text-center text-ink-faint uppercase tracking-widest text-xs">{t('atelier.bookings.accessing')}</div>
         ) : bookings.filter(b => b.status === 'PENDING').length === 0 ? (
-          <div className="p-20 bg-white dark:bg-[#1A1A1A] text-center text-zinc-400 dark:text-zinc-500 uppercase tracking-widest text-xs">{t('atelier.bookings.no_pending')}</div>
+          <div className="p-20 bg-surface-card text-center text-ink-faint uppercase tracking-widest text-xs">{t('atelier.bookings.no_pending')}</div>
         ) : (
           bookings.filter(b => b.status === 'PENDING').map(booking => (
-            <div key={booking.id} className="p-10 bg-white dark:bg-[#1A1A1A] flex flex-col md:flex-row justify-between items-start md:items-center gap-8 group hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all">
+            <div key={booking.id} className="p-10 bg-surface-card flex flex-col md:flex-row justify-between items-start md:items-center gap-8 group hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all">
               <div className="flex items-center gap-8">
-                <div className="p-4 bg-zinc-100 dark:bg-zinc-800 rounded-full text-zinc-400 dark:text-zinc-500">
+                <div className="p-4 bg-zinc-100 dark:bg-zinc-800 rounded-full text-ink-faint">
                   <User size={24} />
                 </div>
                 <div className="space-y-1">
                   <h4 className="font-serif text-2xl italic text-black dark:text-white">{booking.user.fullName ?? booking.user.email}</h4>
-                  <div className="flex items-center gap-4 text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 font-bold">
+                  <div className="flex items-center gap-4 text-[10px] uppercase tracking-widest text-ink-faint font-bold">
                     <span className="flex items-center gap-1"><Clock size={12} /> {new Date(booking.appointmentTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     <span className="flex items-center gap-1"><Calendar size={12} /> {new Date(booking.appointmentTime).toLocaleDateString()}</span>
                     {booking.createdAt && (
-                      <span className="ml-2 pl-4 border-l border-zinc-200 dark:border-zinc-800 text-zinc-300 dark:text-zinc-600">
+                      <span className="ml-2 pl-4 border-l border-hairline-strong text-zinc-300 dark:text-zinc-600">
                         {t('atelier.bookings.booked_at', { defaultValue: 'Booked' })}: {new Date(booking.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     )}
@@ -61,7 +61,7 @@ export function BookingsManager() {
               
               <div className="flex flex-col items-end gap-4 w-full md:w-auto">
                 <div className="text-right">
-                  <span className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 block mb-1">{t('atelier.bookings.total_fee')}</span>
+                  <span className="text-[10px] uppercase tracking-widest text-ink-faint block mb-1">{t('atelier.bookings.total_fee')}</span>
                   <span className="font-serif text-2xl text-black dark:text-white">RM {booking.totalPriceMyr.toString()}</span>
                 </div>
                 <button
@@ -85,9 +85,9 @@ export function BookingsManager() {
                 <div className="flex items-center gap-4">
                   <CheckCircle2 size={16} className="text-green-600" />
                   <span className="text-xs font-bold uppercase tracking-widest text-black dark:text-white">{b.user.email}</span>
-                  <span className="text-xs text-zinc-400 dark:text-zinc-500">— {t(`data.services.${b.service.name}`, { defaultValue: b.service.name })}</span>
+                  <span className="text-xs text-ink-faint">— {t(`data.services.${b.service.name}`, { defaultValue: b.service.name })}</span>
                 </div>
-                <span className="font-mono text-[10px] text-zinc-400 dark:text-zinc-500">{new Date(b.appointmentTime).toLocaleTimeString()}</span>
+                <span className="font-mono text-[10px] text-ink-faint">{new Date(b.appointmentTime).toLocaleTimeString()}</span>
              </div>
            ))}
         </div>

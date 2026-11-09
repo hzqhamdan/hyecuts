@@ -49,7 +49,7 @@ export default function UserBookings() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="min-h-screen bg-white dark:bg-[#1A1A1A] text-black dark:text-[#FAFAFA] p-4 sm:p-6 md:p-12 font-sans transition-colors duration-500"
+      className="min-h-screen bg-surface-card text-black dark:text-studio-white p-4 sm:p-6 md:p-12 font-sans transition-colors duration-500"
     >
       <nav className="flex justify-between items-center max-w-5xl mx-auto mb-10 sm:mb-16">
         <button
@@ -65,14 +65,14 @@ export default function UserBookings() {
 
       <div className="max-w-5xl mx-auto">
         {isLoading ? (
-          <div className="text-center py-20 text-zinc-500 dark:text-zinc-400 text-[10px] uppercase tracking-widest font-bold">
+          <div className="text-center py-20 text-ink-muted text-[10px] uppercase tracking-widest font-bold">
             Loading Appointments...
           </div>
         ) : bookings.length === 0 ? (
-          <div className="text-center py-16 sm:py-20 border border-zinc-200 dark:border-zinc-800 bg-neutral-50 dark:bg-zinc-900/50 transition-colors px-6">
+          <div className="text-center py-16 sm:py-20 border border-hairline-strong bg-neutral-50 dark:bg-zinc-900/50 transition-colors px-6">
             <Calendar className="w-12 h-12 mx-auto mb-4 text-zinc-300 dark:text-zinc-700" />
             <h2 className="font-display text-xl sm:text-2xl uppercase tracking-tighter mb-2 text-black dark:text-white">No Appointments Yet</h2>
-            <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mb-8 font-light italic">You haven't made any bookings.</p>
+            <p className="text-xs sm:text-sm text-ink-muted mb-8 font-light italic">You haven't made any bookings.</p>
             <button
               onClick={() => { navigate('/booking'); }}
               className="px-8 py-4 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all active:scale-[0.98]"
@@ -119,7 +119,7 @@ export default function UserBookings() {
   };
 
   return (
-                <div key={booking.id} className="border border-zinc-200 dark:border-zinc-800 p-5 sm:p-6 bg-white dark:bg-[#1A1A1A] flex flex-col md:flex-row justify-between items-start md:items-center gap-6 hover:border-black dark:hover:border-white transition-all group">
+                <div key={booking.id} className="border border-hairline-strong p-5 sm:p-6 bg-surface-card flex flex-col md:flex-row justify-between items-start md:items-center gap-6 hover:border-black dark:hover:border-white transition-all group">
                   <div className="w-full">
                     <div className="flex items-center gap-2 mb-4">
                       <span className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 border ${
@@ -131,7 +131,7 @@ export default function UserBookings() {
                       </span>
                     </div>
                     <h3 className="font-serif text-2xl sm:text-3xl italic tracking-tight mb-6 text-black dark:text-white group-hover:translate-x-1 transition-transform">{booking.service?.name || 'Service'}</h3>
-                    <div className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6 text-[9px] sm:text-[10px] uppercase tracking-widest font-bold text-zinc-400 dark:text-zinc-500">
+                    <div className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6 text-[9px] sm:text-[10px] uppercase tracking-widest font-bold text-ink-faint">
                       <div className="flex items-center gap-2">
                         <Calendar className="w-3.5 h-3.5 text-gold" /> {dateStr}
                       </div>
@@ -150,21 +150,21 @@ export default function UserBookings() {
                   </div>
                   <div className="text-left md:text-right w-full md:w-auto border-t md:border-t-0 border-zinc-100 dark:border-zinc-800 pt-5 md:pt-0 flex flex-col sm:flex-row md:flex-col justify-between items-start sm:items-end gap-4">
                     <div>
-                      <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1 font-bold">Total</div>
+                      <div className="text-[10px] uppercase tracking-widest text-ink-faint mb-1 font-bold">Total</div>
                       <div className="font-serif text-2xl sm:text-3xl text-black dark:text-white">RM {booking.totalPriceMyr.toFixed(2)}</div>
                     </div>
                     {booking.status === 'PENDING' && (
                       <div className="flex gap-2 w-full sm:w-auto justify-end">
                         <button 
                           onClick={() => generateICS(booking)}
-                          className="p-3 border border-zinc-200 dark:border-zinc-800 hover:border-black dark:hover:border-white transition-colors group/cal active:scale-95"
+                          className="p-3 border border-hairline-strong hover:border-black dark:hover:border-white transition-colors group/cal active:scale-95"
                           title="Add to Calendar"
                         >
-                          <CalendarPlus className="w-4 h-4 text-zinc-500 group-hover/cal:text-black dark:group-hover/cal:text-white" />
+                          <CalendarPlus className="w-4 h-4 text-ink-muted group-hover/cal:text-black dark:group-hover/cal:text-white" />
                         </button>
                         <button 
                           onClick={() => setRescheduleBookingId(booking.id)}
-                          className="flex items-center gap-2 px-4 py-3 border border-zinc-200 dark:border-zinc-800 text-[10px] uppercase tracking-widest font-bold hover:bg-neutral-50 dark:hover:bg-zinc-900 transition-colors text-black dark:text-white active:scale-95"
+                          className="flex items-center gap-2 px-4 py-3 border border-hairline-strong text-[10px] uppercase tracking-widest font-bold hover:bg-neutral-50 dark:hover:bg-zinc-900 transition-colors text-black dark:text-white active:scale-95"
                           title="Reschedule Appointment"
                         >
                           <RefreshCw className="w-3 h-3" /> Reschedule

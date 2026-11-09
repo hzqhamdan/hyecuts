@@ -101,7 +101,7 @@ export default function RescheduleModal({ isOpen, onClose, bookingId, onSuccess,
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="bg-white dark:bg-[#1A1A1A] w-full max-w-lg p-8 relative"
+          className="bg-surface-card w-full max-w-lg p-8 relative"
         >
           <button onClick={onClose} className="absolute top-4 right-4 text-zinc-500 hover:text-black dark:hover:text-white">
             <X className="w-6 h-6" />
@@ -111,7 +111,7 @@ export default function RescheduleModal({ isOpen, onClose, bookingId, onSuccess,
 
           <div className="space-y-6">
             <div>
-              <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold mb-2 block flex items-center gap-2">
+              <label className="text-[10px] uppercase tracking-widest text-ink-muted font-bold mb-2 block flex items-center gap-2">
                 <Calendar className="w-3 h-3" /> Select New Date
               </label>
               <div className="flex gap-2 overflow-x-auto pb-2">
@@ -123,7 +123,7 @@ export default function RescheduleModal({ isOpen, onClose, bookingId, onSuccess,
                       // A time picked for another day may be outside this day's hours.
                       if (selectedTime && !timesForDay(slot.day).includes(selectedTime)) setSelectedTime(null);
                     }}
-                    className={`p-3 border text-xs uppercase ${selectedDate === slot.day ? 'bg-black text-white dark:bg-white dark:text-black' : 'border-zinc-200 dark:border-zinc-800'}`}
+                    className={`p-3 border text-xs uppercase ${selectedDate === slot.day ? 'bg-black text-white dark:bg-white dark:text-black' : 'border-hairline-strong'}`}
                   >
                     {slot.day}
                   </button>
@@ -132,7 +132,7 @@ export default function RescheduleModal({ isOpen, onClose, bookingId, onSuccess,
             </div>
 
             <div>
-              <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold mb-2 block flex items-center gap-2">
+              <label className="text-[10px] uppercase tracking-widest text-ink-muted font-bold mb-2 block flex items-center gap-2">
                 <Clock className="w-3 h-3" /> Select New Time
               </label>
               <div className="grid grid-cols-4 gap-2">
@@ -144,7 +144,7 @@ export default function RescheduleModal({ isOpen, onClose, bookingId, onSuccess,
                           onClick={() => { if (!isBooked) setSelectedTime(time); }}
                           className={`p-2 border text-[10px] ${
                               isBooked ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed' :
-                              selectedTime === time ? 'bg-black text-white dark:bg-white dark:text-black' : 'border-zinc-200 dark:border-zinc-800'
+                              selectedTime === time ? 'bg-black text-white dark:bg-white dark:text-black' : 'border-hairline-strong'
                           }`}
                           disabled={isBooked}
                         >

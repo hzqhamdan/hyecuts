@@ -54,7 +54,7 @@ const MemberLounge = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className="min-h-screen bg-white dark:bg-[#1A1A1A] text-black dark:text-[#FAFAFA] px-6 md:px-12 py-10 md:py-16 font-sans overflow-x-hidden transition-colors duration-500"
+      className="min-h-screen bg-surface-card text-black dark:text-studio-white px-6 md:px-12 py-10 md:py-16 font-sans overflow-x-hidden transition-colors duration-500"
     >
       <LoungeHeader
         onLogout={() => { logout(); navigate('/'); }}
@@ -102,7 +102,7 @@ const MemberLounge = () => {
         </section>
       </div>
 
-      <div className="max-w-7xl mx-auto mt-20 md:mt-32 grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 border-t border-black/10 dark:border-white/10 pt-16 md:pt-24 pb-16 md:pb-24">
+      <div className="max-w-7xl mx-auto mt-20 md:mt-32 grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 border-t border-hairline pt-16 md:pt-24 pb-16 md:pb-24">
         <MissionsPanel
           missions={missions}
           missionProgress={missionProgress}

@@ -126,7 +126,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
           initial={{ y: 40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 40, opacity: 0 }}
-          className="bg-white dark:bg-[#1A1A1A] text-black dark:text-white w-full max-w-4xl max-h-[95vh] sm:h-[85vh] flex flex-col overflow-hidden shadow-2xl relative border border-black/10 dark:border-white/10 sm:rounded-none"
+          className="bg-surface-card text-black dark:text-white w-full max-w-4xl max-h-[95vh] sm:h-[85vh] flex flex-col overflow-hidden shadow-overlay relative border border-hairline sm:rounded-none"
         >
           {/* Close button */}
           <button
@@ -142,7 +142,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
               <input type="file" accept="image/*" className="hidden" id="avatar-upload-mobile" onChange={handleImageChange} />
               <label htmlFor="avatar-upload-mobile" className="cursor-pointer block relative">
                 {avatarPreview ? (
-                  <img src={avatarPreview} alt="Avatar" className="w-10 h-10 rounded-full object-cover border border-black/10 dark:border-white/10" />
+                  <img src={avatarPreview} alt="Avatar" className="w-10 h-10 rounded-full object-cover border border-hairline" />
                 ) : (
                   <div className="w-10 h-10 bg-black dark:bg-white text-white dark:text-black flex items-center justify-center font-serif text-sm rounded-full">
                     {getInitials(formData.fullName || formData.username)}
@@ -152,7 +152,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
             </div>
             <div className="min-w-0 flex-1">
               <h2 className="font-serif text-base uppercase tracking-tighter truncate">{formData.fullName || formData.username}</h2>
-              <div className="text-[9px] uppercase tracking-widest text-zinc-500 truncate">{profile?.currentTier ?? t('lounge.tier_label')}</div>
+              <div className="text-[9px] uppercase tracking-widest text-ink-muted truncate">{profile?.currentTier ?? t('lounge.tier_label')}</div>
             </div>
           </div>
 
@@ -181,13 +181,13 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
           {/* Desktop sidebar + content row */}
           <div className="flex flex-1 flex-col sm:flex-row overflow-hidden">
             {/* Desktop sidebar */}
-            <div className="hidden sm:flex sm:w-1/3 bg-neutral-50 dark:bg-zinc-900 border-r border-black/10 dark:border-white/10 p-6 lg:p-8 flex-col">
+            <div className="hidden sm:flex sm:w-1/3 bg-neutral-50 dark:bg-zinc-900 border-r border-hairline p-6 lg:p-8 flex-col">
               <div className="mb-8 flex items-center gap-3 lg:gap-4">
                 <div className="relative group cursor-pointer shrink-0">
                   <input type="file" accept="image/*" className="hidden" id="avatar-upload" onChange={handleImageChange} />
                   <label htmlFor="avatar-upload" className="cursor-pointer block relative">
                     {avatarPreview ? (
-                      <img src={avatarPreview} alt="Avatar" className="w-14 h-14 lg:w-16 lg:h-16 rounded-full object-cover border border-black/10 dark:border-white/10" />
+                      <img src={avatarPreview} alt="Avatar" className="w-14 h-14 lg:w-16 lg:h-16 rounded-full object-cover border border-hairline" />
                     ) : (
                       <div className="w-14 h-14 lg:w-16 lg:h-16 bg-black dark:bg-white text-white dark:text-black flex items-center justify-center font-serif text-lg lg:text-xl rounded-full">
                         {getInitials(formData.fullName || formData.username)}
@@ -200,7 +200,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                 </div>
                 <div className="min-w-0">
                   <h2 className="font-serif text-xl lg:text-2xl uppercase tracking-tighter truncate">{formData.fullName || formData.username}</h2>
-                  <div className="text-[10px] uppercase tracking-widest text-zinc-500 truncate">{profile?.currentTier ?? t('lounge.tier_label')}</div>
+                  <div className="text-[10px] uppercase tracking-widest text-ink-muted truncate">{profile?.currentTier ?? t('lounge.tier_label')}</div>
                 </div>
               </div>
 
@@ -238,7 +238,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                     transition={{ duration: 0.3 }}
                     className="space-y-6 sm:space-y-8"
                   >
-                    <h3 className="font-serif text-2xl sm:text-3xl uppercase tracking-tighter border-b border-black/10 dark:border-white/10 pb-3 sm:pb-4">
+                    <h3 className="font-serif text-2xl sm:text-3xl uppercase tracking-tighter border-b border-hairline pb-3 sm:pb-4">
                       {t('profile_modal.tabs.general')}
                     </h3>
 
@@ -249,7 +249,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                         </div>
                       )}
                       <div className="flex flex-col gap-1.5 sm:gap-2">
-                        <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">{t('profile_modal.general.name')}</label>
+                        <label className="text-[10px] uppercase tracking-widest text-ink-muted font-bold">{t('profile_modal.general.name')}</label>
                         <input
                           type="text"
                           value={formData.fullName}
@@ -258,7 +258,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                         />
                       </div>
                       <div className="flex flex-col gap-1.5 sm:gap-2">
-                        <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">{t('profile_modal.general.dob')}</label>
+                        <label className="text-[10px] uppercase tracking-widest text-ink-muted font-bold">{t('profile_modal.general.dob')}</label>
                         <input
                           type="date"
                           value={formData.dob}
@@ -267,7 +267,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                         />
                       </div>
                       <div className="flex flex-col gap-1.5 sm:gap-2">
-                        <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">{t('profile_modal.general.email')}</label>
+                        <label className="text-[10px] uppercase tracking-widest text-ink-muted font-bold">{t('profile_modal.general.email')}</label>
                         <input
                           type="email"
                           value={formData.email}
@@ -276,7 +276,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                         />
                       </div>
                       <div className="flex flex-col gap-1.5 sm:gap-2">
-                        <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">{t('profile_modal.general.phone')}</label>
+                        <label className="text-[10px] uppercase tracking-widest text-ink-muted font-bold">{t('profile_modal.general.phone')}</label>
                         <div className="flex items-center border-b border-black/20 dark:border-white/20">
                           <span className="text-sm text-zinc-400 dark:text-zinc-600 mr-2">+60</span>
                           <input
@@ -308,16 +308,16 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                     transition={{ duration: 0.3 }}
                     className="space-y-6 sm:space-y-8"
                   >
-                    <h3 className="font-serif text-2xl sm:text-3xl uppercase tracking-tighter border-b border-black/10 dark:border-white/10 pb-3 sm:pb-4">
+                    <h3 className="font-serif text-2xl sm:text-3xl uppercase tracking-tighter border-b border-hairline pb-3 sm:pb-4">
                       {t('profile_modal.tabs.hair')}
                     </h3>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                    <p className="text-xs text-ink-muted">
                       {t('profile_modal.hair.description')}
                     </p>
 
                     <div className="space-y-6 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-6 lg:gap-8">
                       <div className="flex flex-col gap-2 sm:gap-3">
-                        <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">{t('profile_modal.hair.type')}</label>
+                        <label className="text-[10px] uppercase tracking-widest text-ink-muted font-bold">{t('profile_modal.hair.type')}</label>
                         <div className="flex flex-col gap-1.5 sm:gap-2">
                           {['straight', 'wavy', 'curly', 'coily'].map((type) => (
                             <label key={type} className="flex items-center gap-3 cursor-pointer group">
@@ -332,7 +332,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                       </div>
 
                       <div className="flex flex-col gap-2 sm:gap-3">
-                        <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">{t('profile_modal.hair.length')}</label>
+                        <label className="text-[10px] uppercase tracking-widest text-ink-muted font-bold">{t('profile_modal.hair.length')}</label>
                         <div className="flex flex-col gap-1.5 sm:gap-2">
                           {['short', 'medium', 'long'].map((len) => (
                             <label key={len} className="flex items-center gap-3 cursor-pointer group">
@@ -347,7 +347,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                       </div>
 
                       <div className="flex flex-col gap-2 sm:gap-3 sm:col-span-2">
-                        <label className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">{t('profile_modal.hair.scalp')}</label>
+                        <label className="text-[10px] uppercase tracking-widest text-ink-muted font-bold">{t('profile_modal.hair.scalp')}</label>
                         <div className="flex flex-row flex-wrap gap-4 sm:gap-6">
                           {['normal', 'dry', 'oily', 'sensitive'].map((s) => (
                             <label key={s} className="flex items-center gap-3 cursor-pointer group">
@@ -373,7 +373,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                     transition={{ duration: 0.3 }}
                     className="space-y-6 sm:space-y-8"
                   >
-                    <h3 className="font-serif text-2xl sm:text-3xl uppercase tracking-tighter border-b border-black/10 dark:border-white/10 pb-3 sm:pb-4">
+                    <h3 className="font-serif text-2xl sm:text-3xl uppercase tracking-tighter border-b border-hairline pb-3 sm:pb-4">
                       {t('profile_modal.tabs.security')}
                     </h3>
 
@@ -386,17 +386,17 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                       </div>
 
                       <div className="pt-6 sm:pt-8 border-t border-black/5 dark:border-white/5">
-                        <p className="font-sans text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed mb-5 sm:mb-6">
+                        <p className="font-sans text-xs text-ink-muted leading-relaxed mb-5 sm:mb-6">
                           {t('profile_modal.security.pdpa_description')}
                         </p>
 
                         <div className="space-y-3 sm:space-y-4">
                           <button
                             onClick={onExportData}
-                            className="w-full text-left p-3 sm:p-4 border border-zinc-200 dark:border-zinc-800 hover:border-black dark:hover:border-white hover:bg-neutral-50 dark:hover:bg-zinc-900 transition-colors"
+                            className="w-full text-left p-3 sm:p-4 border border-hairline-strong hover:border-black dark:hover:border-white hover:bg-neutral-50 dark:hover:bg-zinc-900 transition-colors"
                           >
                             <div className="text-[10px] uppercase tracking-widest font-bold mb-1">{t('profile_modal.security.export_data')}</div>
-                            <div className="text-xs text-zinc-500 dark:text-zinc-400">{t('profile_modal.security.export_data_desc')}</div>
+                            <div className="text-xs text-ink-muted">{t('profile_modal.security.export_data_desc')}</div>
                           </button>
 
                           <button
@@ -415,7 +415,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
 
               {/* Save Button */}
               {activeTab !== 'security' && (
-                <div className="fixed sm:absolute bottom-0 left-0 right-0 p-4 sm:p-8 bg-gradient-to-t from-white via-white to-transparent dark:from-[#1A1A1A] dark:via-[#1A1A1A] flex justify-end z-10">
+                <div className="fixed sm:absolute bottom-0 left-0 right-0 p-4 sm:p-8 bg-gradient-to-t from-white via-white to-transparent dark:from-studio-black dark:via-studio-black flex justify-end z-10">
                   <button
                     onClick={handleSave}
                     className="w-full sm:w-auto bg-black dark:bg-white text-white dark:text-black py-3.5 sm:py-4 px-6 sm:px-8 text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors flex items-center justify-center gap-2"

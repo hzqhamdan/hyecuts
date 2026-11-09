@@ -25,20 +25,21 @@
 
   html.dark .bg-zinc-50,
   html.dark .bg-zinc-100,
-  html.dark .bg-neutral-50,
-  html.dark .bg-neutral-100 {
+  html.dark .bg-neutral-50 {
     @apply bg-zinc-900;
   }
 
-  html.dark .bg-white\/70 {
-    background-color: rgb(24 24 27 / 0.7);
-  }
-
+  /* Note: this beats an explicit dark:bg-* on the same element, so the
+     dark: class on Navbar's translucent bar is dead. Prefer the surface
+     tokens over these rules in new work. */
   html.dark .bg-white\/80 {
     background-color: rgb(24 24 27 / 0.8);
   }
 
-  /* Essential border styles for dark mode consistency */
+  /* Essential border styles for dark mode consistency.
+     Tailwind also expands these through the dark: variant, so this rule is
+     what gives the 34 remaining dark:border-zinc-800 usages zinc-700 rather
+     than zinc-800. Don't drop .border-zinc-800 without re-pointing those. */
   html.dark .border-zinc-50,
   html.dark .border-zinc-100,
   html.dark .border-zinc-200,

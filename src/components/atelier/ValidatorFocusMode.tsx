@@ -17,14 +17,14 @@ export function ValidatorFocusMode({ code, setCode, state, onValidate }: Validat
     <div className="flex flex-col items-center justify-center min-h-[70vh] max-w-3xl mx-auto">
       <div className="w-full text-center mb-16">
         <h2 className="font-serif text-5xl mb-4 font-light">{t('atelier.validator.title', { defaultValue: 'The Validator' })}</h2>
-        <p className="text-zinc-400 italic text-sm uppercase tracking-widest">{t('atelier.validator.subtitle', { defaultValue: 'Sequence Authorization' })}</p>
+        <p className="text-ink-faint italic text-sm uppercase tracking-widest">{t('atelier.validator.subtitle', { defaultValue: 'Sequence Authorization' })}</p>
       </div>
 
       <motion.div
         className={`w-full p-16 border transition-all duration-700 ${
           state === 'granted' ? 'border-green-500 bg-green-50/10' :
           state === 'denied' ? 'border-red-500 bg-red-50/10' :
-          'border-black bg-white'
+          'border-black dark:border-white bg-surface-card'
         }`}
         initial={{ scale: 0.98 }}
         animate={{ scale: 1 }}
@@ -35,12 +35,12 @@ export function ValidatorFocusMode({ code, setCode, state, onValidate }: Validat
             value={code}
             onChange={(e) => { setCode(e.target.value); }}
             placeholder="HC-XXXX-XXXX"
-            className="w-full text-center text-5xl font-serif uppercase tracking-[0.3em] bg-transparent border-b border-black focus:outline-none focus:border-black transition-all placeholder:text-zinc-200"
+            className="w-full text-center text-5xl font-serif uppercase tracking-[0.3em] bg-transparent border-b border-black dark:border-white focus:outline-none focus:border-black dark:focus:border-white transition-all placeholder:text-zinc-200 dark:placeholder:text-zinc-700"
             autoFocus
           />
           <button
             type="submit"
-            className="px-16 py-4 bg-black text-white uppercase tracking-[0.2em] text-[10px] font-bold hover:bg-zinc-800 transition-all"
+            className="px-16 py-4 bg-black dark:bg-white text-white dark:text-black uppercase tracking-[0.2em] text-[10px] font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all"
           >
             {t('atelier.validator.execute', { defaultValue: 'Execute Validation' })}
           </button>
@@ -53,7 +53,7 @@ export function ValidatorFocusMode({ code, setCode, state, onValidate }: Validat
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="flex items-center gap-3 text-green-600 font-bold uppercase tracking-widest text-[11px]"
+                className="flex items-center gap-3 text-success font-bold uppercase tracking-widest text-[11px]"
               >
                 <CheckCircle2 size={16} /> {t('atelier.validator.granted', { defaultValue: 'Access Granted' })}
               </motion.div>
@@ -63,7 +63,7 @@ export function ValidatorFocusMode({ code, setCode, state, onValidate }: Validat
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="flex items-center gap-3 text-red-600 font-bold uppercase tracking-widest text-[11px]"
+                className="flex items-center gap-3 text-danger font-bold uppercase tracking-widest text-[11px]"
               >
                 <XCircle size={16} /> {t('atelier.validator.denied', { defaultValue: 'Access Denied' })}
               </motion.div>

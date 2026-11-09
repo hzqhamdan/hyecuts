@@ -17,7 +17,7 @@ const MissionsPanel = ({ missions, missionProgress }: MissionsPanelProps) => {
       <div className="flex items-end justify-between mb-10">
         <div>
           <h3 className="font-serif text-3xl md:text-4xl uppercase tracking-tighter mb-2">{t('lounge.directives_title')}</h3>
-          <p className="font-sans text-zinc-500 dark:text-zinc-400 text-sm tracking-wide">{t('lounge.directives_subtitle')}</p>
+          <p className="font-sans text-ink-muted text-sm tracking-wide">{t('lounge.directives_subtitle')}</p>
         </div>
         <Target className="w-6 h-6 opacity-40 dark:opacity-60" />
       </div>
@@ -47,7 +47,7 @@ const MissionsPanel = ({ missions, missionProgress }: MissionsPanelProps) => {
                               className="absolute top-0 left-0 h-full bg-black dark:bg-gold"
                             />
                           </div>
-                          <div className="text-[9px] md:text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mt-2 flex justify-between items-center font-bold">
+                          <div className="text-[9px] md:text-[10px] text-ink-muted uppercase tracking-widest mt-2 flex justify-between items-center font-bold">
                             <span>{(prog.currentProgress ?? 0).toString()} / {(mission.requiredCount ?? 0).toString()} {mission.targetAction}</span>
                             <span className="font-mono text-black dark:text-white">+{(mission.rewardPoints ?? 0).toString()} {t('lounge.pts')}</span>
                           </div>

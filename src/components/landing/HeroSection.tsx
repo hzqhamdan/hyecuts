@@ -13,13 +13,13 @@ export default function HeroSection() {
     <section className="relative min-h-screen flex items-center justify-center px-6 md:px-12 text-center pt-24">
       <div className="relative z-10 w-full max-w-6xl mx-auto">
         <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="flex flex-col items-center">
-          <motion.span variants={fadeUp} className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-zinc-400 dark:text-zinc-500 mb-6 block font-bold">
+          <motion.span variants={fadeUp} className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-ink-faint mb-6 block font-bold">
             {HYECUTS.name}
           </motion.span>
           <motion.h1 variants={fadeUp} className="font-serif text-5xl sm:text-7xl md:text-9xl leading-tight font-light italic tracking-tighter mb-6 text-balance">
             {t('hero.title')}<span className="text-zinc-300 dark:text-zinc-700">.</span>
           </motion.h1>
-          <motion.p variants={fadeUp} className="max-w-2xl text-base md:text-xl text-zinc-500 dark:text-zinc-400 leading-relaxed mb-10 font-light italic px-4">
+          <motion.p variants={fadeUp} className="max-w-2xl text-base md:text-xl text-ink-muted leading-relaxed mb-10 font-light italic px-4">
             {t('hero.subtitle')}
           </motion.p>
           <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-6 sm:px-0">
@@ -37,7 +37,7 @@ export default function HeroSection() {
               {t('hero.cta_secondary')}
             </button>
           </motion.div>
-          <motion.div variants={fadeUp} className="mt-12 text-[10px] uppercase tracking-[0.3em] text-zinc-400 dark:text-zinc-500 font-bold">
+          <motion.div variants={fadeUp} className="mt-12 text-[10px] uppercase tracking-[0.3em] text-ink-faint font-bold">
             {t('footer.location')}
           </motion.div>
         </motion.div>

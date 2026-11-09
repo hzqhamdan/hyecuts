@@ -62,10 +62,10 @@ export function MemberManager() {
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
         <div>
           <h2 className="font-serif text-5xl mb-4 font-light text-black dark:text-white">{t('atelier.nav.member_manager')}</h2>
-          <p className="text-zinc-400 dark:text-zinc-500 font-sans uppercase tracking-widest text-[11px]">{t('atelier.members.management_subtitle', { defaultValue: 'Registry & Portfolio Oversight' })}</p>
+          <p className="text-ink-faint font-sans uppercase tracking-widest text-[11px]">{t('atelier.members.management_subtitle', { defaultValue: 'Registry & Portfolio Oversight' })}</p>
         </div>
         <div className="relative w-full md:w-80">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500" size={16} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-ink-faint" size={16} />
           <input 
             type="text" 
             placeholder={t('atelier.members.search_placeholder', { defaultValue: 'Search by name or email...' })}
@@ -76,10 +76,10 @@ export function MemberManager() {
         </div>
       </header>
 
-      <div className="border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-[#1A1A1A] overflow-x-auto">
+      <div className="border border-zinc-100 dark:border-zinc-800 bg-surface-card overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-zinc-100 dark:border-zinc-800 text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 font-bold">
+            <tr className="border-b border-zinc-100 dark:border-zinc-800 text-[10px] uppercase tracking-widest text-ink-faint font-bold">
               <th className="p-6 font-medium">{t('atelier.members.name', { defaultValue: 'Member' })}</th>
               <th className="p-6 font-medium">{t('atelier.members.tier', { defaultValue: 'Tier' })}</th>
               <th className="p-6 font-medium flex items-center gap-2">{t('atelier.members.points', { defaultValue: 'Points' })} <ArrowUpDown size={12} /></th>
@@ -89,37 +89,37 @@ export function MemberManager() {
           </thead>
           <tbody className="divide-y divide-zinc-50 dark:divide-zinc-900">
             {isLoading ? (
-              <tr><td colSpan={5} className="p-20 text-center text-zinc-400 dark:text-zinc-500 uppercase tracking-widest text-xs">{t('lounge.retrieving_assets')}</td></tr>
+              <tr><td colSpan={5} className="p-20 text-center text-ink-faint uppercase tracking-widest text-xs">{t('lounge.retrieving_assets')}</td></tr>
             ) : filteredMembers.length === 0 ? (
-              <tr><td colSpan={5} className="p-20 text-center text-zinc-400 dark:text-zinc-500 uppercase tracking-widest text-xs">{t('atelier.members.no_members', { defaultValue: 'No members found.' })}</td></tr>
+              <tr><td colSpan={5} className="p-20 text-center text-ink-faint uppercase tracking-widest text-xs">{t('atelier.members.no_members', { defaultValue: 'No members found.' })}</td></tr>
             ) : filteredMembers.map(member => (
               <tr key={member.id} className="group hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-colors">
                 <td className="p-6">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 dark:text-zinc-500">
+                    <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-ink-faint">
                       <UserIcon size={20} />
                     </div>
                     <div>
                       <p className="font-serif text-lg italic text-black dark:text-white">{member.fullName || 'Anonymous'}</p>
-                      <p className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-tight">{member.email}</p>
+                      <p className="text-[10px] text-ink-faint uppercase tracking-tight">{member.email}</p>
                     </div>
                   </div>
                 </td>
                 <td className="p-6">
-                  <span className="text-[9px] uppercase tracking-widest px-2 py-1 border border-black/10 dark:border-white/10 font-bold text-black dark:text-white">
+                  <span className="text-[9px] uppercase tracking-widest px-2 py-1 border border-hairline font-bold text-black dark:text-white">
                     {t(`data.tiers.${member.tier ?? 'MEMBER'}`)}
                   </span>
                 </td>
                 <td className="p-6 font-mono text-sm text-black dark:text-white">
                   {(member.currentPoints ?? member.pointsBalance ?? 0).toLocaleString()}
                 </td>
-                <td className="p-6 font-mono text-sm text-zinc-400 dark:text-zinc-500">
+                <td className="p-6 font-mono text-sm text-ink-faint">
                   {member.lifetimePoints?.toLocaleString() ?? '—'}
                 </td>
                 <td className="p-6 text-right">
                   <button 
                     onClick={() => setSelectedMember(member)}
-                    className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-all"
+                    className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-ink-faint hover:text-black dark:hover:text-white transition-all"
                   >
                     <MoreHorizontal size={18} />
                   </button>
@@ -141,7 +141,7 @@ export function MemberManager() {
           <motion.div 
             initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="relative w-full max-w-lg bg-white dark:bg-[#1A1A1A] h-screen shadow-2xl p-12 overflow-y-auto"
+            className="relative w-full max-w-lg bg-surface-card h-screen shadow-overlay p-12 overflow-y-auto"
           >
             <button 
               onClick={() => setSelectedMember(null)}
@@ -156,16 +156,16 @@ export function MemberManager() {
                   <UserIcon size={48} />
                 </div>
                 <h3 className="font-serif text-4xl italic mb-2 text-black dark:text-white">{selectedMember.fullName}</h3>
-                <p className="text-[10px] uppercase tracking-[0.3em] text-zinc-400 dark:text-zinc-500 font-bold">{selectedMember.email}</p>
+                <p className="text-[10px] uppercase tracking-[0.3em] text-ink-faint font-bold">{selectedMember.email}</p>
               </header>
 
               <div className="grid grid-cols-2 gap-px bg-zinc-100 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-800">
-                <div className="p-8 bg-white dark:bg-[#1A1A1A] text-center">
-                  <p className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2">{t('lounge.points_balance')}</p>
+                <div className="p-8 bg-surface-card text-center">
+                  <p className="text-[10px] uppercase tracking-widest text-ink-faint mb-2">{t('lounge.points_balance')}</p>
                   <p className="font-serif text-3xl text-black dark:text-white">{(selectedMember.currentPoints ?? selectedMember.pointsBalance ?? 0).toLocaleString()}</p>
                 </div>
-                <div className="p-8 bg-white dark:bg-[#1A1A1A] text-center">
-                  <p className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2">{t('lounge.tier_label')}</p>
+                <div className="p-8 bg-surface-card text-center">
+                  <p className="text-[10px] uppercase tracking-widest text-ink-faint mb-2">{t('lounge.tier_label')}</p>
                   <p className="font-serif text-3xl text-gold">{t(`data.tiers.${selectedMember.tier ?? 'MEMBER'}`)}</p>
                 </div>
               </div>
@@ -177,7 +177,7 @@ export function MemberManager() {
                 </div>
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-zinc-500 italic">{t('atelier.members.adjustment_desc', { defaultValue: 'Add or deduct points from this portfolio.' })}</span>
+                    <span className="text-xs text-ink-muted italic">{t('atelier.members.adjustment_desc', { defaultValue: 'Add or deduct points from this portfolio.' })}</span>
                     <span className={`font-mono text-xl ${adjustAmount > 0 ? 'text-green-600' : adjustAmount < 0 ? 'text-red-600' : 'text-zinc-400'}`}>
                       {adjustAmount > 0 ? '+' : ''}{adjustAmount}
                     </span>
@@ -208,7 +208,7 @@ export function MemberManager() {
                       key="override-btn"
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                       onClick={() => setIsOverridingTier(true)}
-                      className="w-full py-4 border border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 text-[10px] uppercase tracking-widest font-bold hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-all"
+                      className="w-full py-4 border border-hairline-strong text-ink-faint text-[10px] uppercase tracking-widest font-bold hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-all"
                     >
                       {t('atelier.members.override_tier', { defaultValue: 'Override Membership Tier' })}
                     </motion.button>
@@ -228,7 +228,7 @@ export function MemberManager() {
                             className={`px-4 py-2 text-[9px] uppercase tracking-widest font-bold border transition-all ${
                               selectedMember.tier === tier 
                                 ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white' 
-                                : 'border-zinc-200 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white'
+                                : 'border-hairline-strong text-ink-faint hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white'
                             } disabled:opacity-50`}
                           >
                             {t(`data.tiers.${tier}`)}
@@ -237,7 +237,7 @@ export function MemberManager() {
                       </div>
                       <button 
                         onClick={() => setIsOverridingTier(false)}
-                        className="w-full py-2 text-[9px] uppercase tracking-widest text-zinc-400 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors"
+                        className="w-full py-2 text-[9px] uppercase tracking-widest text-ink-faint hover:text-black dark:hover:text-white transition-colors"
                       >
                         {t('atelier.loyalty.cancel')}
                       </button>

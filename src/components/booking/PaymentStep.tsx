@@ -7,6 +7,7 @@ import { ShieldCheck, Loader2 } from 'lucide-react';
 import { api } from '../../api/client';
 import { useBookingStore } from '../../store/useBookingStore';
 import { useAuth } from '../../context/AuthContext';
+import { tokenHex } from '../../styles/tokens';
 
 // Initialize Stripe outside of component to avoid recreating the object
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder');
@@ -109,7 +110,7 @@ export function PaymentStep({ serviceId, onPaymentSuccess }: { serviceId: number
   if (serviceId === undefined || loadFailed) {
     return (
       <div role="alert" className="flex flex-col items-center justify-center h-64 space-y-4 text-center">
-        <p className="text-zinc-500 font-sans text-sm">
+        <p className="text-ink-muted font-sans text-sm">
           {t('booking.payment.unavailable', { defaultValue: 'We could not set up the deposit for this service. Please go back and try again.' })}
         </p>
       </div>
@@ -120,7 +121,7 @@ export function PaymentStep({ serviceId, onPaymentSuccess }: { serviceId: number
     return (
       <div className="flex flex-col items-center justify-center h-64 space-y-4">
         <Loader2 className="animate-spin text-zinc-400" size={32} />
-        <p className="text-zinc-500 font-sans text-sm uppercase tracking-widest">
+        <p className="text-ink-muted font-sans text-sm uppercase tracking-widest">
           {t('booking.payment.initializing', { defaultValue: 'Securely initializing payment...' })}
         </p>
       </div>
@@ -138,7 +139,7 @@ export function PaymentStep({ serviceId, onPaymentSuccess }: { serviceId: number
         <h2 className="font-serif text-3xl font-light text-black dark:text-white mb-2">
           {t('booking.payment.title', { defaultValue: 'Secure Deposit' })}
         </h2>
-        <p className="text-zinc-500 dark:text-zinc-400 font-sans text-sm max-w-md mx-auto">
+        <p className="text-ink-muted font-sans text-sm max-w-md mx-auto">
           {t('booking.payment.description', { defaultValue: 'A 50% deposit is required to secure your appointment. This will be deducted from your final bill.' })}
           <br/>
           {depositAmount && (
@@ -154,9 +155,11 @@ export function PaymentStep({ serviceId, onPaymentSuccess }: { serviceId: number
           appearance: {
             theme: 'night', // Or dynamic based on dark mode, but 'night' fits the luxury aesthetic well, or we can use variables
             variables: {
-              colorPrimary: '#FAFAFA',
-              colorBackground: '#1A1A1A',
-              colorText: '#FAFAFA',
+              // Stripe renders in its own iframe, where this page's custom properties do
+              // not reach, so these are the raw token values.
+              colorPrimary: tokenHex.studioWhite,
+              colorBackground: tokenHex.studioBlack,
+              colorText: tokenHex.studioWhite,
               colorDanger: '#ef4444',
               fontFamily: 'Inter, sans-serif',
               spacingUnit: '4px',
@@ -168,7 +171,7 @@ export function PaymentStep({ serviceId, onPaymentSuccess }: { serviceId: number
         <CheckoutForm onSuccess={onPaymentSuccess} />
       </Elements>
       
-      <div className="mt-8 flex justify-center items-center gap-2 text-zinc-400 text-xs">
+      <div className="mt-8 flex justify-center items-center gap-2 text-ink-faint text-xs">
         <ShieldCheck size={14} />
         <span>{t('booking.payment.secure_ssl', { defaultValue: 'Payments are secure and encrypted via Stripe SSL.' })}</span>
       </div>

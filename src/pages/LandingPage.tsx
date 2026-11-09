@@ -26,7 +26,7 @@ const LandingPage = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.8 }}
-      className="min-h-screen bg-white dark:bg-[#1A1A1A] text-black dark:text-[#FAFAFA] font-sans selection:bg-black selection:text-white overflow-x-hidden transition-colors duration-500"
+      className="min-h-screen bg-surface-card text-black dark:text-studio-white font-sans selection:bg-black selection:text-white overflow-x-hidden transition-colors duration-500"
     >
       <Navbar
         isMenuOpen={isMenuOpen}

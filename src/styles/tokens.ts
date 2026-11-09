@@ -26,10 +26,13 @@ export const CHART_SERIES = [
 ] as const;
 
 /**
- * Raw hex, for consumers that parse colours themselves and cannot resolve a CSS variable
- * — currently only the WebGL shader behind the sign-in screen, which converts hex to a
- * uniform. Keep this in step with tokens.css.
+ * Raw hex, for consumers that parse colours themselves and cannot resolve a CSS variable:
+ * the WebGL shader behind the sign-in screen, which converts hex to a uniform, and Stripe
+ * Elements, which renders in its own iframe where this page's custom properties do not
+ * reach. Keep these in step with tokens.css.
  */
 export const tokenHex = {
+  studioBlack: '#1A1A1A',
+  studioWhite: '#FAFAFA',
   studioGold: '#B8A070',
 } as const;

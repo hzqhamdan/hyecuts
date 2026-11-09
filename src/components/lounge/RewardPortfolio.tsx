@@ -17,7 +17,7 @@ const RewardPortfolio = ({ rewards, isLoading, onRedeem }: RewardPortfolioProps)
       <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
         <div>
           <h3 className="font-serif text-3xl md:text-4xl uppercase tracking-tighter mb-2">{t('lounge.portfolio_title')}</h3>
-          <p className="font-sans text-zinc-500 dark:text-zinc-400 text-sm tracking-wide">{t('lounge.portfolio_subtitle')}</p>
+          <p className="font-sans text-ink-muted text-sm tracking-wide">{t('lounge.portfolio_subtitle')}</p>
         </div>
         <div className="sm:text-right">
           <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest border-b border-black dark:border-white pb-1">
@@ -29,11 +29,11 @@ const RewardPortfolio = ({ rewards, isLoading, onRedeem }: RewardPortfolioProps)
       {/* Editorial Layout Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 md:gap-x-12 gap-y-10 md:gap-y-16">
         {isLoading ? (
-          <div className="col-span-full text-center py-12 text-zinc-500 dark:text-zinc-400 text-xs uppercase tracking-widest">
+          <div className="col-span-full text-center py-12 text-ink-muted text-xs uppercase tracking-widest">
             {t('lounge.retrieving_assets')}
           </div>
         ) : rewards.length === 0 ? (
-          <div className="col-span-full text-center py-12 text-zinc-500 dark:text-zinc-400 text-xs uppercase tracking-widest">
+          <div className="col-span-full text-center py-12 text-ink-muted text-xs uppercase tracking-widest">
             {t('lounge.no_rewards')}
           </div>
         ) : rewards.map((reward, idx) => (
@@ -45,7 +45,7 @@ const RewardPortfolio = ({ rewards, isLoading, onRedeem }: RewardPortfolioProps)
             className="relative group cursor-pointer"
             onClick={() => { onRedeem(reward); }}
           >
-            <div className="relative overflow-hidden aspect-[1.6/1] bg-white dark:bg-[#1A1A1A] border border-black/10 dark:border-white/10 p-6 md:p-8 flex flex-col justify-between transition-all duration-500 group-hover:shadow-xl dark:group-hover:shadow-black/50 group-hover:border-black dark:group-hover:border-white">
+            <div className="relative overflow-hidden aspect-[1.6/1] bg-surface-card border border-hairline p-6 md:p-8 flex flex-col justify-between transition-all duration-500 group-hover:shadow-xl dark:group-hover:shadow-black/50 group-hover:border-black dark:group-hover:border-white">
               {/* Top Row */}
               <div className="flex justify-between items-start">
                 <div className="flex items-center gap-2">
@@ -68,7 +68,7 @@ const RewardPortfolio = ({ rewards, isLoading, onRedeem }: RewardPortfolioProps)
                 <h4 className="font-serif text-lg md:text-xl uppercase tracking-tight mb-2 group-hover:translate-x-1 transition-transform duration-300">
                   {t(`data.rewards.${reward.title}.title`, { defaultValue: reward.title })}
                 </h4>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 font-sans leading-relaxed max-w-xs line-clamp-2 mb-3">
+                <p className="text-xs text-ink-muted font-sans leading-relaxed max-w-xs line-clamp-2 mb-3">
                   {t(`data.rewards.${reward.title}.description`, { defaultValue: reward.description })}
                 </p>
                 <div className="font-mono text-[9px] md:text-[10px] tracking-widest text-zinc-500 dark:text-zinc-500 uppercase font-bold">

@@ -41,7 +41,7 @@ export default function OAuth2Callback() {
   }, [searchParams, login, navigate]);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#1A1A1A] flex items-center justify-center">
+    <div className="min-h-screen bg-surface-card flex items-center justify-center">
       <div className="text-black dark:text-white font-serif text-xl">Signing in...</div>
     </div>
   );
