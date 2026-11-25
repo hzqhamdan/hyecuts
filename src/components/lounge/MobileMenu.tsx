@@ -64,7 +64,7 @@ const MobileMenu = ({ isOpen, onClose, onLogout, onToggleLanguage, onOpenSetting
               onClose();
               onLogout();
             }}
-            className="mt-4 text-2xl font-serif italic tracking-tight capitalize text-red-500"
+            className="mt-4 text-2xl font-serif italic tracking-tight capitalize text-danger"
           >
             {t('nav.logout')}
           </button>

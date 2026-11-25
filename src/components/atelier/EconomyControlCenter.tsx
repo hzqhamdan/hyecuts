@@ -48,7 +48,7 @@ export function EconomyControlCenter({ ratio, setRatio, multiplier, setMultiplie
             onChange={(e) => { setRatio(parseInt(e.target.value)); }}
             className="w-full h-px bg-zinc-200 dark:bg-zinc-800 rounded-none appearance-none cursor-pointer accent-black dark:accent-white"
           />
-          <p className="text-xs text-zinc-400 dark:text-zinc-600 leading-relaxed italic">
+          <p className="text-xs text-ink-faint leading-relaxed italic">
             {t('atelier.loyalty.ratio_desc')}
           </p>
         </div>
@@ -65,7 +65,7 @@ export function EconomyControlCenter({ ratio, setRatio, multiplier, setMultiplie
             onChange={(e) => { setMultiplier(parseFloat(e.target.value)); }}
             className="w-full h-px bg-zinc-200 dark:bg-zinc-800 rounded-none appearance-none cursor-pointer accent-black dark:accent-white"
           />
-          <p className="text-xs text-zinc-400 dark:text-zinc-600 leading-relaxed italic">
+          <p className="text-xs text-ink-faint leading-relaxed italic">
             {t('atelier.loyalty.multiplier_desc')}
           </p>
         </div>

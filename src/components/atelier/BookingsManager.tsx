@@ -50,7 +50,7 @@ export function BookingsManager() {
                     <span className="flex items-center gap-1"><Clock size={12} /> {new Date(booking.appointmentTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     <span className="flex items-center gap-1"><Calendar size={12} /> {new Date(booking.appointmentTime).toLocaleDateString()}</span>
                     {booking.createdAt && (
-                      <span className="ml-2 pl-4 border-l border-hairline-strong text-zinc-300 dark:text-zinc-600">
+                      <span className="ml-2 pl-4 border-l border-hairline-strong text-ink-faint">
                         {t('atelier.bookings.booked_at', { defaultValue: 'Booked' })}: {new Date(booking.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     )}
@@ -83,7 +83,7 @@ export function BookingsManager() {
            {bookings.filter(b => b.status === 'COMPLETED').slice(0, 5).map(b => (
              <div key={b.id} className="p-6 border border-zinc-100 dark:border-zinc-800 flex justify-between items-center opacity-60">
                 <div className="flex items-center gap-4">
-                  <CheckCircle2 size={16} className="text-green-600" />
+                  <CheckCircle2 size={16} className="text-success" />
                   <span className="text-xs font-bold uppercase tracking-widest text-black dark:text-white">{b.user.email}</span>
                   <span className="text-xs text-ink-faint">— {t(`data.services.${b.service.name}`, { defaultValue: b.service.name })}</span>
                 </div>

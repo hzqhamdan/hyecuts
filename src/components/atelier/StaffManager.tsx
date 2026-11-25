@@ -64,7 +64,7 @@ export function StaffManager() {
               <ShieldCheck size={16} className={member.isActive ? 'text-gold' : 'text-zinc-200 dark:text-zinc-700'} />
             </div>
             
-            <div className="w-16 h-16 rounded-full bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center text-zinc-300 dark:text-zinc-600 mb-8 group-hover:bg-black dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-black transition-colors">
+            <div className="w-16 h-16 rounded-full bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center text-ink-faint mb-8 group-hover:bg-black dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-black transition-colors">
               <User size={32} />
             </div>
 

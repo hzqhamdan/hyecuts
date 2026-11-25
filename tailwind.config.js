@@ -39,6 +39,7 @@ export default {
           DEFAULT: 'var(--hairline)',
           strong: token('hairline-strong'),
         },
+        chrome: 'var(--chrome-translucent)',
         interactive: {
           DEFAULT: token('interactive'),
           hover: token('interactive-hover'),

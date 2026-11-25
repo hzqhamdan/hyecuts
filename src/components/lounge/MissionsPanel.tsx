@@ -24,7 +24,7 @@ const MissionsPanel = ({ missions, missionProgress }: MissionsPanelProps) => {
 
       <div className="space-y-4">
         {missions.length === 0 ? (
-          <div className="text-[10px] md:text-xs uppercase tracking-widest text-zinc-500 dark:text-zinc-500">{t('lounge.no_directives')}</div>
+          <div className="text-[10px] md:text-xs uppercase tracking-widest text-ink-muted">{t('lounge.no_directives')}</div>
         ) : (
           pickMissions(missions, missionProgress).map(mission => {
             const prog = missionProgress.find(p => p.missionId === mission.id) ?? { currentProgress: 0, completed: false };

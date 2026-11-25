@@ -244,7 +244,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
 
                     <div className="space-y-5 sm:space-y-6">
                       {errorMessage && (
-                        <div className="p-3 sm:p-4 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 text-xs font-bold text-center">
+                        <div className="p-3 sm:p-4 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 text-red-700 dark:text-red-400 text-xs font-bold text-center">
                           {errorMessage}
                         </div>
                       )}
@@ -278,7 +278,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                       <div className="flex flex-col gap-1.5 sm:gap-2">
                         <label className="text-[10px] uppercase tracking-widest text-ink-muted font-bold">{t('profile_modal.general.phone')}</label>
                         <div className="flex items-center border-b border-black/20 dark:border-white/20">
-                          <span className="text-sm text-zinc-400 dark:text-zinc-600 mr-2">+60</span>
+                          <span className="text-sm text-ink-faint mr-2">+60</span>
                           <input
                             type="tel"
                             value={formData.phone.replace(/^\+60\s?/, '')}
@@ -403,8 +403,8 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                             onClick={onDeleteAccount}
                             className="w-full text-left p-3 sm:p-4 border border-red-200 dark:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors group"
                           >
-                            <div className="text-[10px] uppercase tracking-widest font-bold text-red-600 dark:text-red-500 mb-1">{t('profile_modal.security.delete_account')}</div>
-                            <div className="text-xs text-red-500/80 dark:text-red-400/80 group-hover:text-red-500 dark:group-hover:text-red-400">{t('profile_modal.security.delete_account_desc')}</div>
+                            <div className="text-[10px] uppercase tracking-widest font-bold text-danger mb-1">{t('profile_modal.security.delete_account')}</div>
+                            <div className="text-xs text-danger">{t('profile_modal.security.delete_account_desc')}</div>
                           </button>
                         </div>
                       </div>

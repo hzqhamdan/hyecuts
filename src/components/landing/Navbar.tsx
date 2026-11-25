@@ -17,7 +17,7 @@ export default function Navbar({ isMenuOpen, onToggleMenu, token, onToggleLangua
   const { t } = useTranslation();
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 px-6 md:px-12 py-4 flex justify-between items-center backdrop-blur-md bg-white/80 dark:bg-studio-black/80 border-b border-zinc-100 dark:border-zinc-800 transition-colors">
+    <nav className="fixed top-0 left-0 w-full z-50 px-6 md:px-12 py-4 flex justify-between items-center backdrop-blur-md bg-chrome border-b border-zinc-100 dark:border-zinc-800 transition-colors">
       <motion.button
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}

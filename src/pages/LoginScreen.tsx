@@ -95,7 +95,7 @@ export default function LoginScreen() {
 
       <motion.div
         initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-        className="relative z-10 w-full max-w-md bg-white/80 dark:bg-studio-black/70 backdrop-blur-xl border border-white/30 dark:border-zinc-700/50 p-8 sm:p-12 transition-colors shadow-overlay"
+        className="relative z-10 w-full max-w-md bg-chrome backdrop-blur-xl border border-white/30 dark:border-zinc-700/50 p-8 sm:p-12 transition-colors shadow-overlay"
       >
         <div className="text-center mb-8 md:mb-10">
           <CustomShieldIcon className="w-8 h-8 mx-auto mb-4 text-black dark:text-white" />
@@ -104,7 +104,7 @@ export default function LoginScreen() {
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 text-xs text-center font-bold">
+          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 text-red-700 dark:text-red-400 text-xs text-center font-bold">
             {error}
           </div>
         )}

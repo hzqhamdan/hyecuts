@@ -71,7 +71,7 @@ const RewardPortfolio = ({ rewards, isLoading, onRedeem }: RewardPortfolioProps)
                 <p className="text-xs text-ink-muted font-sans leading-relaxed max-w-xs line-clamp-2 mb-3">
                   {t(`data.rewards.${reward.title}.description`, { defaultValue: reward.description })}
                 </p>
-                <div className="font-mono text-[9px] md:text-[10px] tracking-widest text-zinc-500 dark:text-zinc-500 uppercase font-bold">
+                <div className="font-mono text-[9px] md:text-[10px] tracking-widest text-ink-muted uppercase font-bold">
                   {(reward.pointsCost ?? 0).toString()} {t('lounge.pts')} {reward.stockCount !== null && `• ${reward.stockCount.toString()} ${t('lounge.left')}`}
                 </div>
               </div>

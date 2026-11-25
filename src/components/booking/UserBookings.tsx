@@ -54,7 +54,7 @@ export default function UserBookings() {
       <nav className="flex justify-between items-center max-w-5xl mx-auto mb-10 sm:mb-16">
         <button
           onClick={() => { navigate('/lounge'); }}
-          className="flex items-center gap-2 sm:gap-3 text-[10px] uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-bold"
+          className="flex items-center gap-2 sm:gap-3 text-[10px] uppercase tracking-[0.2em] text-ink-muted hover:text-black dark:hover:text-white transition-colors font-bold"
         >
           <ArrowLeft className="w-3 h-3" /> <span className="hidden xs:inline">Return to Lounge</span><span className="xs:hidden">Lounge</span>
         </button>
@@ -123,8 +123,8 @@ export default function UserBookings() {
                   <div className="w-full">
                     <div className="flex items-center gap-2 mb-4">
                       <span className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 border ${
-                        booking.status === 'COMPLETED' ? 'border-green-200 text-green-700 bg-green-50 dark:bg-green-900/10' :
-                        booking.status === 'CANCELLED' ? 'border-red-200 text-red-700 bg-red-50 dark:bg-red-900/10' :
+                        booking.status === 'COMPLETED' ? 'border-green-200 text-success bg-green-50 dark:bg-green-900/10' :
+                        booking.status === 'CANCELLED' ? 'border-red-200 text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/10' :
                         'border-zinc-200 text-zinc-700 bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-300'
                       }`}>
                         {booking.status}

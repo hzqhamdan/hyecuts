@@ -72,7 +72,7 @@ export function ReviewQueue() {
                 <div className="flex-1 space-y-8">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-300 dark:text-zinc-600">
+                      <div className="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-ink-faint">
                         <User size={24} />
                       </div>
                       <div>
@@ -110,7 +110,7 @@ export function ReviewQueue() {
                   </button>
                   <button 
                     onClick={() => handleAction(review.id, 'REJECTED')}
-                    className="w-full md:w-48 py-4 border border-hairline-strong text-ink-faint text-[10px] uppercase tracking-widest font-bold hover:border-red-200 dark:hover:border-red-900 hover:text-red-500 dark:hover:text-red-400 transition-all flex items-center justify-center gap-3"
+                    className="w-full md:w-48 py-4 border border-hairline-strong text-ink-faint text-[10px] uppercase tracking-widest font-bold hover:border-red-200 dark:hover:border-red-900 hover:text-danger transition-all flex items-center justify-center gap-3"
                   >
                     <X size={14} /> {t('atelier.reviews.reject', { defaultValue: 'Reject' })}
                   </button>

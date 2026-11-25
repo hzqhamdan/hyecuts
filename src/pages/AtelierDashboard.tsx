@@ -190,7 +190,7 @@ export default function AtelierDashboard() {
               {i18n.language === 'en' ? <Globe size={14} className="text-ink-faint" /> : <img src="/flags/my.svg" alt="Malaysia" className="w-4 h-3 rounded-sm" />}
               <div className="flex justify-between items-center w-full">
                 <span>{i18n.language === 'en' ? 'English' : 'Bahasa Malaysia'}</span>
-                <span className="text-zinc-300 dark:text-zinc-600 ml-auto">{i18n.language === 'en' ? 'EN' : 'MY'}</span>
+                <span className="text-ink-faint ml-auto">{i18n.language === 'en' ? 'EN' : 'MY'}</span>
               </div>
             </button>
             <div className="flex items-center gap-4 p-4 rounded-none bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800">
@@ -232,7 +232,7 @@ export default function AtelierDashboard() {
           </div>
           <button 
             onClick={() => { logout(); navigate('/'); }}
-            className="text-[10px] uppercase tracking-widest text-red-500 font-bold"
+            className="text-[10px] uppercase tracking-widest text-danger font-bold"
           >
             {t('nav.logout')}
           </button>

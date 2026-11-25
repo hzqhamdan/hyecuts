@@ -16,7 +16,7 @@ export default function ContactSection() {
             <div>
               <p className="text-black dark:text-white font-bold mb-2 uppercase tracking-widest text-[10px]">{t('landing.address')}</p>
               <p className="font-medium">{HYECUTS.address}</p>
-              <p className="mt-2 text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-600 font-bold">{t('landing.waze')}: {HYECUTS.waze}</p>
+              <p className="mt-2 text-[10px] uppercase tracking-widest text-ink-faint font-bold">{t('landing.waze')}: {HYECUTS.waze}</p>
             </div>
             <div>
               <p className="text-black dark:text-white font-bold mb-2 uppercase tracking-widest text-[10px]">{t('landing.contact_details')}</p>

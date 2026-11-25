@@ -58,7 +58,7 @@ export function LoyaltyConfigurator() {
         multiplier={data.multiplier} 
         setMultiplier={(val) => { multiMutation.mutate(val); }} 
       />
-      <hr className="border-zinc-200" />
+      <hr className="border-hairline-strong" />
       <RewardsInventory 
         rewards={data.rewards} 
         onRewardAdded={() => { void queryClient.invalidateQueries({ queryKey: ['loyalty-config'] }); }} 

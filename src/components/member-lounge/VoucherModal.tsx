@@ -42,7 +42,7 @@ const VoucherModal = ({ voucher, status, onClose, onConfirmRedeem }: VoucherModa
 
               <div className="flex flex-col gap-4 w-full max-w-xs">
                 {status === 'success' ? (
-                  <div className="py-4 text-[10px] uppercase tracking-widest text-green-700 dark:text-green-400 font-bold border border-green-200 dark:border-green-900 bg-green-50 dark:bg-green-900/10">
+                  <div className="py-4 text-[10px] uppercase tracking-widest text-success font-bold border border-green-200 dark:border-green-900 bg-green-50 dark:bg-green-900/10">
                     {t('lounge.redemption_confirmed')}
                   </div>
                 ) : status === 'error' ? (

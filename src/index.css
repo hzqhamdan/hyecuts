@@ -29,13 +29,6 @@
     @apply bg-zinc-900;
   }
 
-  /* Note: this beats an explicit dark:bg-* on the same element, so the
-     dark: class on Navbar's translucent bar is dead. Prefer the surface
-     tokens over these rules in new work. */
-  html.dark .bg-white\/80 {
-    background-color: rgb(24 24 27 / 0.8);
-  }
-
   /* Essential border styles for dark mode consistency.
      Tailwind also expands these through the dark: variant, so this rule is
      what gives the 34 remaining dark:border-zinc-800 usages zinc-700 rather

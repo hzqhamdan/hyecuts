@@ -18,7 +18,7 @@ export default function Footer() {
         </button>
         <div className="text-[10px] uppercase tracking-widest text-ink-faint font-bold">
           {HYECUTS.address}
-          <div className="mt-2 text-[9px] text-zinc-300 dark:text-zinc-600 font-medium">Developed By: Haziq Hamdan</div>
+          <div className="mt-2 text-[9px] text-ink-faint font-medium">Developed By: Haziq Hamdan</div>
         </div>
       </div>
     </footer>

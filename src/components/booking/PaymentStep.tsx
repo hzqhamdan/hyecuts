@@ -53,7 +53,7 @@ function CheckoutForm({ onSuccess }: { onSuccess: () => void }) {
       </div>
       
       {errorMessage && (
-        <div className="text-red-500 text-sm font-medium">
+        <div className="text-danger text-sm font-medium">
           {errorMessage}
         </div>
       )}

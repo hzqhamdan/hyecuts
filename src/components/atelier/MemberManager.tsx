@@ -152,7 +152,7 @@ export function MemberManager() {
 
             <div className="mt-20 space-y-16">
               <header className="text-center">
-                <div className="w-24 h-24 rounded-full bg-zinc-100 dark:bg-zinc-800 mx-auto mb-8 flex items-center justify-center text-zinc-300 dark:text-zinc-600">
+                <div className="w-24 h-24 rounded-full bg-zinc-100 dark:bg-zinc-800 mx-auto mb-8 flex items-center justify-center text-ink-faint">
                   <UserIcon size={48} />
                 </div>
                 <h3 className="font-serif text-4xl italic mb-2 text-black dark:text-white">{selectedMember.fullName}</h3>
@@ -178,7 +178,7 @@ export function MemberManager() {
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-ink-muted italic">{t('atelier.members.adjustment_desc', { defaultValue: 'Add or deduct points from this portfolio.' })}</span>
-                    <span className={`font-mono text-xl ${adjustAmount > 0 ? 'text-green-600' : adjustAmount < 0 ? 'text-red-600' : 'text-zinc-400'}`}>
+                    <span className={`font-mono text-xl ${adjustAmount > 0 ? 'text-success' : adjustAmount < 0 ? 'text-danger' : 'text-ink-faint'}`}>
                       {adjustAmount > 0 ? '+' : ''}{adjustAmount}
                     </span>
                   </div>
@@ -244,7 +244,7 @@ export function MemberManager() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-                <p className="text-[9px] text-center text-zinc-400 dark:text-zinc-600 mt-4 italic">
+                <p className="text-[9px] text-center text-ink-faint mt-4 italic">
                   {t('atelier.members.audit_note', { defaultValue: 'All manual adjustments are logged in the fulfillment archive.' })}
                 </p>
               </section>

@@ -197,7 +197,7 @@ export default function BookingFlow() {
                 else if (step === 1 || step === 6) navigate(token ? '/lounge' : '/');
                 else prevStep();
               }}
-              className="flex items-center gap-2 sm:gap-3 text-[10px] uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors font-bold"
+              className="flex items-center gap-2 sm:gap-3 text-[10px] uppercase tracking-[0.2em] text-ink-muted hover:text-black dark:hover:text-white transition-colors font-bold"
             >
               <ArrowLeft className="w-3 h-3" />
               <span>
@@ -206,7 +206,7 @@ export default function BookingFlow() {
             </button>
             
             {step > 0 && step < 6 && (
-              <div className="sm:hidden text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-600 font-bold">
+              <div className="sm:hidden text-[10px] uppercase tracking-widest text-ink-faint font-bold">
                 {Math.min(step, 5)} / 5
               </div>
             )}
@@ -218,7 +218,7 @@ export default function BookingFlow() {
         
           <div className="hidden sm:flex sm:justify-self-end items-center gap-4 order-3">
             {step > 0 && step < 6 && (
-              <div className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-600 font-bold">
+              <div className="text-[10px] uppercase tracking-widest text-ink-faint font-bold">
                 {t('booking.step_label', { current: Math.min(step, 5), total: 5 }).replace('{{current}}', Math.min(step, 5).toString()).replace('{{total}}', '5')}
               </div>
             )}
@@ -227,7 +227,7 @@ export default function BookingFlow() {
               const newLang = i18n.language === 'en' ? 'ms' : 'en';
               void i18n.changeLanguage(newLang);
             }}
-            className={`flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-500 hover:text-black dark:hover:text-white transition-colors ${step > 0 && step < 5 ? 'sm:border-l sm:border-zinc-200 dark:sm:border-zinc-800 sm:pl-4' : ''} font-bold`}
+            className={`flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-ink-muted hover:text-black dark:hover:text-white transition-colors ${step > 0 && step < 5 ? 'sm:border-l sm:border-zinc-200 dark:sm:border-zinc-800 sm:pl-4' : ''} font-bold`}
           >
             {i18n.language === 'en' ? <Globe size={12} /> : <img src="/flags/my.svg" alt="Malaysia" className="w-4 h-3 rounded-sm" />}
             {i18n.language === 'en' ? 'EN' : 'MY'}
@@ -276,7 +276,7 @@ export default function BookingFlow() {
                   // Surfaced here rather than at Confirm (BK-020): if we cannot load
                   // the list, nothing is bookable, and the customer should learn that
                   // before filling in five steps of detail.
-                  <div className="mb-6 p-4 border border-red-300 bg-red-50 dark:bg-red-900/10 text-xs sm:text-sm text-red-700 flex items-center justify-between gap-4">
+                  <div className="mb-6 p-4 border border-red-300 bg-red-50 dark:bg-red-900/10 text-xs sm:text-sm text-red-700 dark:text-red-400 flex items-center justify-between gap-4">
                     <span>
                       {t('booking.services_load_failed', {
                         defaultValue: 'Could not load available services. Booking is unavailable until this loads.',
@@ -324,9 +324,20 @@ export default function BookingFlow() {
                                     return (
                                     <div
                                       key={service.name}
+                                      role="button"
+                                      tabIndex={isSelectable ? 0 : -1}
                                       onClick={() => { if (isSelectable) setSelectedService(service.name); }}
+                                      onKeyDown={(e) => {
+                                        if (isSelectable && (e.key === 'Enter' || e.key === ' ')) {
+                                          e.preventDefault();
+                                          setSelectedService(service.name);
+                                        }
+                                      }}
+                                      // The gold border and title are 2.42:1 in Paper, so selection
+                                      // also has to be stated in the markup and in words.
+                                      aria-pressed={selectedService === service.name}
                                       aria-disabled={!isSelectable}
-                                      className={`p-4 border-2 transition-all duration-300 ${
+                                      className={`p-4 border-2 transition-all duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black dark:focus-visible:outline-white ${
                                         !isSelectable
                                           ? 'opacity-40 cursor-not-allowed border-transparent'
                                           : selectedService === service.name
@@ -346,6 +357,11 @@ export default function BookingFlow() {
                                       </div>
                                       <div className="flex gap-4 text-[9px] sm:text-[10px] uppercase tracking-widest text-ink-faint font-bold">
                                         <span>{service.duration}</span>
+                                        {selectedService === service.name && (
+                                          <span className="text-black dark:text-white">
+                                            {t('booking.selected', { defaultValue: 'Selected' })}
+                                          </span>
+                                        )}
                                         {!isSelectable && (
                                           <span>
                                             {t('booking.service_unavailable_badge', { defaultValue: 'Unavailable' })}
@@ -390,13 +406,13 @@ export default function BookingFlow() {
                           : 'border-hairline-strong hover:border-zinc-400 dark:hover:border-zinc-600'
                       }`}
                     >
-                      <div className={`w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center font-bold transition-colors ${selectedStaff === staff.id ? 'bg-studio-black dark:bg-studio-gold text-studio-white dark:text-studio-black' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-500'}`}>
+                      <div className={`w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center font-bold transition-colors ${selectedStaff === staff.id ? 'bg-studio-black dark:bg-studio-gold text-studio-white dark:text-studio-black' : 'bg-zinc-100 dark:bg-zinc-800 text-ink-muted'}`}>
                         {staff.id === 'any' ? '?' : staff.name.charAt(0)}
                       </div>
                       <h3 className={`font-serif text-base sm:text-lg uppercase tracking-tight mb-1 transition-colors ${selectedStaff === staff.id ? 'text-studio-black dark:text-studio-gold' : 'text-studio-black dark:text-studio-white'}`}>
                         {staff.id === 'any' ? t('landing.no_preference') : staff.name}
                       </h3>
-                      <p className="text-[10px] uppercase tracking-widest text-zinc-500 dark:text-zinc-500 font-bold">{staff.id === 'any' ? t('landing.first_available') : t(`data.roles.${staff.role}`)}</p>
+                      <p className="text-[10px] uppercase tracking-widest text-ink-muted font-bold">{staff.id === 'any' ? t('landing.first_available') : t(`data.roles.${staff.role}`)}</p>
                     </div>
                   ))}
                 </div>
@@ -436,7 +452,7 @@ export default function BookingFlow() {
                         }`}
                       >
                         <div className={`text-[10px] uppercase tracking-widest mb-1 font-bold ${selectedDate === date.id ? 'opacity-100' : 'opacity-60'}`}>{t(`data.days.${date.day}`)}</div>
-                        <div className={`font-serif text-lg ${selectedDate === date.id ? 'text-studio-white dark:text-studio-black' : 'text-zinc-500 dark:text-zinc-500'}`}>{date.hours}</div>
+                        <div className={`font-serif text-lg ${selectedDate === date.id ? 'text-studio-white dark:text-studio-black' : 'text-ink-muted'}`}>{date.hours}</div>
                       </div>
                     ))}
                   </div>
@@ -520,7 +536,7 @@ export default function BookingFlow() {
                       {t('landing.policy_2')}
                     </div>
                     {BOOKING_POLICIES.slice(0, 3).map((policy, idx) => (
-                      <p key={policy} className="text-xs text-zinc-500 dark:text-zinc-500 italic leading-relaxed">
+                      <p key={policy} className="text-xs text-ink-muted italic leading-relaxed">
                         {t(`landing.policy_${idx + 1}`)}
                       </p>
                     ))}
@@ -630,16 +646,16 @@ export default function BookingFlow() {
           <h3 className="font-serif text-2xl italic mb-6 text-black dark:text-white">{HYECUTS.name}</h3>
           <div className="space-y-4 text-sm text-zinc-600 dark:text-zinc-400 font-light">
             <div>
-              <p className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mb-1 font-bold">{t('landing.address')}</p>
+              <p className="text-[10px] uppercase tracking-widest text-ink-faint mb-1 font-bold">{t('landing.address')}</p>
               <p>{HYECUTS.address}</p>
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mb-1 font-bold">{t('landing.contact_details')}</p>
+              <p className="text-[10px] uppercase tracking-widest text-ink-faint mb-1 font-bold">{t('landing.contact_details')}</p>
               <p>{HYECUTS.phone}</p>
               <p>{HYECUTS.email}</p>
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mb-1 font-bold">{t('landing.team_members')}</p>
+              <p className="text-[10px] uppercase tracking-widest text-ink-faint mb-1 font-bold">{t('landing.team_members')}</p>
               {TEAM_MEMBERS.map((member) => (
                 <p key={member.name}>
                   {member.name} — {t(`data.roles.${member.role}`)}
@@ -647,7 +663,7 @@ export default function BookingFlow() {
               ))}
             </div>
             <div>
-              <p className="text-[10px] uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mb-1 font-bold">{t('landing.booking_policies')}</p>
+              <p className="text-[10px] uppercase tracking-widest text-ink-faint mb-1 font-bold">{t('landing.booking_policies')}</p>
               {BOOKING_POLICIES.map((policy, idx) => (
                 <p key={policy} className="mb-2">
                   {t(`landing.policy_${idx + 1}`)}

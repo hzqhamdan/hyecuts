@@ -16,7 +16,7 @@ export default function HoursSection() {
             {BUSINESS_HOURS.map((slot) => (
               <div key={slot.day} className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-4">
                 <span className="text-xs md:text-sm uppercase tracking-widest font-bold">{t(`data.days.${slot.day}`)}</span>
-                <span className={`text-xs md:text-sm font-medium ${slot.open ? 'text-black dark:text-white' : 'text-zinc-400 dark:text-zinc-600'}`}>{slot.hours}</span>
+                <span className={`text-xs md:text-sm font-medium ${slot.open ? 'text-black dark:text-white' : 'text-ink-faint'}`}>{slot.hours}</span>
               </div>
             ))}
           </div>

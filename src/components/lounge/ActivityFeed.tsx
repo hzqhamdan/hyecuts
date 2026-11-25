@@ -21,12 +21,12 @@ const ActivityFeed = ({ activities }: ActivityFeedProps) => {
                   <Activity className="w-4 h-4 text-ink-muted" />
                   <div>
                     <p className="text-xs md:text-sm font-bold">{act.description}</p>
-                    <p className="text-[10px] text-zinc-500 dark:text-zinc-500 uppercase tracking-widest mt-1">
+                    <p className="text-[10px] text-ink-muted uppercase tracking-widest mt-1">
                       {new Date(act.timestamp).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
-                <div className={`font-mono text-xs md:text-sm font-bold ${act.pointsEarned > 0 ? 'text-green-600' : 'text-ink-muted'}`}>
+                <div className={`font-mono text-xs md:text-sm font-bold ${act.pointsEarned > 0 ? 'text-success' : 'text-ink-muted'}`}>
                   {act.pointsEarned > 0 ? '+' : ''}{act.pointsEarned.toString()} {t('lounge.pts')}
                 </div>
               </div>

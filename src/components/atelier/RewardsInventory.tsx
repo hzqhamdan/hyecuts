@@ -79,7 +79,7 @@ export function RewardsInventory({ rewards, onRewardAdded }: { rewards: Reward[]
             <input type="number" placeholder={t('atelier.loyalty.stock')} value={newReward.stockCount ?? ''} onChange={e => { setNewReward({...newReward, stockCount: toNumberOrNull(e.target.value)}); }} className="p-3 border border-hairline-strong bg-transparent text-black dark:text-white text-sm outline-none focus:border-black dark:focus:border-white transition-all" />
           </div>
           {error && (
-            <p role="alert" className="text-xs text-red-600 dark:text-red-400">{error}</p>
+            <p role="alert" className="text-xs text-danger">{error}</p>
           )}
           <button onClick={() => { void handleAddAsset(); }} className="bg-black dark:bg-white text-white dark:text-black px-8 py-3 text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all">{t('atelier.loyalty.save_asset')}</button>
         </div>

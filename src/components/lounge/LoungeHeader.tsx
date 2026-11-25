@@ -119,7 +119,7 @@ const LoungeHeader = ({ onLogout, onToggleLanguage, showNotifications, onToggleN
 
         <button
           onClick={onLogout}
-          className="text-[10px] uppercase tracking-widest text-red-400 dark:text-red-500 hover:text-red-600 transition-colors font-bold"
+          className="text-[10px] uppercase tracking-widest text-danger hover:text-red-700 dark:hover:text-red-300 transition-colors font-bold"
         >
           {t('nav.logout')}
         </button>

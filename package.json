@@ -9,7 +9,8 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "tokens": "node scripts/build-tokens.ts"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "^6.4.0",
