@@ -100,10 +100,15 @@ export interface UserMissionProgress {
 
 export interface Booking {
   id: string;
+  // Null for a guest booking, which has no account: the guest's own details
+  // are in guestName and guestEmail instead.
   user: {
     email: string;
-    fullName?: string;
-  };
+    // users.full_name allows NULL.
+    fullName: string | null;
+  } | null;
+  guestName?: string | null;
+  guestEmail?: string | null;
   appointmentTime: string;
   service: {
     name: string;

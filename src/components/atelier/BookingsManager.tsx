@@ -5,6 +5,17 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 
 import { api } from '../../api/client';
+import { firstNonEmpty } from '../../utils/text';
+
+// A guest booking has no user, so its name and email are the ones the guest
+// gave when booking.
+function customerName(booking: Booking): string {
+  return firstNonEmpty(booking.user?.fullName, booking.user?.email, booking.guestName) ?? '';
+}
+
+function customerEmail(booking: Booking): string {
+  return firstNonEmpty(booking.user?.email, booking.guestEmail) ?? '';
+}
 
 export function BookingsManager() {
   const { t } = useTranslation();
@@ -45,7 +56,7 @@ export function BookingsManager() {
                   <User size={24} />
                 </div>
                 <div className="space-y-1">
-                  <h4 className="font-serif text-2xl italic text-black dark:text-white">{booking.user.fullName ?? booking.user.email}</h4>
+                  <h4 className="font-serif text-2xl italic text-black dark:text-white">{customerName(booking)}</h4>
                   <div className="flex items-center gap-4 text-[10px] uppercase tracking-widest text-ink-faint font-bold">
                     <span className="flex items-center gap-1"><Clock size={12} /> {new Date(booking.appointmentTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     <span className="flex items-center gap-1"><Calendar size={12} /> {new Date(booking.appointmentTime).toLocaleDateString()}</span>
@@ -84,7 +95,7 @@ export function BookingsManager() {
              <div key={b.id} className="p-6 border border-zinc-100 dark:border-zinc-800 flex justify-between items-center opacity-60">
                 <div className="flex items-center gap-4">
                   <CheckCircle2 size={16} className="text-success" />
-                  <span className="text-xs font-bold uppercase tracking-widest text-black dark:text-white">{b.user.email}</span>
+                  <span className="text-xs font-bold uppercase tracking-widest text-black dark:text-white">{customerEmail(b)}</span>
                   <span className="text-xs text-ink-faint">— {t(`data.services.${b.service.name}`, { defaultValue: b.service.name })}</span>
                 </div>
                 <span className="font-mono text-[10px] text-ink-faint">{new Date(b.appointmentTime).toLocaleTimeString()}</span>

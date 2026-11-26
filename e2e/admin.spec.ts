@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test';
 import { test, expect } from './support/test';
 import { ADMIN, MEMBER, signInAs } from './support/mockApi';
 
-function booking(id: string, who: { user: unknown; guestName?: string }, status = 'PENDING') {
+function booking(id: string, who: { user: unknown; guestName?: string; guestEmail?: string }, status = 'PENDING') {
   return {
     id,
     ...who,
@@ -79,16 +79,24 @@ test.describe('Booking manager', () => {
     expect(api.sent('PUT', '/bookings/b-1/complete')[0].token).toBe(ADMIN.token);
   });
 
-  // E2E-006: guest bookings have no user (the backend sends "user": null),
-  // and the list reads booking.user.fullName, so one guest booking blanks the
-  // whole booking manager.
+  // E2E-006 (fixed): guest bookings have no user (the backend sends
+  // "user": null), and the list read booking.user.fullName, so one guest
+  // booking blanked the whole booking manager.
   test('lists a guest booking under the guest name', async ({ page, api }) => {
-    test.fail();
     const errors = pageErrors(page);
     api.allBookings = [booking('b-2', { user: null, guestName: 'Farah Lee' })];
     await page.goto('/admin/bookings');
 
     await expect(page.getByRole('heading', { name: 'Farah Lee' })).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+
+  test('lists a completed guest booking under the guest email', async ({ page, api }) => {
+    const errors = pageErrors(page);
+    api.allBookings = [booking('b-3', { user: null, guestName: 'Farah Lee', guestEmail: 'farah@example.com' }, 'COMPLETED')];
+    await page.goto('/admin/bookings');
+
+    await expect(page.getByText('farah@example.com')).toBeVisible();
     expect(errors).toEqual([]);
   });
 });
