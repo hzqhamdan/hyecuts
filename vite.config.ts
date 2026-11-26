@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import { tokenHex } from './src/styles/tokens.ts'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -20,8 +21,9 @@ export default defineConfig({
         name: 'Hyecuts: The Studio',
         short_name: 'The Studio',
         description: 'Premium Barbershop Loyalty & Booking',
-        theme_color: '#1A1A1A',
-        background_color: '#FAFAFA',
+        // The manifest is JSON, so it takes literal colours rather than CSS variables.
+        theme_color: tokenHex.studioBlack,
+        background_color: tokenHex.studioWhite,
         display: 'standalone',
         icons: [
           {

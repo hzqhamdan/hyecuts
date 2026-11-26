@@ -160,7 +160,7 @@ export function PaymentStep({ serviceId, onPaymentSuccess }: { serviceId: number
               colorPrimary: tokenHex.studioWhite,
               colorBackground: tokenHex.studioBlack,
               colorText: tokenHex.studioWhite,
-              colorDanger: '#ef4444',
+              colorDanger: tokenHex.statusDangerStudio,
               fontFamily: 'Inter, sans-serif',
               spacingUnit: '4px',
               borderRadius: '0px',

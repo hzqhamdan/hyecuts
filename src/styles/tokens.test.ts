@@ -9,8 +9,9 @@ import { tokenHex } from './tokens';
 const read = (file: string) => readFileSync(new URL(file, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
 
 const tokens = JSON.parse(read('./tokens.json')) as TokensFile;
-const lightValue = (name: string) =>
-  tokens.color.tokens.find((t) => t.name === name)?.value.light.toLowerCase();
+const themeValue = (name: string, theme: 'light' | 'dark') =>
+  tokens.color.tokens.find((t) => t.name === name)?.value[theme].toLowerCase();
+const lightValue = (name: string) => themeValue(name, 'light');
 
 describe('design tokens', () => {
   it('tokens.css is generated from tokens.json (run `npm run tokens` if this fails)', () => {
@@ -22,5 +23,6 @@ describe('design tokens', () => {
     expect(tokenHex.studioBlack.toLowerCase()).toBe(lightValue('studio-black'));
     expect(tokenHex.studioWhite.toLowerCase()).toBe(lightValue('studio-white'));
     expect(tokenHex.studioGold.toLowerCase()).toBe(lightValue('studio-gold'));
+    expect(tokenHex.statusDangerStudio.toLowerCase()).toBe(themeValue('status-danger', 'dark'));
   });
 });

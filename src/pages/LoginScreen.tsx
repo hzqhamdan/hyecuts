@@ -70,7 +70,7 @@ export default function LoginScreen() {
       className="min-h-screen text-black dark:text-studio-white font-sans flex flex-col justify-center items-center p-4 sm:p-6 relative overflow-hidden transition-colors duration-500"
     >
       {/* WebGL smokey background (only the shader; the existing form is preserved) */}
-      <div className="absolute inset-0 z-0 bg-[#0A0A0A]">
+      <div className="absolute inset-0 z-0 bg-studio-black">
         <SmokeyBackground color={tokenHex.studioGold} backdropBlurAmount="none" />
       </div>
 

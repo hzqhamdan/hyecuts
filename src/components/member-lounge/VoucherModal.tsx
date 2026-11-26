@@ -16,7 +16,7 @@ const VoucherModal = ({ voucher, status, onClose, onConfirmRedeem }: VoucherModa
     <>
       {voucher && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-md p-6">
-          <div className="bg-[#F9F9F7] dark:bg-studio-black w-full max-w-lg relative overflow-hidden shadow-overlay">
+          <div className="bg-surface-page w-full max-w-lg relative overflow-hidden shadow-overlay">
             {/* Luxury Invitation Styling */}
             <div className="p-12 flex flex-col items-center text-center bg-repeat">
               <div className="w-full border-t border-b border-black dark:border-white py-8 mb-12">

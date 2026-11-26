@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, type ReactElement } from "react";
+import { tokenHex } from "../../styles/tokens";
 
 // Vertex shader source code
 const vertexSmokeySource = `
@@ -79,7 +80,7 @@ const blurClassMap: Record<BlurSize, string> = {
  */
 export function SmokeyBackground({
   backdropBlurAmount = "sm",
-  color = "#1E40AF", // Default dark blue
+  color = tokenHex.studioGold,
   className = "",
 }: SmokeyBackgroundProps): ReactElement {
   const canvasRef = useRef<HTMLCanvasElement>(null);

@@ -35,4 +35,6 @@ export const tokenHex = {
   studioBlack: '#1A1A1A',
   studioWhite: '#FAFAFA',
   studioGold: '#B8A070',
+  // Stripe draws its form with the dark 'night' theme, so it takes Studio's danger red.
+  statusDangerStudio: '#F87171',
 } as const;
