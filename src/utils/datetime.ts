@@ -37,3 +37,19 @@ export function nextDateForWeekday(weekday: string, from: Date = new Date()): Da
   date.setDate(date.getDate() + ((target + 7 - date.getDay()) % 7 || 7));
   return date;
 }
+
+/**
+ * When a new booking for `weekday` at `hours`:`minutes` (24-hour, local time) takes
+ * place: the next time that weekday and time come round after `from`. Today counts
+ * while the time is still ahead; once it has passed, the booking is for next week.
+ * (E2E-004: a time already past today used to be booked for today, in the past.)
+ * Returns null for an unrecognised weekday name.
+ */
+export function nextSlotForWeekday(weekday: string, hours: number, minutes: number, from: Date = new Date()): Date | null {
+  const target = WEEKDAY_INDEX[weekday] as number | undefined;
+  if (target === undefined) return null;
+  const date = new Date(from.getFullYear(), from.getMonth(), from.getDate(), hours, minutes);
+  date.setDate(date.getDate() + ((target + 7 - date.getDay()) % 7));
+  if (date <= from) date.setDate(date.getDate() + 7);
+  return date;
+}

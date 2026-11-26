@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { nextDateForWeekday, toLocalIsoString } from './datetime';
+import { nextDateForWeekday, nextSlotForWeekday, toLocalIsoString } from './datetime';
 
 describe('toLocalIsoString (BK-016)', () => {
   it('returns the local wall-clock time it was given', () => {
@@ -68,5 +68,39 @@ describe('nextDateForWeekday', () => {
     const from = new Date(wednesday);
     nextDateForWeekday('Friday', from);
     expect(from.getTime()).toBe(wednesday.getTime());
+  });
+});
+
+describe('nextSlotForWeekday (E2E-004)', () => {
+  // Monday 26 October 2026, 6 PM local time.
+  const mondayEvening = new Date(2026, 9, 26, 18, 0);
+  const iso = (d: Date | null) => (d ? toLocalIsoString(d) : null);
+
+  it('books today when the time is still ahead', () => {
+    expect(iso(nextSlotForWeekday('Monday', 19, 30, mondayEvening))).toBe('2026-10-26T19:30:00');
+  });
+
+  it('books next week when the time has passed today', () => {
+    expect(iso(nextSlotForWeekday('Monday', 15, 0, mondayEvening))).toBe('2026-11-02T15:00:00');
+  });
+
+  it('books next week for the current minute itself', () => {
+    expect(iso(nextSlotForWeekday('Monday', 18, 0, mondayEvening))).toBe('2026-11-02T18:00:00');
+  });
+
+  it('books a later weekday this week, whatever the time', () => {
+    expect(iso(nextSlotForWeekday('Tuesday', 10, 0, mondayEvening))).toBe('2026-10-27T10:00:00');
+  });
+
+  it('wraps an earlier weekday into next week', () => {
+    expect(iso(nextSlotForWeekday('Sunday', 12, 0, mondayEvening))).toBe('2026-11-01T12:00:00');
+  });
+
+  it('crosses a month and year boundary', () => {
+    expect(iso(nextSlotForWeekday('Friday', 9, 0, new Date(2026, 11, 31, 9, 0)))).toBe('2027-01-01T09:00:00');
+  });
+
+  it('returns null for an unknown weekday', () => {
+    expect(nextSlotForWeekday('Funday', 10, 0, mondayEvening)).toBeNull();
   });
 });

@@ -170,10 +170,9 @@ test.describe('Choosing a time', () => {
     await expect(page.getByText('(Booked)')).toHaveCount(0);
   });
 
-  // E2E-004: the date is "the next occurrence of the weekday", which is today
-  // when today's weekday is picked, even if that time has already passed.
+  // E2E-004 (fixed): picking today's weekday at a time that has already passed
+  // used to book today, in the past.
   test('picking today at a time that has passed books next week', async ({ page, api }) => {
-    test.fail();
     await page.clock.setFixedTime(new Date('2026-10-26T18:00:00+08:00')); // Monday, 6 PM
     await page.goto('/booking');
     await page.getByRole('button', { name: /Continue as Guest/ }).click();

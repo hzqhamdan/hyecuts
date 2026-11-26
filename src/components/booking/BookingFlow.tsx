@@ -4,7 +4,7 @@ import { ArrowLeft, ChevronRight, ChevronDown, Calendar, Clock, CheckCircle, Shi
 import { BOOKING_POLICIES, BUSINESS_HOURS, HYECUTS, ALL_SERVICES, SERVICE_CATEGORIES, TEAM_MEMBERS, AVAILABLE_TIMES, timesForDay, type ServiceItem } from '../../data/hyecuts';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../api/client';
-import { toLocalIsoString } from '../../utils/datetime';
+import { nextSlotForWeekday, toLocalIsoString } from '../../utils/datetime';
 import { useBookingStore } from '../../store/useBookingStore';
 import { useTranslation } from 'react-i18next';
 import { PaymentStep } from './PaymentStep';
@@ -120,19 +120,6 @@ export default function BookingFlow() {
         }));
       }
 
-      const dayMap: Record<string, number> = { Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6, Sunday: 0 };
-      const chosenDate = DATES.find((d) => d.id === selectedDate);
-      const now = new Date();
-      const localDate = new Date(now);
-      if (chosenDate) {
-        const targetDay = dayMap[chosenDate.day];
-        // Next occurrence of the selected weekday (today only if picked and still upcoming).
-        localDate.setDate(now.getDate() + ((targetDay + 7 - now.getDay()) % 7));
-      } else {
-        // No date was actually selected (shouldn't happen — Confirm is disabled
-        // without one) — fall back to tomorrow rather than silently booking "today".
-        localDate.setDate(now.getDate() + 1);
-      }
       let hours = 12, mins = 0;
       if (selectedTime) {
         const match = /(\d+):(\d+)\s*(AM|PM)/i.exec(selectedTime);
@@ -143,7 +130,20 @@ export default function BookingFlow() {
           if (match[3].toUpperCase() === 'AM' && hours === 12) hours = 0;
         }
       }
-      localDate.setHours(hours, mins, 0, 0);
+
+      // The next time the chosen weekday and slot come round: today only while the
+      // slot is still ahead (E2E-004).
+      const slot = chosenDay ? nextSlotForWeekday(chosenDay, hours, mins) : null;
+      let localDate: Date;
+      if (slot) {
+        localDate = slot;
+      } else {
+        // No date was actually selected (shouldn't happen — Confirm is disabled
+        // without one) — fall back to tomorrow rather than silently booking "today".
+        localDate = new Date();
+        localDate.setDate(localDate.getDate() + 1);
+        localDate.setHours(hours, mins, 0, 0);
+      }
 
       // Local wall-clock, shared with the reschedule path (BK-016).
       const localIso = toLocalIsoString(localDate);
