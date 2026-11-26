@@ -38,9 +38,10 @@ export function ReviewQueue() {
     }
   ]);
 
-  const handleAction = (id: string, _status: 'APPROVED' | 'REJECTED') => {
+  // Approve and reject both only take the review off this prototype's list for now;
+  // a real app would send the decision to the API and award points.
+  const handleAction = (id: string) => {
     setReviews(reviews.filter(r => r.id !== id));
-    // In real app, call API to update status and award points
   };
 
   return (
@@ -81,7 +82,7 @@ export function ReviewQueue() {
                       </div>
                     </div>
                     <div className="flex gap-1 text-gold">
-                      {[...Array(5)].map((_, i) => (
+                      {Array.from({ length: 5 }, (_, i) => (
                         <Star key={i} size={14} fill={i < review.rating ? 'currentColor' : 'none'} />
                       ))}
                     </div>
@@ -103,13 +104,13 @@ export function ReviewQueue() {
 
                 <div className="flex md:flex-col justify-center gap-4">
                   <button 
-                    onClick={() => handleAction(review.id, 'APPROVED')}
+                    onClick={() => { handleAction(review.id); }}
                     className="w-full md:w-48 py-4 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all flex items-center justify-center gap-3"
                   >
                     <Check size={14} /> {t('atelier.reviews.approve', { defaultValue: 'Approve (+25 pts)' })}
                   </button>
                   <button 
-                    onClick={() => handleAction(review.id, 'REJECTED')}
+                    onClick={() => { handleAction(review.id); }}
                     className="w-full md:w-48 py-4 border border-hairline-strong text-ink-faint text-[10px] uppercase tracking-widest font-bold hover:border-red-200 dark:hover:border-red-900 hover:text-danger transition-all flex items-center justify-center gap-3"
                   >
                     <X size={14} /> {t('atelier.reviews.reject', { defaultValue: 'Reject' })}

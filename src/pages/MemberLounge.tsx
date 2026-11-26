@@ -48,6 +48,24 @@ const MemberLounge = () => {
     refreshProfile
   } = useLoungeData(USER_ID, token);
 
+  const deleteAccount = async () => {
+    // The lounge is behind ProtectedRoute, so there is always a user here; the guard
+    // keeps a missing id from becoming a request to /loyalty/profile/undefined.
+    const userId = user?.id;
+    if (!userId) return;
+    if(confirm(t('lounge.delete_confirm'))) {
+      try {
+        await api.del(`/loyalty/profile/${userId}`, { token: token ?? undefined });
+        alert(t('lounge.delete_submitted'));
+        logout();
+        void navigate('/');
+      } catch (error) {
+        console.error('Failed to delete account', error);
+        alert(t('lounge.delete_error', { defaultValue: 'Failed to delete your account. Please try again or contact support.' }));
+      }
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -57,7 +75,7 @@ const MemberLounge = () => {
       className="min-h-screen bg-surface-card text-black dark:text-studio-white px-6 md:px-12 py-10 md:py-16 font-sans overflow-x-hidden transition-colors duration-500"
     >
       <LoungeHeader
-        onLogout={() => { logout(); navigate('/'); }}
+        onLogout={() => { logout(); void navigate('/'); }}
         onToggleLanguage={toggleLanguage}
         showNotifications={showNotifications}
         onToggleNotifications={() => { setShowNotifications(!showNotifications); }}
@@ -72,7 +90,7 @@ const MemberLounge = () => {
       <MobileMenu
         isOpen={isMenuOpen}
         onClose={() => { setIsMenuOpen(false); }}
-        onLogout={() => { logout(); navigate('/'); }}
+        onLogout={() => { logout(); void navigate('/'); }}
         onToggleLanguage={toggleLanguage}
         onOpenSettings={() => { setShowSettingsModal(true); }}
         i18nLang={i18n.language}
@@ -118,14 +136,14 @@ const MemberLounge = () => {
         voucher={selectedVoucher}
         status={redemptionStatus}
         onClose={() => { setSelectedVoucher(null); }}
-        onConfirmRedeem={() => { void handleRedeem(selectedVoucher!.id); }}
+        onConfirmRedeem={() => { if (selectedVoucher) void handleRedeem(selectedVoucher.id); }}
       />
 
       <UserProfileModal
         profile={profile}
         isOpen={showSettingsModal}
-        onClose={() => setShowSettingsModal(false)}
-        onProfileUpdate={refreshProfile}
+        onClose={() => { setShowSettingsModal(false); }}
+        onProfileUpdate={() => { void refreshProfile(); }}
         onExportData={() => {
           if(profile) {
             const fullExport = {
@@ -146,19 +164,7 @@ const MemberLounge = () => {
             dlAnchorElem.click();
           }
         }}
-        onDeleteAccount={async () => {
-          if(confirm(t('lounge.delete_confirm'))) {
-            try {
-              await api.del(`/loyalty/profile/${user?.id}`, { token: token ?? undefined });
-              alert(t('lounge.delete_submitted'));
-              logout();
-              navigate('/');
-            } catch (error) {
-              console.error('Failed to delete account', error);
-              alert(t('lounge.delete_error', { defaultValue: 'Failed to delete your account. Please try again or contact support.' }));
-            }
-          }
-        }}
+        onDeleteAccount={() => { void deleteAccount(); }}
       />
     </motion.div>
   );

@@ -28,6 +28,10 @@ const MissionsPanel = ({ missions, missionProgress }: MissionsPanelProps) => {
         ) : (
           pickMissions(missions, missionProgress).map(mission => {
             const prog = missionProgress.find(p => p.missionId === mission.id) ?? { currentProgress: 0, completed: false };
+            const progress = prog.currentProgress ?? 0;
+            const required = mission.requiredCount ?? 0;
+            // A target of 0 is treated as 1 so the bar never divides by zero.
+            const percent = Math.min(100, (progress / (required || 1)) * 100);
 
             return (
                 <div key={mission.id} className="py-4 border-b border-black/5 dark:border-white/5 flex justify-between items-center group">
@@ -42,13 +46,13 @@ const MissionsPanel = ({ missions, missionProgress }: MissionsPanelProps) => {
                           <div className="w-full h-1 bg-neutral-200 dark:bg-zinc-800 overflow-hidden relative">
                             <motion.div
                               initial={{ width: 0 }}
-                              animate={{ width: `${Math.min(100, ((prog.currentProgress ?? 0) / (mission.requiredCount || 1)) * 100)}%` }}
+                              animate={{ width: `${String(percent)}%` }}
                               transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
                               className="absolute top-0 left-0 h-full bg-black dark:bg-gold"
                             />
                           </div>
                           <div className="text-[9px] md:text-[10px] text-ink-muted uppercase tracking-widest mt-2 flex justify-between items-center font-bold">
-                            <span>{(prog.currentProgress ?? 0).toString()} / {(mission.requiredCount ?? 0).toString()} {mission.targetAction}</span>
+                            <span>{progress.toString()} / {required.toString()} {mission.targetAction}</span>
                             <span className="font-mono text-black dark:text-white">+{(mission.rewardPoints ?? 0).toString()} {t('lounge.pts')}</span>
                           </div>
                         </div>

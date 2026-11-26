@@ -23,7 +23,7 @@ export function MemberManager() {
 
   const adjustMutation = useMutation({
     mutationFn: ({ userId, amount }: { userId: string, amount: number }) =>
-      api.post(`/admin/points/adjust/${userId}?points=${amount}`, { token: token ?? undefined }),
+      api.post(`/admin/points/adjust/${userId}?points=${String(amount)}`, { token: token ?? undefined }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['members', token] });
       // Update selected member if open
@@ -70,7 +70,7 @@ export function MemberManager() {
             type="text" 
             placeholder={t('atelier.members.search_placeholder', { defaultValue: 'Search by name or email...' })}
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => { setSearchTerm(e.target.value); }}
             className="w-full pl-12 pr-4 py-3 bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 text-sm focus:outline-none focus:border-black dark:focus:border-white text-black dark:text-white transition-all placeholder:text-zinc-400"
           />
         </div>
@@ -107,18 +107,18 @@ export function MemberManager() {
                 </td>
                 <td className="p-6">
                   <span className="text-[9px] uppercase tracking-widest px-2 py-1 border border-hairline font-bold text-black dark:text-white">
-                    {t(`data.tiers.${member.tier ?? 'MEMBER'}`)}
+                    {t(`data.tiers.${member.tier}`)}
                   </span>
                 </td>
                 <td className="p-6 font-mono text-sm text-black dark:text-white">
-                  {(member.currentPoints ?? member.pointsBalance ?? 0).toLocaleString()}
+                  {member.currentPoints.toLocaleString()}
                 </td>
                 <td className="p-6 font-mono text-sm text-ink-faint">
-                  {member.lifetimePoints?.toLocaleString() ?? '—'}
+                  {member.lifetimePoints.toLocaleString()}
                 </td>
                 <td className="p-6 text-right">
                   <button 
-                    onClick={() => setSelectedMember(member)}
+                    onClick={() => { setSelectedMember(member); }}
                     className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-ink-faint hover:text-black dark:hover:text-white transition-all"
                   >
                     <MoreHorizontal size={18} />
@@ -135,7 +135,7 @@ export function MemberManager() {
         <div className="fixed inset-0 z-[100] flex justify-end">
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            onClick={() => setSelectedMember(null)}
+            onClick={() => { setSelectedMember(null); }}
             className="absolute inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm"
           />
           <motion.div 
@@ -144,7 +144,7 @@ export function MemberManager() {
             className="relative w-full max-w-lg bg-surface-card h-screen shadow-overlay p-12 overflow-y-auto"
           >
             <button 
-              onClick={() => setSelectedMember(null)}
+              onClick={() => { setSelectedMember(null); }}
               className="absolute top-12 left-12 p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-all text-black dark:text-white"
             >
               <ArrowUpDown className="rotate-90" size={20} />
@@ -162,11 +162,11 @@ export function MemberManager() {
               <div className="grid grid-cols-2 gap-px bg-zinc-100 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-800">
                 <div className="p-8 bg-surface-card text-center">
                   <p className="text-[10px] uppercase tracking-widest text-ink-faint mb-2">{t('lounge.points_balance')}</p>
-                  <p className="font-serif text-3xl text-black dark:text-white">{(selectedMember.currentPoints ?? selectedMember.pointsBalance ?? 0).toLocaleString()}</p>
+                  <p className="font-serif text-3xl text-black dark:text-white">{selectedMember.currentPoints.toLocaleString()}</p>
                 </div>
                 <div className="p-8 bg-surface-card text-center">
                   <p className="text-[10px] uppercase tracking-widest text-ink-faint mb-2">{t('lounge.tier_label')}</p>
-                  <p className="font-serif text-3xl text-gold">{t(`data.tiers.${selectedMember.tier ?? 'MEMBER'}`)}</p>
+                  <p className="font-serif text-3xl text-gold">{t(`data.tiers.${selectedMember.tier}`)}</p>
                 </div>
               </div>
 
@@ -185,7 +185,7 @@ export function MemberManager() {
                   <input 
                     type="range" min="-1000" max="1000" step="50"
                     value={adjustAmount}
-                    onChange={(e) => setAdjustAmount(parseInt(e.target.value))}
+                    onChange={(e) => { setAdjustAmount(parseInt(e.target.value)); }}
                     className="w-full h-px bg-zinc-200 dark:bg-zinc-800 rounded-none appearance-none cursor-pointer accent-black dark:accent-white"
                   />
                   <button 
@@ -207,7 +207,7 @@ export function MemberManager() {
                     <motion.button 
                       key="override-btn"
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      onClick={() => setIsOverridingTier(true)}
+                      onClick={() => { setIsOverridingTier(true); }}
                       className="w-full py-4 border border-hairline-strong text-ink-faint text-[10px] uppercase tracking-widest font-bold hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-all"
                     >
                       {t('atelier.members.override_tier', { defaultValue: 'Override Membership Tier' })}
@@ -223,7 +223,7 @@ export function MemberManager() {
                         {tiers.map(tier => (
                           <button
                             key={tier}
-                            onClick={() => tierMutation.mutate({ userId: selectedMember.id, tierName: tier })}
+                            onClick={() => { tierMutation.mutate({ userId: selectedMember.id, tierName: tier }); }}
                             disabled={tierMutation.isPending || selectedMember.tier === tier}
                             className={`px-4 py-2 text-[9px] uppercase tracking-widest font-bold border transition-all ${
                               selectedMember.tier === tier 
@@ -236,7 +236,7 @@ export function MemberManager() {
                         ))}
                       </div>
                       <button 
-                        onClick={() => setIsOverridingTier(false)}
+                        onClick={() => { setIsOverridingTier(false); }}
                         className="w-full py-2 text-[9px] uppercase tracking-widest text-ink-faint hover:text-black dark:hover:text-white transition-colors"
                       >
                         {t('atelier.loyalty.cancel')}

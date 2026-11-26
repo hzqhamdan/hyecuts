@@ -18,19 +18,20 @@ export function StaffManager() {
   // Initial state derived from seeder data for prototype
   const [staff, setStaff] = useState<StaffProfile[]>(
     TEAM_MEMBERS.map((m, idx) => ({
-      id: `staff-${idx}`,
+      id: `staff-${String(idx)}`,
       name: m.name,
       role: m.role,
-      schedule: BUSINESS_HOURS.reduce((acc, curr) => {
+      schedule: BUSINESS_HOURS.reduce<Record<string, string>>((acc, curr) => {
         acc[curr.day] = curr.hours;
         return acc;
-      }, {} as Record<string, string>),
+      }, {}),
       isActive: true
     }))
   );
 
   const [selectedStaff, setSelectedStaff] = useState<StaffProfile | null>(null);
-  const [_isAdding, setIsAdding] = useState(false);
+  // Nothing reads this yet: the add-staff form has not been built.
+  const [, setIsAdding] = useState(false);
 
   const handleSave = (updated: StaffProfile) => {
     setStaff(staff.map(s => s.id === updated.id ? updated : s));
@@ -45,7 +46,7 @@ export function StaffManager() {
           <p className="text-ink-faint font-sans uppercase tracking-widest text-[11px]">{t('atelier.staff.subtitle', { defaultValue: 'Team & Availability Roster' })}</p>
         </div>
         <button 
-          onClick={() => setIsAdding(true)}
+          onClick={() => { setIsAdding(true); }}
           className="px-8 py-3 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all flex items-center gap-2"
         >
           <Plus size={14} /> {t('atelier.staff.add_member', { defaultValue: 'Add Specialist' })}
@@ -58,7 +59,7 @@ export function StaffManager() {
             key={member.id}
             whileHover={{ y: -4 }}
             className="group relative bg-surface-card border border-zinc-100 dark:border-zinc-800 p-10 hover:border-black dark:hover:border-white transition-all cursor-pointer"
-            onClick={() => setSelectedStaff(member)}
+            onClick={() => { setSelectedStaff(member); }}
           >
             <div className="absolute top-10 right-10">
               <ShieldCheck size={16} className={member.isActive ? 'text-gold' : 'text-zinc-200 dark:text-zinc-700'} />
@@ -86,7 +87,7 @@ export function StaffManager() {
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => setSelectedStaff(null)}
+              onClick={() => { setSelectedStaff(null); }}
               className="absolute inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-md"
             />
             <motion.div 
@@ -94,7 +95,7 @@ export function StaffManager() {
               className="relative w-full max-w-2xl bg-surface-card shadow-overlay p-12 overflow-y-auto max-h-[90vh]"
             >
               <button 
-                onClick={() => setSelectedStaff(null)}
+                onClick={() => { setSelectedStaff(null); }}
                 className="absolute top-8 right-8 p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-all text-black dark:text-white"
               >
                 <X size={20} />
@@ -109,7 +110,7 @@ export function StaffManager() {
                     <input 
                       type="text" 
                       value={selectedStaff.name} 
-                      onChange={e => setSelectedStaff({...selectedStaff, name: e.target.value})}
+                      onChange={e => { setSelectedStaff({...selectedStaff, name: e.target.value}); }}
                       className="font-serif text-4xl italic focus:outline-none w-full bg-transparent text-black dark:text-white border-b border-transparent focus:border-zinc-200"
                     />
                     <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-bold">{t(`data.roles.${selectedStaff.role}`, { defaultValue: selectedStaff.role })}</p>
@@ -143,13 +144,13 @@ export function StaffManager() {
 
                 <div className="pt-8 flex gap-4">
                   <button 
-                    onClick={() => handleSave(selectedStaff)}
+                    onClick={() => { handleSave(selectedStaff); }}
                     className="flex-1 py-4 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all flex items-center justify-center gap-2"
                   >
                     <Save size={14} /> {t('atelier.staff.save', { defaultValue: 'Save Profile' })}
                   </button>
                   <button 
-                    onClick={() => setSelectedStaff(null)}
+                    onClick={() => { setSelectedStaff(null); }}
                     className="px-8 py-4 border border-hairline-strong text-ink-faint text-[10px] uppercase tracking-widest font-bold hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-all"
                   >
                     {t('atelier.loyalty.cancel')}

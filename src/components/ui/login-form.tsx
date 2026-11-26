@@ -150,7 +150,8 @@ export function SmokeyBackground({
       const fragmentShader = compileShader(gl.FRAGMENT_SHADER, fragmentSmokeySource);
       if (!vertexShader || !fragmentShader) return;
 
-      const program = gl.createProgram();
+      // lib.dom types this as never null, but it returns null once the context is lost.
+      const program = gl.createProgram() as WebGLProgram | null;
       if (!program) return;
       gl.attachShader(program, vertexShader);
       gl.attachShader(program, fragmentShader);
@@ -161,6 +162,8 @@ export function SmokeyBackground({
         return;
       }
 
+      // WebGL's useProgram is not a React hook; the compiler goes by the `use` prefix.
+      // eslint-disable-next-line react-compiler/react-compiler
       gl.useProgram(program);
 
       const positionBuffer = gl.createBuffer();
@@ -219,7 +222,7 @@ export function SmokeyBackground({
     };
   }, [color]);
 
-  const finalBlurClass = blurClassMap[backdropBlurAmount as BlurSize] || blurClassMap["sm"];
+  const finalBlurClass = blurClassMap[backdropBlurAmount as BlurSize] || blurClassMap.sm;
 
   return (
     <div className={`absolute inset-0 w-full h-full overflow-hidden ${className}`}>

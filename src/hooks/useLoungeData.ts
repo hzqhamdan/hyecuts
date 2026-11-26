@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '../api/client';
 import { useTranslation } from 'react-i18next';
 import type { LoyaltyProfile, Reward, ActivityLog, Badge, UserBadge, Mission, UserMissionProgress } from '../types/loyalty';
 import { getTierProgress } from './useTierProgress';
+import { firstNonEmpty } from '../utils/text';
 
 interface Notification {
   id: number;
@@ -16,6 +17,40 @@ const mockNotifications: Notification[] = [
   { id: 1, title: 'Tier Upgraded', message: 'Welcome to Artisan tier. Enjoy your new perks.', isRead: false, time: '2h ago' },
   { id: 2, title: 'Reward Redeemed', message: 'Complimentary Hair Cut applied successfully.', isRead: true, time: '1d ago' },
 ];
+
+// GET /loyalty/profile/{id} returns the backend User entity. Columns that allow NULL
+// come back as null, and test fixtures leave them out, so they are optional here.
+interface ProfileResponse {
+  id: string;
+  email: string;
+  currentPoints: number;
+  tier: string;
+  username?: string | null;
+  fullName?: string | null;
+  dob?: string | null;
+  phone?: string | null;
+  hairType?: string | null;
+  hairLength?: string | null;
+  hairScalp?: string | null;
+  avatar?: string | null;
+}
+
+function toLoyaltyProfile(data: ProfileResponse): LoyaltyProfile {
+  return {
+    userId: data.id,
+    email: data.email,
+    username: firstNonEmpty(data.username) ?? data.email,
+    fullName: data.fullName ?? '',
+    pointsBalance: data.currentPoints,
+    currentTier: data.tier,
+    dob: firstNonEmpty(data.dob) ?? '1990-01-01',
+    phone: data.phone ?? '',
+    hairType: firstNonEmpty(data.hairType) ?? 'straight',
+    hairLength: firstNonEmpty(data.hairLength) ?? 'short',
+    hairScalp: firstNonEmpty(data.hairScalp) ?? 'normal',
+    avatar: firstNonEmpty(data.avatar) ?? null,
+  };
+}
 
 export function useLoungeData(userId: string, token?: string | null) {
   const { i18n } = useTranslation();
@@ -43,27 +78,14 @@ export function useLoungeData(userId: string, token?: string | null) {
     void i18n.changeLanguage(newLang);
   };
 
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
-      const profileData = await api.get<any>(`/loyalty/profile/${userId}`, { token: authToken });
-      setProfile({
-        userId: profileData.id,
-        email: profileData.email,
-        username: profileData.username || profileData.email,
-        fullName: profileData.fullName || '',
-        pointsBalance: profileData.currentPoints,
-        currentTier: profileData.tier ?? 'MEMBER',
-        dob: profileData.dob || '1990-01-01',
-        phone: profileData.phone || '',
-        hairType: profileData.hairType || 'straight',
-        hairLength: profileData.hairLength || 'short',
-        hairScalp: profileData.hairScalp || 'normal',
-        avatar: profileData.avatar || null
-      });
+      const profileData = await api.get<ProfileResponse>(`/loyalty/profile/${userId}`, { token: authToken });
+      setProfile(toLoyaltyProfile(profileData));
     } catch (error) {
       console.error("Error fetching profile:", error);
     }
-  };
+  }, [userId, authToken]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -105,15 +127,16 @@ export function useLoungeData(userId: string, token?: string | null) {
     };
 
     void fetchData();
-  }, [userId, authToken]);
+  }, [userId, authToken, fetchProfile]);
 
   const handleRedeem = async (rewardId: string) => {
     setRedemptionStatus('loading');
     try {
       await api.post(`/rewards/redeem/${userId}/${rewardId}`, { token: authToken });
       setRedemptionStatus('success');
-      const profileData = await api.get<LoyaltyProfile>(`/loyalty/profile/${userId}`, { token: authToken });
-      setProfile(profileData);
+      // The endpoint returns the raw User entity, which has to be mapped like any other fetch.
+      const profileData = await api.get<ProfileResponse>(`/loyalty/profile/${userId}`, { token: authToken });
+      setProfile(toLoyaltyProfile(profileData));
     } catch {
       setRedemptionStatus('error');
     }

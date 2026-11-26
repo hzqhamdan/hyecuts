@@ -53,7 +53,7 @@ export default function UserBookings() {
     >
       <nav className="flex justify-between items-center max-w-5xl mx-auto mb-10 sm:mb-16">
         <button
-          onClick={() => { navigate('/lounge'); }}
+          onClick={() => { void navigate('/lounge'); }}
           className="flex items-center gap-2 sm:gap-3 text-[10px] uppercase tracking-[0.2em] text-ink-muted hover:text-black dark:hover:text-white transition-colors font-bold"
         >
           <ArrowLeft className="w-3 h-3" /> <span className="hidden xs:inline">Return to Lounge</span><span className="xs:hidden">Lounge</span>
@@ -74,7 +74,7 @@ export default function UserBookings() {
             <h2 className="font-display text-xl sm:text-2xl uppercase tracking-tighter mb-2 text-black dark:text-white">No Appointments Yet</h2>
             <p className="text-xs sm:text-sm text-ink-muted mb-8 font-light italic">You haven't made any bookings.</p>
             <button
-              onClick={() => { navigate('/booking'); }}
+              onClick={() => { void navigate('/booking'); }}
               className="px-8 py-4 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all active:scale-[0.98]"
             >
               Book an Appointment
@@ -89,7 +89,7 @@ export default function UserBookings() {
 
   const generateICS = (booking: Booking) => {
     const startObj = new Date(booking.appointmentTime);
-    const endObj = new Date(startObj.getTime() + (booking.service?.durationMinutes || 30) * 60000);
+    const endObj = new Date(startObj.getTime() + (booking.service.durationMinutes || 30) * 60000);
 
     const formatDate = (date: Date) => date.toISOString().replace(/-|:|\.\d+/g, '');
 
@@ -102,8 +102,8 @@ export default function UserBookings() {
       `DTSTAMP:${formatDate(new Date())}`,
       `DTSTART:${formatDate(startObj)}`,
       `DTEND:${formatDate(endObj)}`,
-      `SUMMARY:${escapeICSText(booking.service?.name || 'Appointment')} at Hyecuts`,
-      `DESCRIPTION:Your appointment for ${escapeICSText(booking.service?.name || 'Service')} (${booking.service?.durationMinutes || 30} mins) at The Studio by Hyecuts.`,
+      `SUMMARY:${escapeICSText(booking.service.name || 'Appointment')} at Hyecuts`,
+      `DESCRIPTION:Your appointment for ${escapeICSText(booking.service.name || 'Service')} (${String(booking.service.durationMinutes || 30)} mins) at The Studio by Hyecuts.`,
       `LOCATION:3361 Jalan Sungai Penchala, Kuala Lumpur`,
       'END:VEVENT',
       'END:VCALENDAR'
@@ -130,7 +130,7 @@ export default function UserBookings() {
                         {booking.status}
                       </span>
                     </div>
-                    <h3 className="font-serif text-2xl sm:text-3xl italic tracking-tight mb-6 text-black dark:text-white group-hover:translate-x-1 transition-transform">{booking.service?.name || 'Service'}</h3>
+                    <h3 className="font-serif text-2xl sm:text-3xl italic tracking-tight mb-6 text-black dark:text-white group-hover:translate-x-1 transition-transform">{booking.service.name || 'Service'}</h3>
                     <div className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6 text-[9px] sm:text-[10px] uppercase tracking-widest font-bold text-ink-faint">
                       <div className="flex items-center gap-2">
                         <Calendar className="w-3.5 h-3.5 text-gold" /> {dateStr}
@@ -139,7 +139,7 @@ export default function UserBookings() {
                         <Clock className="w-3.5 h-3.5 text-gold" /> {timeStr}
                       </div>
                       <div className="flex items-center gap-2">
-                        <Scissors className="w-3.5 h-3.5 text-gold" /> {booking.service?.durationMinutes || 0} mins
+                        <Scissors className="w-3.5 h-3.5 text-gold" /> {booking.service.durationMinutes || 0} mins
                       </div>
                       {booking.createdAt && (
                         <div className="flex items-center gap-2 opacity-60">
@@ -156,14 +156,14 @@ export default function UserBookings() {
                     {booking.status === 'PENDING' && (
                       <div className="flex gap-2 w-full sm:w-auto justify-end">
                         <button 
-                          onClick={() => generateICS(booking)}
+                          onClick={() => { generateICS(booking); }}
                           className="p-3 border border-hairline-strong hover:border-black dark:hover:border-white transition-colors group/cal active:scale-95"
                           title="Add to Calendar"
                         >
                           <CalendarPlus className="w-4 h-4 text-ink-muted group-hover/cal:text-black dark:group-hover/cal:text-white" />
                         </button>
                         <button 
-                          onClick={() => setRescheduleBookingId(booking.id)}
+                          onClick={() => { setRescheduleBookingId(booking.id); }}
                           className="flex items-center gap-2 px-4 py-3 border border-hairline-strong text-[10px] uppercase tracking-widest font-bold hover:bg-neutral-50 dark:hover:bg-zinc-900 transition-colors text-black dark:text-white active:scale-95"
                           title="Reschedule Appointment"
                         >
@@ -180,11 +180,11 @@ export default function UserBookings() {
       </div>
       <RescheduleModal
         isOpen={!!rescheduleBookingId}
-        onClose={() => setRescheduleBookingId(null)}
-        bookingId={rescheduleBookingId || ''}
+        onClose={() => { setRescheduleBookingId(null); }}
+        bookingId={rescheduleBookingId ?? ''}
         token={token}
         onSuccess={() => {
-            queryClient.invalidateQueries({ queryKey: ['user-bookings', USER_ID] });
+            void queryClient.invalidateQueries({ queryKey: ['user-bookings', USER_ID] });
         }}
       />
     </motion.div>

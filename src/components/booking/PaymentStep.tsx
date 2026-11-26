@@ -8,6 +8,7 @@ import { api } from '../../api/client';
 import { useBookingStore } from '../../store/useBookingStore';
 import { useAuth } from '../../context/AuthContext';
 import { tokenHex } from '../../styles/tokens';
+import { firstNonEmpty } from '../../utils/text';
 
 // Initialize Stripe outside of component to avoid recreating the object
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder');
@@ -19,7 +20,7 @@ function CheckoutForm({ onSuccess }: { onSuccess: () => void }) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!stripe || !elements) return;
@@ -38,7 +39,7 @@ function CheckoutForm({ onSuccess }: { onSuccess: () => void }) {
     });
 
     if (error) {
-      setErrorMessage(error.message || t('booking.payment.error_generic', { defaultValue: 'An unexpected error occurred.' }));
+      setErrorMessage(firstNonEmpty(error.message) ?? t('booking.payment.error_generic', { defaultValue: 'An unexpected error occurred.' }));
       setIsProcessing(false);
     } else {
       // Payment succeeded
@@ -47,7 +48,7 @@ function CheckoutForm({ onSuccess }: { onSuccess: () => void }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={(e) => { void handleSubmit(e); }} className="space-y-6">
       <div className="bg-zinc-50 dark:bg-zinc-900 p-6 border border-zinc-100 dark:border-zinc-800">
         <PaymentElement options={{ layout: 'tabs' }} />
       </div>

@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, User, Scissors, ShieldAlert, Check } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../api/client';
 import type { LoyaltyProfile } from '../../types/loyalty';
+import { firstNonEmpty } from '../../utils/text';
 
 interface UserProfileModalProps {
   isOpen: boolean;
@@ -23,22 +24,26 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
   const [activeTab, setActiveTab] = useState<TabType>('general');
 
   // Avatar handling
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(profile?.avatar || null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(firstNonEmpty(profile?.avatar) ?? null);
 
   // Form states
   const [formData, setFormData] = useState({
-    username: profile?.username || user?.username || 'Client',
-    fullName: profile?.fullName || 'Client',
-    dob: profile?.dob || '1990-01-01',
-    email: profile?.email || user?.username || 'client@hyecuts.com',
-    phone: profile?.phone || '',
-    hairType: profile?.hairType || 'straight',
-    hairLength: profile?.hairLength || 'short',
-    scalp: profile?.hairScalp || 'normal',
+    username: firstNonEmpty(profile?.username, user?.username) ?? 'Client',
+    fullName: firstNonEmpty(profile?.fullName) ?? 'Client',
+    dob: firstNonEmpty(profile?.dob) ?? '1990-01-01',
+    email: firstNonEmpty(profile?.email, user?.username) ?? 'client@hyecuts.com',
+    phone: profile?.phone ?? '',
+    hairType: firstNonEmpty(profile?.hairType) ?? 'straight',
+    hairLength: firstNonEmpty(profile?.hairLength) ?? 'short',
+    scalp: firstNonEmpty(profile?.hairScalp) ?? 'normal',
   });
 
-  // Sync state when profile prop changes
-  useEffect(() => {
+  // Sync the form when the profile prop changes, during render rather than in an effect
+  // (https://react.dev/learn/you-might-not-need-an-effect). Starting from undefined means
+  // a profile that is already loaded on the first render is applied too, as before.
+  const [syncedProfile, setSyncedProfile] = useState<LoyaltyProfile | null | undefined>(undefined);
+  if (profile !== syncedProfile) {
+    setSyncedProfile(profile);
     if (profile) {
       setFormData({
         username: profile.username || profile.email,
@@ -50,9 +55,9 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
         hairLength: profile.hairLength || 'short',
         scalp: profile.hairScalp || 'normal',
       });
-      setAvatarPreview(profile.avatar || null);
+      setAvatarPreview(firstNonEmpty(profile.avatar) ?? null);
     }
-  }, [profile]);
+  }
   
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -75,9 +80,13 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
   if (!isOpen) return null;
 
   const handleSave = async () => {
+    // The modal only opens in the lounge, which requires a signed-in user; the guard
+    // keeps a missing id from becoming a request to /loyalty/profile/undefined.
+    const userId = user?.id;
+    if (!userId) return;
     setErrorMessage(null);
     try {
-      await api.put(`/loyalty/profile/${user?.id}`, {
+      await api.put(`/loyalty/profile/${userId}`, {
         body: {
           fullName: formData.fullName,
           email: formData.email.trim(),
@@ -94,16 +103,16 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
       });
       setIsSaved(true);
       onProfileUpdate?.();
-      setTimeout(() => setIsSaved(false), 2000);
+      setTimeout(() => { setIsSaved(false); }, 2000);
     } catch (error: unknown) {
       console.error("Error updating profile", error);
       let msg = "Failed to update profile";
       if (error instanceof Error) {
         try {
-          const errorData = JSON.parse(error.message);
-          msg = errorData.message || msg;
+          const errorData = JSON.parse(error.message) as { message?: unknown } | null;
+          if (typeof errorData?.message === 'string' && errorData.message !== '') msg = errorData.message;
         } catch {
-          msg = error.message || msg;
+          msg = firstNonEmpty(error.message) ?? msg;
         }
       }
       setErrorMessage(msg);
@@ -165,7 +174,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
             ]).map(tab => (
               <button
                 key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
+                onClick={() => { setActiveTab(tab.key); }}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded text-[9px] font-bold uppercase tracking-[0.15em] whitespace-nowrap transition-colors ${
                   activeTab === tab.key
                     ? 'bg-black text-white dark:bg-white dark:text-black'
@@ -212,7 +221,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                 ]).map(tab => (
                   <button
                     key={tab.key}
-                    onClick={() => setActiveTab(tab.key)}
+                    onClick={() => { setActiveTab(tab.key); }}
                     className={`flex items-center gap-3 text-left p-3 lg:p-4 transition-colors ${
                       activeTab === tab.key
                         ? 'bg-black text-white dark:bg-white dark:text-black'
@@ -253,7 +262,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                         <input
                           type="text"
                           value={formData.fullName}
-                          onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                          onChange={(e) => { setFormData({ ...formData, fullName: e.target.value }); }}
                           className="bg-transparent border-b border-black/20 dark:border-white/20 py-2 text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors"
                         />
                       </div>
@@ -262,7 +271,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                         <input
                           type="date"
                           value={formData.dob}
-                          onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
+                          onChange={(e) => { setFormData({ ...formData, dob: e.target.value }); }}
                           className="bg-transparent border-b border-black/20 dark:border-white/20 py-2 text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors"
                         />
                       </div>
@@ -271,7 +280,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                         <input
                           type="email"
                           value={formData.email}
-                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          onChange={(e) => { setFormData({ ...formData, email: e.target.value }); }}
                           className="bg-transparent border-b border-black/20 dark:border-white/20 py-2 text-sm focus:outline-none focus:border-black dark:focus:border-white transition-colors"
                         />
                       </div>
@@ -325,7 +334,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                                 {formData.hairType === type && <div className="w-2 h-2 bg-black dark:bg-gold rounded-full" />}
                               </div>
                               <span className="text-sm">{t(`profile_modal.hair.type_options.${type}`)}</span>
-                              <input type="radio" name="hairType" value={type} checked={formData.hairType === type} onChange={() => setFormData({ ...formData, hairType: type })} className="hidden" />
+                              <input type="radio" name="hairType" value={type} checked={formData.hairType === type} onChange={() => { setFormData({ ...formData, hairType: type }); }} className="hidden" />
                             </label>
                           ))}
                         </div>
@@ -340,7 +349,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                                 {formData.hairLength === len && <div className="w-2 h-2 bg-black dark:bg-gold rounded-full" />}
                               </div>
                               <span className="text-sm">{t(`profile_modal.hair.length_options.${len}`)}</span>
-                              <input type="radio" name="hairLength" value={len} checked={formData.hairLength === len} onChange={() => setFormData({ ...formData, hairLength: len })} className="hidden" />
+                              <input type="radio" name="hairLength" value={len} checked={formData.hairLength === len} onChange={() => { setFormData({ ...formData, hairLength: len }); }} className="hidden" />
                             </label>
                           ))}
                         </div>
@@ -355,7 +364,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                                 {formData.scalp === s && <div className="w-2 h-2 bg-black dark:bg-gold rounded-full" />}
                               </div>
                               <span className="text-sm">{t(`profile_modal.hair.scalp_options.${s}`)}</span>
-                              <input type="radio" name="scalp" value={s} checked={formData.scalp === s} onChange={() => setFormData({ ...formData, scalp: s })} className="hidden" />
+                              <input type="radio" name="scalp" value={s} checked={formData.scalp === s} onChange={() => { setFormData({ ...formData, scalp: s }); }} className="hidden" />
                             </label>
                           ))}
                         </div>
@@ -417,7 +426,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
               {activeTab !== 'security' && (
                 <div className="fixed sm:absolute bottom-0 left-0 right-0 p-4 sm:p-8 bg-gradient-to-t from-white via-white to-transparent dark:from-studio-black dark:via-studio-black flex justify-end z-10">
                   <button
-                    onClick={handleSave}
+                    onClick={() => { void handleSave(); }}
                     className="w-full sm:w-auto bg-black dark:bg-white text-white dark:text-black py-3.5 sm:py-4 px-6 sm:px-8 text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors flex items-center justify-center gap-2"
                   >
                     {isSaved ? (

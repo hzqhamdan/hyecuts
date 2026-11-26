@@ -10,7 +10,7 @@ export default function Footer() {
         <button 
           onClick={() => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            navigate('/');
+            void navigate('/');
           }}
           className="font-serif text-4xl font-light tracking-tighter italic hover:opacity-70 transition-opacity focus:outline-none"
         >

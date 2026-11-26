@@ -12,6 +12,7 @@ import {
   Shield
 } from 'lucide-react';
 import { useNavigate, Outlet, useLocation, NavLink } from 'react-router-dom';
+import { firstNonEmpty } from '../utils/text';
 
 export default function AtelierDashboard() {
   const { t, i18n } = useTranslation();
@@ -34,7 +35,7 @@ export default function AtelierDashboard() {
       <aside className="w-full md:w-72 border-b md:border-r border-zinc-100 dark:border-zinc-800 flex flex-col h-auto md:h-screen md:sticky top-0 bg-surface-card z-20 transition-colors">
         <div className="p-6 sm:p-10 mb-2 md:mb-8">
           <button 
-            onClick={() => { navigate('/'); }}
+            onClick={() => { void navigate('/'); }}
             className="text-left hover:opacity-70 transition-opacity focus:outline-none group"
           >
             <h1 className="font-serif text-2xl sm:text-3xl tracking-tighter font-light uppercase italic group-hover:tracking-normal transition-all duration-500">
@@ -201,14 +202,14 @@ export default function AtelierDashboard() {
               <div className="text-[10px] uppercase tracking-widest">
                 <p className="font-bold text-black dark:text-white">{t('atelier.session_active')}</p>
                 <p className="text-ink-faint font-bold">
-                  {user?.role === 'owner' ? t('atelier.owner_access') : user?.role?.replace('_', ' ') || 'Staff Access'}
+                  {user?.role === 'owner' ? t('atelier.owner_access') : firstNonEmpty(user?.role.replace('_', ' ')) ?? 'Staff Access'}
                 </p>
               </div>
             </div>
             <button
               onClick={() => {
                 logout();
-                navigate('/');
+                void navigate('/');
               }}
               className="w-full py-3 border border-black dark:border-white text-[10px] uppercase tracking-widest font-bold hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all text-center"
             >
@@ -231,7 +232,7 @@ export default function AtelierDashboard() {
             <ShieldCheck size={12} /> {user?.role === 'owner' ? 'Owner' : 'Staff'}
           </div>
           <button 
-            onClick={() => { logout(); navigate('/'); }}
+            onClick={() => { logout(); void navigate('/'); }}
             className="text-[10px] uppercase tracking-widest text-danger font-bold"
           >
             {t('nav.logout')}

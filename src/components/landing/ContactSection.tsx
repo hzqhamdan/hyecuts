@@ -67,7 +67,7 @@ export default function ContactSection() {
             </div>
           </div>
           <button
-            onClick={() => { navigate('/booking'); }}
+            onClick={() => { void navigate('/booking'); }}
             className="mt-12 px-8 py-5 bg-black dark:bg-white text-white dark:text-black text-[10px] md:text-xs uppercase tracking-[0.2em] font-bold hover:bg-zinc-800 dark:hover:bg-zinc-800 hover:text-white dark:hover:text-white transition-all duration-500"
           >
             {t('landing.book_now')}

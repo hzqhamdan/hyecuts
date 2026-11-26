@@ -43,7 +43,7 @@ export default function MobileMenu({ isOpen, onClose, token, onToggleLanguage, i
         <motion.button
           onClick={() => {
             onClose();
-            navigate('/lounge');
+            void navigate('/lounge');
           }}
           whileTap={navTap}
           transition={navTapTransition}
@@ -66,7 +66,7 @@ export default function MobileMenu({ isOpen, onClose, token, onToggleLanguage, i
       <motion.button
         onClick={() => {
           onClose();
-          navigate('/booking');
+          void navigate('/booking');
         }}
         whileTap={navTap}
         transition={navTapTransition}

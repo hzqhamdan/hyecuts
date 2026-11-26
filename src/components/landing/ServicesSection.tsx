@@ -83,7 +83,7 @@ export default function ServicesSection() {
                                       <button
                                         onClick={(e) => {
                                           e.stopPropagation();
-                                          navigate('/booking');
+                                          void navigate('/booking');
                                         }}
                                         className="w-full py-3 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-800 hover:text-white dark:hover:text-white transition-colors flex items-center justify-center gap-2"
                                       >

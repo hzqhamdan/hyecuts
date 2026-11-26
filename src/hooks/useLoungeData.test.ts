@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { api } from '../api/client';
 import type { Reward } from '../types/loyalty';
 import { useLoungeData } from './useLoungeData';
@@ -13,6 +13,7 @@ vi.mock('../api/client', () => ({
 }));
 
 const mockedGet = vi.mocked(api.get);
+const mockedPost = vi.mocked(api.post);
 
 function reward(id: string, isActive: boolean): Reward {
   return { id, title: `Reward ${id}`, description: null, pointsCost: 100, minTier: null, stockCount: null, isActive };
@@ -56,5 +57,31 @@ describe('useLoungeData', () => {
     await waitFor(() => { expect(result.current.isLoading).toBe(false); });
 
     expect(result.current.missions.map((m) => m.type)).toEqual(['DAILY', 'WEEKLY', 'QUEST']);
+  });
+
+  it('fetches the profile once, not again on every render', async () => {
+    const { result, rerender } = renderHook(() => useLoungeData('u-1', 'token'));
+    await waitFor(() => { expect(result.current.isLoading).toBe(false); });
+    rerender();
+    rerender();
+
+    const profileCalls = mockedGet.mock.calls.filter(([path]) => path.startsWith('/loyalty/profile/'));
+    expect(profileCalls).toHaveLength(1);
+  });
+
+  it('maps the profile it reloads after a redemption, like the first load', async () => {
+    const { result } = renderHook(() => useLoungeData('u-1', 'token'));
+    await waitFor(() => { expect(result.current.isLoading).toBe(false); });
+
+    mockedPost.mockResolvedValue(undefined);
+    mockedGet.mockImplementation((path: string) =>
+      path.startsWith('/loyalty/profile/')
+        ? Promise.resolve({ id: 'u-1', email: 'member@example.com', currentPoints: 150, tier: 'INSIDER' })
+        : Promise.resolve([]),
+    );
+    await act(() => result.current.handleRedeem('on'));
+
+    expect(result.current.redemptionStatus).toBe('success');
+    expect(result.current.profile).toMatchObject({ userId: 'u-1', pointsBalance: 150, currentTier: 'INSIDER', username: 'member@example.com' });
   });
 });

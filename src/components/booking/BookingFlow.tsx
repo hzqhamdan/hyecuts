@@ -180,6 +180,8 @@ export default function BookingFlow() {
   const getService = () => ALL_SERVICES.find((service) => service.name === selectedService);
   const getStaff = () => STAFF.find((staff) => staff.id === selectedStaff);
   const getDate = () => DATES.find((date) => date.id === selectedDate);
+  const chosenService = getService();
+  const chosenDate = getDate();
 
   return (
     <motion.div
@@ -192,9 +194,9 @@ export default function BookingFlow() {
         <div className="flex justify-between items-center w-full sm:w-auto sm:justify-self-start order-2 sm:order-1">
           <button
               onClick={() => {
-                if (step === 0) navigate('/');
+                if (step === 0) void navigate('/');
                 else if (step === 1 && !token) setStep(0);
-                else if (step === 1 || step === 6) navigate(token ? '/lounge' : '/');
+                else if (step === 1 || step === 6) void navigate(token ? '/lounge' : '/');
                 else prevStep();
               }}
               className="flex items-center gap-2 sm:gap-3 text-[10px] uppercase tracking-[0.2em] text-ink-muted hover:text-black dark:hover:text-white transition-colors font-bold"
@@ -247,7 +249,7 @@ export default function BookingFlow() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 w-full max-w-2xl px-4 sm:px-0">
                   <button
-                    onClick={() => { navigate('/login'); }}
+                    onClick={() => { void navigate('/login'); }}
                     className="p-6 md:p-8 border border-black dark:border-white bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-900 dark:hover:bg-zinc-800 hover:text-white dark:hover:text-white transition-all flex flex-col items-center text-center group active:scale-[0.98]"
                   >
                     <UserCircle className="w-8 h-8 mb-4 opacity-80 group-hover:opacity-100 transition-opacity" />
@@ -503,7 +505,7 @@ export default function BookingFlow() {
                   <div className="flex justify-between border-b border-hairline-strong pb-6 gap-6">
                     <div>
                       <div className="text-[10px] uppercase tracking-widest text-ink-faint mb-1 font-bold">{t('nav.services')}</div>
-                      <div className="font-serif text-lg sm:text-xl uppercase tracking-tight text-black dark:text-white">{getService() ? t(`data.services.${getService()!.name}`) : ''}</div>
+                      <div className="font-serif text-lg sm:text-xl uppercase tracking-tight text-black dark:text-white">{chosenService ? t(`data.services.${chosenService.name}`) : ''}</div>
                     </div>
                     <div className="text-right">
                       <div className="text-[10px] uppercase tracking-widest text-ink-faint mb-1 font-bold">{t('booking.total')}</div>
@@ -522,7 +524,7 @@ export default function BookingFlow() {
                     </div>
                     <div>
                       <div className="text-[10px] uppercase tracking-widest text-ink-faint mb-1 font-bold">{t('booking.day')}</div>
-                      <div className="text-xs sm:text-sm text-black dark:text-white font-medium">{getDate() ? t(`data.days.${getDate()!.day}`) : ''}</div>
+                      <div className="text-xs sm:text-sm text-black dark:text-white font-medium">{chosenDate ? t(`data.days.${chosenDate.day}`) : ''}</div>
                     </div>
                     <div>
                       <div className="text-[10px] uppercase tracking-widest text-ink-faint mb-1 font-bold">{t('booking.time')}</div>
@@ -537,7 +539,7 @@ export default function BookingFlow() {
                     </div>
                     {BOOKING_POLICIES.slice(0, 3).map((policy, idx) => (
                       <p key={policy} className="text-xs text-ink-muted italic leading-relaxed">
-                        {t(`landing.policy_${idx + 1}`)}
+                        {t(`landing.policy_${String(idx + 1)}`)}
                       </p>
                     ))}
                   </div>
@@ -582,7 +584,7 @@ export default function BookingFlow() {
                     </button>
                   )}
                   <button
-                    onClick={handleConfirm}
+                    onClick={() => { void handleConfirm(); }}
                     disabled={isConfirming || (!token && !isGuestDetailsValid)}
                     className="w-full py-5 border border-black/20 dark:border-white/20 text-zinc-500 hover:text-black dark:hover:text-white text-[10px] uppercase tracking-widest font-bold transition-colors disabled:opacity-50 active:scale-[0.98]"
                   >
@@ -623,14 +625,14 @@ export default function BookingFlow() {
                 <div className="flex flex-col gap-4">
                   {token && (
                     <button
-                      onClick={() => { navigate('/my-bookings'); }}
+                      onClick={() => { void navigate('/my-bookings'); }}
                       className="w-full py-5 bg-black dark:bg-white text-white dark:text-black text-[10px] uppercase tracking-widest font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors"
                     >
                       {t('booking.view_appointments')}
                     </button>
                   )}
                   <button
-                    onClick={() => { navigate(token ? '/lounge' : '/'); }}
+                    onClick={() => { void navigate(token ? '/lounge' : '/'); }}
                     className="w-full py-5 border border-black dark:border-white text-black dark:text-white text-[10px] uppercase tracking-widest font-bold hover:bg-neutral-50 dark:hover:bg-zinc-900 transition-colors"
                   >
                     {token ? t('nav.return_lounge') : t('nav.return_home')}
@@ -666,7 +668,7 @@ export default function BookingFlow() {
               <p className="text-[10px] uppercase tracking-widest text-ink-faint mb-1 font-bold">{t('landing.booking_policies')}</p>
               {BOOKING_POLICIES.map((policy, idx) => (
                 <p key={policy} className="mb-2">
-                  {t(`landing.policy_${idx + 1}`)}
+                  {t(`landing.policy_${String(idx + 1)}`)}
                 </p>
               ))}
             </div>

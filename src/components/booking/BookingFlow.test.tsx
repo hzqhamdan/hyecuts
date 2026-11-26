@@ -74,7 +74,11 @@ vi.mock('framer-motion', async () => {
     AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
     motion: {
       div: ({ children, ...props }: Record<string, unknown>) => {
-        const { initial, animate, exit, ...rest } = props as Record<string, unknown>;
+        // Drop the animation props, which a plain <div> does not accept.
+        const rest = { ...props };
+        delete rest.initial;
+        delete rest.animate;
+        delete rest.exit;
         return <div {...rest}>{children as React.ReactNode}</div>;
       },
     },
@@ -223,7 +227,7 @@ describe('BookingFlow', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/login');
   });
 
-  it('should reset store state when back button clicked at step 0', async () => {
+  it('should reset store state when back button clicked at step 0', () => {
     useBookingStore.getState().setStep(3);
     renderBookingFlow();
 

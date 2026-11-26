@@ -23,7 +23,7 @@ export default function Navbar({ isMenuOpen, onToggleMenu, token, onToggleLangua
         animate={{ opacity: 1, x: 0 }}
         onClick={() => {
           window.scrollTo({ top: 0, behavior: 'smooth' });
-          navigate('/');
+          void navigate('/');
         }}
         className="font-serif text-xl tracking-tighter uppercase font-light italic hover:opacity-70 transition-opacity focus:outline-none"
       >
@@ -48,7 +48,7 @@ export default function Navbar({ isMenuOpen, onToggleMenu, token, onToggleLangua
         ))}
         {!token && (
           <motion.button
-            onClick={() => { navigate('/lounge'); }}
+            onClick={() => { void navigate('/lounge'); }}
             whileTap={navTap}
             transition={navTapTransition}
             className="hover:text-zinc-400 dark:hover:text-zinc-500 transition-colors duration-300 uppercase"
@@ -69,7 +69,7 @@ export default function Navbar({ isMenuOpen, onToggleMenu, token, onToggleLangua
 
       <div className="flex items-center gap-4">
         <motion.button
-          onClick={() => { navigate('/booking'); }}
+          onClick={() => { void navigate('/booking'); }}
           whileTap={navTap}
           transition={navTapTransition}
           className="hidden md:block px-6 py-2 text-[10px] uppercase tracking-widest border border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all duration-500 font-bold active:scale-95"

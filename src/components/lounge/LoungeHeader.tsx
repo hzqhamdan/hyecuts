@@ -31,7 +31,7 @@ const LoungeHeader = ({ onLogout, onToggleLanguage, showNotifications, onToggleN
   return (
     <nav className="max-w-7xl mx-auto mb-16 md:mb-24 flex flex-col gap-6 md:flex-row md:justify-between md:items-center">
       <div className="flex justify-between items-center w-full md:w-auto">
-        <button onClick={() => { navigate('/'); }}
+        <button onClick={() => { void navigate('/'); }}
           className="flex items-center gap-3 text-[10px] uppercase tracking-[0.2em] text-ink-faint hover:text-black dark:hover:text-white transition-colors"
         >
           <ArrowLeft className="w-3 h-3" /> {t('nav.return_facade')}
@@ -55,13 +55,13 @@ const LoungeHeader = ({ onLogout, onToggleLanguage, showNotifications, onToggleN
 
       <div className="hidden md:flex flex-wrap items-center gap-x-6 gap-y-4 md:gap-8">
         <button
-          onClick={() => { navigate('/booking'); }}
+          onClick={() => { void navigate('/booking'); }}
           className="text-[10px] uppercase tracking-widest text-ink-faint hover:text-black dark:hover:text-white transition-colors font-bold"
         >
           {t('nav.book')}
         </button>
         <button
-          onClick={() => { navigate('/my-bookings'); }}
+          onClick={() => { void navigate('/my-bookings'); }}
           className="text-[10px] uppercase tracking-widest text-ink-faint hover:text-black dark:hover:text-white transition-colors font-bold"
         >
           {t('nav.appointments')}

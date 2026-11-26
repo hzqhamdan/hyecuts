@@ -20,8 +20,8 @@ function createWrapper(contextValue: AuthContextType) {
   };
 }
 
-const mockLoginFn = () => {};
-const mockLogoutFn = () => {};
+const mockLoginFn = () => undefined;
+const mockLogoutFn = () => undefined;
 
 describe('AdminRoute', () => {
   beforeEach(() => {

@@ -28,12 +28,12 @@ export default function HoursSection() {
           <div className="space-y-4">
             {BOOKING_POLICIES.map((policy, idx) => (
               <p key={policy} className="text-xs md:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium">
-                {t(`landing.policy_${idx + 1}`)}
+                {t(`landing.policy_${String(idx + 1)}`)}
               </p>
             ))}
           </div>
           <button
-            onClick={() => { navigate('/booking'); }}
+            onClick={() => { void navigate('/booking'); }}
             className="mt-8 px-8 py-3 border border-black dark:border-white text-[10px] uppercase tracking-widest font-bold hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black transition-all"
           >
             {t('landing.reserve_slot')}

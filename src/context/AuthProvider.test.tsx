@@ -1,7 +1,7 @@
-import { render, screen, act } from '@testing-library/react';
+import { render, renderHook, screen, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { AuthProvider } from './AuthProvider';
-import { useAuth } from './AuthContext';
+import { useAuth, type User } from './AuthContext';
 
 function TestConsumer() {
   const { user, token, login, logout } = useAuth();
@@ -11,11 +11,11 @@ function TestConsumer() {
       <div data-testid="user">{user ? JSON.stringify(user) : 'null'}</div>
       <button
         data-testid="login-btn"
-        onClick={() => login('jwt-token', 'user-1', 'ROLE_USER', 'testuser')}
+        onClick={() => { login('jwt-token', 'user-1', 'ROLE_USER', 'testuser'); }}
       >
         Login
       </button>
-      <button data-testid="logout-btn" onClick={() => logout()}>
+      <button data-testid="logout-btn" onClick={() => { logout(); }}>
         Logout
       </button>
     </div>
@@ -49,7 +49,7 @@ describe('AuthProvider', () => {
     );
 
     expect(screen.getByTestId('token').textContent).toBe('stored-token');
-    const user = JSON.parse(screen.getByTestId('user').textContent!);
+    const user = JSON.parse(screen.getByTestId('user').textContent) as User;
     expect(user.id).toBe('stored-id');
     expect(user.role).toBe('ROLE_ADMIN');
   });
@@ -79,7 +79,7 @@ describe('AuthProvider', () => {
     });
 
     expect(sessionStorage.getItem('hc_token')).toBe('jwt-token');
-    expect(JSON.parse(sessionStorage.getItem('hc_user')!)).toEqual({
+    expect(JSON.parse(sessionStorage.getItem('hc_user') ?? 'null')).toEqual({
       id: 'user-1',
       role: 'ROLE_USER',
       username: 'testuser',
@@ -98,7 +98,7 @@ describe('AuthProvider', () => {
     });
 
     expect(screen.getByTestId('token').textContent).toBe('jwt-token');
-    const user = JSON.parse(screen.getByTestId('user').textContent!);
+    const user = JSON.parse(screen.getByTestId('user').textContent) as User;
     expect(user.username).toBe('testuser');
   });
 
@@ -149,7 +149,7 @@ describe('AuthProvider', () => {
       screen.getByTestId('login-btn').click();
     });
 
-    const user = JSON.parse(screen.getByTestId('user').textContent!);
+    const user = JSON.parse(screen.getByTestId('user').textContent) as User;
     expect(user.role).toBe('ROLE_USER');
   });
 
@@ -175,18 +175,9 @@ describe('AuthProvider', () => {
   });
 
   it('useAuth should throw when used outside AuthProvider', () => {
-    const TestOutside = () => {
-      try {
-        useAuth();
-      } catch (e) {
-        return <div data-testid="error">{(e as Error).message}</div>;
-      }
-      return null;
-    };
-
-    render(<TestOutside />);
-    expect(screen.getByTestId('error').textContent).toBe(
-      'useAuth must be used within an AuthProvider'
-    );
+    // React reports the render error to the console as well as throwing it.
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    expect(() => renderHook(() => useAuth())).toThrow('useAuth must be used within an AuthProvider');
+    consoleError.mockRestore();
   });
 });

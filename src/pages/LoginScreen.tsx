@@ -50,9 +50,9 @@ export default function LoginScreen() {
         });
         login(data.token, data.userId, data.role, username);
         if (data.role === 'ROLE_ADMIN') {
-          navigate('/admin');
+          void navigate('/admin');
         } else {
-          navigate('/lounge');
+          void navigate('/lounge');
         }
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Authentication failed';
@@ -76,7 +76,7 @@ export default function LoginScreen() {
 
       <div className="relative z-10 absolute top-8 sm:top-12 left-6 sm:left-12 flex items-center gap-3">
         <button 
-          onClick={() => { navigate('/'); }}
+          onClick={() => { void navigate('/'); }}
           className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-ink-faint hover:text-black dark:hover:text-white transition-colors font-bold"
         >
           <ArrowLeft className="w-3 h-3" /> {t('nav.return_facade')}

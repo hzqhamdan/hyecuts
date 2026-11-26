@@ -33,13 +33,13 @@ const MobileMenu = ({ isOpen, onClose, onLogout, onToggleLanguage, onOpenSetting
             <X size={28} />
           </button>
           <button
-            onClick={() => { onClose(); navigate('/booking'); }}
+            onClick={() => { onClose(); void navigate('/booking'); }}
             className="text-4xl font-serif italic tracking-tight capitalize"
           >
             {t('nav.book')}
           </button>
           <button
-            onClick={() => { onClose(); navigate('/my-bookings'); }}
+            onClick={() => { onClose(); void navigate('/my-bookings'); }}
             className="text-4xl font-serif italic tracking-tight capitalize"
           >
             {t('nav.appointments')}

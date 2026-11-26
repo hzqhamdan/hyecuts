@@ -24,14 +24,14 @@ export default function HeroSection() {
           </motion.p>
           <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-6 sm:px-0">
             <button
-              onClick={() => { navigate('/booking'); }}
+              onClick={() => { void navigate('/booking'); }}
               className="group relative px-10 py-5 bg-black dark:bg-white text-white dark:text-black overflow-hidden transition-all duration-500 hover:bg-zinc-800 dark:hover:bg-zinc-800 hover:text-white dark:hover:text-white"
             >
               <span className="relative z-10 text-[10px] md:text-xs uppercase tracking-[0.2em] font-bold">{t('hero.cta_primary')}</span>
               <ArrowRight className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-[-10px] group-hover:translate-x-0" size={16} />
             </button>
             <button
-              onClick={() => { navigate('/lounge'); }}
+              onClick={() => { void navigate('/lounge'); }}
               className="px-10 py-5 text-[10px] md:text-xs uppercase tracking-[0.2em] font-bold border border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all duration-500"
             >
               {t('hero.cta_secondary')}

@@ -72,7 +72,7 @@ const RewardPortfolio = ({ rewards, isLoading, onRedeem }: RewardPortfolioProps)
                   {t(`data.rewards.${reward.title}.description`, { defaultValue: reward.description })}
                 </p>
                 <div className="font-mono text-[9px] md:text-[10px] tracking-widest text-ink-muted uppercase font-bold">
-                  {(reward.pointsCost ?? 0).toString()} {t('lounge.pts')} {reward.stockCount !== null && `• ${reward.stockCount.toString()} ${t('lounge.left')}`}
+                  {reward.pointsCost.toString()} {t('lounge.pts')} {reward.stockCount !== null && `• ${reward.stockCount.toString()} ${t('lounge.left')}`}
                 </div>
               </div>
             </div>

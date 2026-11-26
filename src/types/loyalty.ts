@@ -71,15 +71,17 @@ export interface Mission {
   title: string;
   description: string;
   type: string;
-  rewardPoints: number;
+  // Both columns allow NULL in the database.
+  rewardPoints: number | null;
   targetAction: string;
-  requiredCount: number;
+  requiredCount: number | null;
 }
 
 export interface UserMissionProgress {
   id: number;
   missionId: number;
-  currentProgress: number;
+  // user_mission_progress.current_progress has a default but no NOT NULL (V1 migration).
+  currentProgress: number | null;
   completed: boolean;
 }
 
