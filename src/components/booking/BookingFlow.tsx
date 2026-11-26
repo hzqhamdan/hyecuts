@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ChevronRight, ChevronDown, Calendar, Clock, CheckCircle, ShieldCheck, UserCircle, UserPlus, Globe } from 'lucide-react';
-import { BOOKING_POLICIES, BUSINESS_HOURS, HYECUTS, ALL_SERVICES, SERVICE_CATEGORIES, TEAM_MEMBERS, AVAILABLE_TIMES, timesForDay, type ServiceItem } from '../../data/hyecuts';
+import { BOOKING_POLICIES, BUSINESS_HOURS, HYECUTS, ALL_SERVICES, SERVICE_CATEGORIES, TEAM_MEMBERS, AVAILABLE_TIMES, minutesOfDay, timesForDay, type ServiceItem } from '../../data/hyecuts';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../api/client';
-import { nextSlotForWeekday, toLocalIsoString } from '../../utils/datetime';
+import { fetchTakenTimes } from '../../api/availability';
+import { minuteKey, nextSlotForWeekday, toLocalIsoString } from '../../utils/datetime';
 import { useBookingStore } from '../../store/useBookingStore';
 import { useTranslation } from 'react-i18next';
 import { PaymentStep } from './PaymentStep';
@@ -67,10 +68,39 @@ export default function BookingFlow() {
     && guestPhone.trim() !== ''
     && GUEST_EMAIL_PATTERN.test(guestEmail.trim());
 
-  // E2E-003: made up rather than fetched, so every day shows 2 PM and 4 PM as taken.
-  // Worked out during render, not in an effect, so a slot never shows as free for a
-  // frame before its booked mark appears.
-  const bookedTimes = selectedDate ? ['02:00 PM', '04:00 PM'] : [];
+  // When each visible slot would take place. On today's weekday that is today for
+  // slots still ahead and next week for the rest, the rule handleConfirm books by.
+  const slots = chosenDay
+    ? visibleTimes.map((time) => {
+        const minutes = minutesOfDay(time);
+        const at = minutes === null ? null : nextSlotForWeekday(chosenDay, Math.floor(minutes / 60), minutes % 60);
+        return { time, key: at ? minuteKey(at) : null };
+      })
+    : [];
+  const availabilityDates = [...new Set(slots.flatMap((slot) => (slot.key ? [slot.key.slice(0, 10)] : [])))].join(',');
+
+  // Which slots are taken (E2E-003: these used to be made up, 2 PM and 4 PM on every
+  // day). Until the answer arrives, or if it never does, no slot is marked; the server
+  // still refuses a taken one.
+  const [availability, setAvailability] = useState<{ dates: string; taken: Set<string> } | null>(null);
+  useEffect(() => {
+    if (!availabilityDates) return;
+    let cancelled = false;
+    Promise.all(availabilityDates.split(',').map((date) => fetchTakenTimes(date, token ?? undefined)))
+      .then((sets) => {
+        if (!cancelled) setAvailability({ dates: availabilityDates, taken: new Set(sets.flatMap((set) => [...set])) });
+      })
+      .catch((error: unknown) => { console.error('Could not load availability', error); });
+    return () => { cancelled = true; };
+  }, [availabilityDates, token]);
+  const taken = availability?.dates === availabilityDates ? availability.taken : null;
+  const bookedTimes = taken ? slots.filter((slot) => slot.key !== null && taken.has(slot.key)).map((slot) => slot.time) : [];
+
+  // A time picked before its day's availability arrived may turn out to be taken.
+  const selectedTimeIsTaken = selectedTime !== null && bookedTimes.includes(selectedTime);
+  useEffect(() => {
+    if (selectedTimeIsTaken) setSelectedTime(null);
+  }, [selectedTimeIsTaken, setSelectedTime]);
 
   useEffect(() => {
     // Automatically skip step 0 if the user is already logged in and we haven't advanced yet
@@ -120,16 +150,9 @@ export default function BookingFlow() {
         }));
       }
 
-      let hours = 12, mins = 0;
-      if (selectedTime) {
-        const match = /(\d+):(\d+)\s*(AM|PM)/i.exec(selectedTime);
-        if (match) {
-          hours = parseInt(match[1]);
-          mins = parseInt(match[2]);
-          if (match[3].toUpperCase() === 'PM' && hours < 12) hours += 12;
-          if (match[3].toUpperCase() === 'AM' && hours === 12) hours = 0;
-        }
-      }
+      const minutes = selectedTime ? minutesOfDay(selectedTime) : null;
+      const hours = minutes === null ? 12 : Math.floor(minutes / 60);
+      const mins = minutes === null ? 0 : minutes % 60;
 
       // The next time the chosen weekday and slot come round: today only while the
       // slot is still ahead (E2E-004).

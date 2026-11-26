@@ -154,20 +154,22 @@ test.describe('Choosing a time', () => {
     await expect(page.getByRole('button', { name: 'Review Booking' })).toBeDisabled();
   });
 
-  // E2E-003: availability is made up. Whatever day is picked, the screen marks
-  // 2 PM and 4 PM as booked without asking the server, and every other slot
-  // as free, so customers can pick slots that are really taken and are
-  // refused ones that are open.
-  test('only slots the server reports as taken are shown as booked', async ({ page }) => {
-    test.fail();
+  // E2E-003 (fixed): availability used to be made up. Whatever day was picked,
+  // the screen marked 2 PM and 4 PM as booked without asking the server.
+  test('only slots the server reports as taken are shown as booked', async ({ page, api }) => {
+    await page.clock.setFixedTime(MONDAY_MORNING);
+    api.takenTimes = ['2026-10-27T15:00:00']; // Tuesday, 3 PM
     await page.goto('/booking');
     await page.getByRole('button', { name: /Continue as Guest/ }).click();
     await chooseService(page, 'Adult Hair Cut');
     await chooseBarber(page, 'Haiqal');
-    await page.getByText('Monday', { exact: true }).click();
+    await page.getByText('Tuesday', { exact: true }).click();
 
-    // The mock backend has no bookings at all.
-    await expect(page.getByText('(Booked)')).toHaveCount(0);
+    // Waiting for the taken slot first means the count below is not read before
+    // the answer has arrived.
+    await expect(page.getByText('03:00 PM (Booked)')).toBeVisible();
+    await expect(page.getByText('(Booked)')).toHaveCount(1);
+    expect(api.sent('GET', '/bookings/availability/2026-10-27')).toHaveLength(1);
   });
 
   // E2E-004 (fixed): picking today's weekday at a time that has already passed

@@ -2,14 +2,9 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, Clock } from 'lucide-react';
 import { api } from '../../api/client';
-import { nextDateForWeekday, toLocalIsoString } from '../../utils/datetime';
-import { BUSINESS_HOURS, timesForDay } from '../../data/hyecuts';
-
-interface Booking {
-  id: string;
-  appointmentTime: string;
-  status: string;
-}
+import { fetchTakenTimes } from '../../api/availability';
+import { minuteKey, nextDateForWeekday, toLocalIsoString } from '../../utils/datetime';
+import { BUSINESS_HOURS, minutesOfDay, timesForDay } from '../../data/hyecuts';
 
 interface RescheduleModalProps {
   isOpen: boolean;
@@ -33,16 +28,19 @@ export default function RescheduleModal({ isOpen, onClose, bookingId, onSuccess,
     // The previous day's slots don't apply to this one.
     setBookedTimes([]);
     let stale = false;
-    // The endpoint takes a YYYY-MM-DD date. This used to send the weekday
-    // name ("/bookings/date/Friday"), which the backend rejects, so booked
-    // slots never showed and every time looked free (BK-051).
-    api.get<Booking[]>(`/bookings/date/${toLocalIsoString(date).slice(0, 10)}`, { token: token ?? undefined }).then(bookings => {
+    // By calendar date, YYYY-MM-DD. This used to send the weekday name
+    // ("/bookings/date/Friday"), which the backend rejects, so booked slots
+    // never showed and every time looked free (BK-051).
+    const day = toLocalIsoString(date).slice(0, 10);
+    fetchTakenTimes(day, token ?? undefined).then(taken => {
         if (stale) return;
-        // PENDING and CONFIRMED both hold the slot; CANCELLED/COMPLETED/NO_SHOW
-        // don't (BK-050 — CONFIRMED bookings used to show as free here).
-        const times = bookings
-            .filter(b => b.status === 'PENDING' || b.status === 'CONFIRMED')
-            .map(b => new Date(b.appointmentTime).toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit', hour12: true}));
+        const times = timesForDay(selectedDate).filter(time => {
+          const minutes = minutesOfDay(time);
+          if (minutes === null) return false;
+          const at = new Date(date);
+          at.setHours(Math.floor(minutes / 60), minutes % 60, 0, 0);
+          return taken.has(minuteKey(at));
+        });
         setBookedTimes(times);
         setSelectedTime(current => (current && times.includes(current) ? null : current));
     }).catch(console.error);

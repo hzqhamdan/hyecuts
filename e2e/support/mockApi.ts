@@ -67,6 +67,8 @@ function defaultMembers(): MemberRow[] {
 export class MockApi {
   services = defaultServices();
   members = defaultMembers();
+  /** What GET /bookings/availability/{date} reports as taken: `YYYY-MM-DDTHH:mm:ss` times. */
+  takenTimes: string[] = [];
   settings: Record<string, string> = { POINTS_PER_MYR: '1', SEASONAL_MULTIPLIER: '1.0' };
   /** What GET /bookings/all returns, shaped like the backend's Booking entity. */
   allBookings: unknown[] = [];
@@ -160,6 +162,10 @@ export class MockApi {
     if (method === 'GET' && path === '/services/active') return { json: this.services.filter(s => s.isActive) };
     if (method === 'POST' && path === '/bookings') return { json: { id: this.nextBookingId++, status: 'PENDING' } };
     if (method === 'GET' && path.startsWith('/bookings/user/')) return { json: [] };
+    if (method === 'GET' && (m = /^\/bookings\/availability\/(\d{4}-\d{2}-\d{2})$/.exec(path))) {
+      const day = m[1];
+      return { json: this.takenTimes.filter(time => time.startsWith(day)) };
+    }
     if (method === 'GET' && path === '/bookings/all') return { json: this.allBookings };
     if (method === 'PUT' && (m = /^\/bookings\/([\w-]+)\/complete$/.exec(path))) {
       const id = m[1];

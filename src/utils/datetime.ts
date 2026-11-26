@@ -53,3 +53,11 @@ export function nextSlotForWeekday(weekday: string, hours: number, minutes: numb
   if (date <= from) date.setDate(date.getDate() + 7);
   return date;
 }
+
+/**
+ * An appointment time as `YYYY-MM-DDTHH:mm`, local wall-clock. For comparing a
+ * slot with a time the server sent, which may or may not carry seconds.
+ */
+export function minuteKey(value: Date | string): string {
+  return (typeof value === 'string' ? value : toLocalIsoString(value)).slice(0, 16);
+}

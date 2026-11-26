@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { useBookingStore } from '../../store/useBookingStore';
@@ -46,14 +46,16 @@ vi.mock('../../context/AuthContext', () => ({
 // through the `serviceId = 1` fallback (BK-019). The suite passed *because of*
 // the bug — and only because 'Adult Hair Cut' happens to be id 1, so the wrong
 // answer looked like the right one.
-vi.mock('../../api/client', () => ({
+vi.mock('../../api/client', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../api/client')>()),
   api: {
-    get: vi.fn().mockResolvedValue([
+    // Availability lookups see no bookings; every other GET gets the service list.
+    get: vi.fn((path: string) => Promise.resolve(path.startsWith('/bookings/availability/') ? [] : [
       { id: 1, name: 'Adult Hair Cut', price: 'RM 25', duration: '30 mins' },
       { id: 4, name: 'Teenager Hair Cut', price: 'RM 20', duration: '30 mins' },
       { id: 2, name: 'Adult Cut & Shave', price: 'RM 30', duration: '30 mins' },
       { id: 8, name: 'Beard Trim/Shape', price: 'RM 10', duration: '10 mins' },
-    ]),
+    ])),
     post: vi.fn().mockResolvedValue({ id: 12345 }),
     put: vi.fn().mockResolvedValue(undefined),
     del: vi.fn().mockResolvedValue(undefined),
@@ -217,6 +219,40 @@ describe('BookingFlow', () => {
     expect(screen.queryByText('12:00 PM')).not.toBeInTheDocument();
     expect(screen.getByText('02:30 PM')).toBeInTheDocument();
     expect(screen.getByText('booking.review_booking').closest('button')).toBeDisabled();
+  });
+
+  it('marks only the slots the server reports as taken, and drops a pick that turns out to be taken (E2E-003)', async () => {
+    // Monday 26 October 2026, 10:00 local time; only Date is faked.
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(2026, 9, 26, 10, 0, 0));
+    const services = await vi.mocked(api.get)('/services/active');
+    let releaseMonday: (times: string[]) => void = () => undefined;
+    vi.mocked(api.get).mockImplementation((path: string) => {
+      if (path === '/bookings/availability/2026-10-26') return new Promise((resolve) => { releaseMonday = resolve; });
+      return Promise.resolve(path.startsWith('/bookings/availability/') ? [] : services);
+    });
+    try {
+      const user = userEvent.setup();
+      renderBookingFlow();
+      await user.click(screen.getByText('booking.guest_cta'));
+      await user.click(screen.getByText('data.services.Adult Hair Cut'));
+      await user.click(screen.getByText('booking.continue_barber'));
+      await user.click(screen.getByText('landing.no_preference'));
+      await user.click(screen.getByText('booking.continue_schedule'));
+
+      // Picked before Monday's availability has arrived.
+      await user.click(screen.getByText('data.days.Monday'));
+      await user.click(screen.getByText('03:00 PM'));
+      expect(screen.getByText('booking.review_booking').closest('button')).not.toBeDisabled();
+
+      act(() => { releaseMonday(['2026-10-26T15:00:00']); });
+
+      expect(await screen.findByText('03:00 PM (Booked)')).toBeInTheDocument();
+      expect(screen.getAllByText(/\(Booked\)/)).toHaveLength(1);
+      expect(screen.getByText('booking.review_booking').closest('button')).toBeDisabled();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('should navigate to login page when login button clicked at step 0', async () => {

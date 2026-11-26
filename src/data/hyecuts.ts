@@ -87,7 +87,7 @@ export const AVAILABLE_TIMES = [
 ];
 
 // "2:30 PM" / "02:30 PM" -> minutes since midnight; null if unparseable.
-function minutesOfDay(time: string): number | null {
+export function minutesOfDay(time: string): number | null {
   const match = /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i.exec(time.trim());
   if (!match) return null;
   let hours = parseInt(match[1], 10) % 12;

@@ -2,10 +2,11 @@ import type { ComponentProps } from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { api } from '../../api/client';
+import { api, ApiError } from '../../api/client';
 import RescheduleModal from './RescheduleModal';
 
-vi.mock('../../api/client', () => ({
+vi.mock('../../api/client', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../api/client')>()),
   api: {
     get: vi.fn(),
     put: vi.fn(),
@@ -72,7 +73,7 @@ describe('RescheduleModal', () => {
 
     await user.click(screen.getByRole('button', { name: 'Friday' }));
 
-    expect(mockedGet).toHaveBeenCalledWith('/bookings/date/2026-10-23', { token: 'jwt-token' });
+    expect(mockedGet).toHaveBeenCalledWith('/bookings/availability/2026-10-23', { token: 'jwt-token' });
   });
 
   it('only offers Friday slots from its 2:30 PM opening', async () => {
@@ -99,14 +100,9 @@ describe('RescheduleModal', () => {
     expect(confirmButton()).toBeDisabled();
   });
 
-  it('disables slots held by pending or confirmed bookings, and only those', async () => {
+  it('disables the slots the server reports as taken, and only those', async () => {
     const user = userEvent.setup();
-    mockedGet.mockResolvedValue([
-      { id: 'a', appointmentTime: '2026-10-23T14:30:00', status: 'PENDING' },
-      { id: 'b', appointmentTime: '2026-10-23T15:00:00', status: 'CONFIRMED' },
-      { id: 'c', appointmentTime: '2026-10-23T16:00:00', status: 'CANCELLED' },
-      { id: 'd', appointmentTime: '2026-10-23T17:00:00', status: 'COMPLETED' },
-    ]);
+    mockedGet.mockResolvedValue(['2026-10-23T14:30:00', '2026-10-23T15:00:00']);
     renderModal();
 
     await user.click(screen.getByRole('button', { name: 'Friday' }));
@@ -117,12 +113,27 @@ describe('RescheduleModal', () => {
     expect(screen.getByRole('button', { name: /^05:00 PM/ })).toBeEnabled();
   });
 
+  it("reads the day's bookings instead from a backend without the availability endpoint", async () => {
+    const user = userEvent.setup();
+    mockedGet.mockImplementation((path: string) => path.startsWith('/bookings/availability/')
+      ? Promise.reject(new ApiError(404, 'Not Found'))
+      : Promise.resolve([
+          { id: 'a', appointmentTime: '2026-10-23T14:30:00', status: 'CONFIRMED' },
+          { id: 'b', appointmentTime: '2026-10-23T16:00:00', status: 'CANCELLED' },
+        ]));
+    renderModal();
+
+    await user.click(screen.getByRole('button', { name: 'Friday' }));
+
+    expect(await screen.findByRole('button', { name: '02:30 PM (Booked)' })).toBeDisabled();
+    expect(mockedGet).toHaveBeenCalledWith('/bookings/date/2026-10-23', { token: 'jwt-token' });
+    expect(screen.getByRole('button', { name: /^04:00 PM/ })).toBeEnabled();
+  });
+
   it('clears a chosen time that turns out to be booked on the newly picked day', async () => {
     const user = userEvent.setup();
     mockedGet.mockImplementation((path: string) => Promise.resolve(
-      path === '/bookings/date/2026-10-26'
-        ? [{ id: 'a', appointmentTime: '2026-10-26T14:30:00', status: 'CONFIRMED' }]
-        : []
+      path === '/bookings/availability/2026-10-26' ? ['2026-10-26T14:30:00'] : []
     ));
     renderModal();
 
