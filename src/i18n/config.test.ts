@@ -76,4 +76,16 @@ describe('i18n config', () => {
   it('returns the key itself for an unknown key rather than throwing', () => {
     expect(i18n.t('does.not.exist')).toBe('does.not.exist');
   });
+
+  it('reports a regional browser language as the shipped language, which the toggles compare with', async () => {
+    await i18n.changeLanguage('en-US');
+    expect(i18n.language).toBe('en');
+    await i18n.changeLanguage('ms-MY');
+    expect(i18n.language).toBe('ms');
+  });
+
+  it('falls back to English for a browser language it does not ship', async () => {
+    await i18n.changeLanguage('fr-FR');
+    expect(i18n.language).toBe('en');
+  });
 });

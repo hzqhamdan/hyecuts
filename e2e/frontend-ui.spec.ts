@@ -58,12 +58,20 @@ test.describe('Language', () => {
     });
   });
 
-  // E2E-002: the toggles compare i18n.language with 'en', but the detector
-  // stores the browser's full tag. In an en-US or en-GB browser the page is in
-  // English yet the button shows the Malaysian flag, and the first click
-  // "switches" to English, so it takes two clicks to reach Malay.
+  // E2E-002 (fixed): the toggles compare i18n.language with 'en', but the
+  // detector kept the browser's full tag. In an en-US or en-GB browser the
+  // page was in English yet the button showed the Malaysian flag, and the
+  // first click "switched" to English, so it took two clicks to reach Malay.
   test('one click switches an en-US browser to Malay', async ({ page }) => {
-    test.fail();
+    await page.goto('/');
+    await expect(languageButton(page)).toHaveText('EN');
+    await languageButton(page).click();
+
+    await expect(inMalay(page)).toBeVisible();
+  });
+
+  test('a visitor whose earlier visit saved en-US also switches to Malay in one click', async ({ page }) => {
+    await page.addInitScript(() => { localStorage.setItem('i18nextLng', 'en-US'); });
     await page.goto('/');
     await expect(languageButton(page)).toHaveText('EN');
     await languageButton(page).click();

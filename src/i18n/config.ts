@@ -14,6 +14,11 @@ void i18n
       ms: { translation: ms }
     },
     fallbackLng: 'en',
+    // The language toggles compare i18n.language with 'en'. Without this, an
+    // en-US or en-GB browser keeps its full tag as the language: the page is in
+    // English but the toggle shows the Malaysian flag, and the first click
+    // "switches" to English.
+    supportedLngs: ['en', 'ms'],
     interpolation: {
       escapeValue: false
     }
