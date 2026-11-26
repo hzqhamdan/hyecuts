@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { api } from '../../api/client';
 import type { LoyaltyProfile } from '../../types/loyalty';
 import { firstNonEmpty } from '../../utils/text';
+import { formatMalaysianPhone } from '../../utils/phone';
 
 interface UserProfileModalProps {
   isOpen: boolean;
@@ -292,12 +293,7 @@ export default function UserProfileModal({ isOpen, onClose, onExportData, onDele
                             type="tel"
                             value={formData.phone.replace(/^\+60\s?/, '')}
                             onChange={(e) => {
-                              let val = e.target.value.replace(/\D/g, '');
-                              if (val.length > 9) val = val.substring(0, 9);
-                              let formatted = val;
-                              if (val.length > 2) formatted = val.substring(0, 2) + '-' + val.substring(2);
-                              if (val.length > 5) formatted = val.substring(0, 2) + '-' + val.substring(2, 5) + ' ' + val.substring(5);
-                              setFormData({ ...formData, phone: `+60 ${formatted}` });
+                              setFormData({ ...formData, phone: formatMalaysianPhone(e.target.value) });
                             }}
                             placeholder="12-345 6789"
                             className="bg-transparent py-2 text-sm focus:outline-none w-full transition-colors"

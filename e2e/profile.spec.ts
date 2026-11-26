@@ -52,20 +52,29 @@ test.describe('Profile details', () => {
     await expect(page.getByRole('heading', { name: 'Aiman bin Rahman' }).filter({ visible: true })).toBeVisible();
   });
 
-  test('the phone number is formatted as it is typed and capped at nine digits', async ({ page }) => {
+  test('the phone number is formatted as it is typed', async ({ page }) => {
     await openProfile(page);
     const phone = field(page, 'Phone Number');
     await phone.fill('');
-    await phone.pressSequentially('1a2-3456789012');
+    await phone.pressSequentially('1a2-3456789');
 
     await expect(phone).toHaveValue('12-345 6789');
   });
 
-  // E2E-007: the field keeps the leading 0 of a local number after its +60
-  // prefix and then caps at nine digits, so 019-876 5432 is saved as
+  // An 011 number has ten digits after +60; a nine-digit cap used to drop the last one.
+  test('the phone number keeps the ten digits of an 011 number and stops there', async ({ page }) => {
+    await openProfile(page);
+    const phone = field(page, 'Phone Number');
+    await phone.fill('');
+    await phone.pressSequentially('111234567890');
+
+    await expect(phone).toHaveValue('11-1234 5678');
+  });
+
+  // E2E-007 (fixed): the field kept the leading 0 of a local number after its
+  // +60 prefix and then capped at nine digits, so 019-876 5432 was saved as
   // +60 01-987 6543: a wrong number with the last digit dropped.
   test('a number typed with its leading 0 is saved in +60 form', async ({ page, api }) => {
-    test.fail();
     await openProfile(page);
     await field(page, 'Phone Number').fill('0198765432');
     await page.getByRole('button', { name: 'Save Changes' }).click();
