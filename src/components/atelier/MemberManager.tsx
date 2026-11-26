@@ -4,7 +4,8 @@ import { Search, User as UserIcon, MoreHorizontal, ArrowUpDown, Shield } from 'l
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '../../api/client';
-import type { User } from '../../types/loyalty';
+import type { AdminMember } from '../../types/loyalty';
+import { firstNonEmpty } from '../../utils/text';
 import { useAuth } from '../../context/AuthContext';
 
 export function MemberManager() {
@@ -12,13 +13,13 @@ export function MemberManager() {
   const { token } = useAuth();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedMember, setSelectedMember] = useState<User | null>(null);
+  const [selectedMember, setSelectedMember] = useState<AdminMember | null>(null);
   const [adjustAmount, setAdjustAmount] = useState(0);
 
-  const { data: members = [], isLoading } = useQuery<User[]>({
+  const { data: members = [], isLoading } = useQuery<AdminMember[]>({
     queryKey: ['members', token],
     queryFn: () =>
-      api.get<User[]>('/admin/users', { token: token ?? undefined })
+      api.get<AdminMember[]>('/admin/users', { token: token ?? undefined })
   });
 
   const adjustMutation = useMutation({
@@ -54,7 +55,7 @@ export function MemberManager() {
 
   const filteredMembers = members.filter(m => 
     m.email.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    m.fullName.toLowerCase().includes(searchTerm.toLowerCase())
+    (m.fullName ?? '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -100,7 +101,7 @@ export function MemberManager() {
                       <UserIcon size={20} />
                     </div>
                     <div>
-                      <p className="font-serif text-lg italic text-black dark:text-white">{member.fullName || 'Anonymous'}</p>
+                      <p className="font-serif text-lg italic text-black dark:text-white">{firstNonEmpty(member.fullName) ?? 'Anonymous'}</p>
                       <p className="text-[10px] text-ink-faint uppercase tracking-tight">{member.email}</p>
                     </div>
                   </div>
@@ -155,7 +156,7 @@ export function MemberManager() {
                 <div className="w-24 h-24 rounded-full bg-zinc-100 dark:bg-zinc-800 mx-auto mb-8 flex items-center justify-center text-ink-faint">
                   <UserIcon size={48} />
                 </div>
-                <h3 className="font-serif text-4xl italic mb-2 text-black dark:text-white">{selectedMember.fullName}</h3>
+                <h3 className="font-serif text-4xl italic mb-2 text-black dark:text-white">{firstNonEmpty(selectedMember.fullName) ?? 'Anonymous'}</h3>
                 <p className="text-[10px] uppercase tracking-[0.3em] text-ink-faint font-bold">{selectedMember.email}</p>
               </header>
 

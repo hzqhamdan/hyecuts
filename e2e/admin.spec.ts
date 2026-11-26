@@ -94,6 +94,27 @@ test.describe('Booking manager', () => {
 });
 
 test.describe('Member manager', () => {
+  test('a member with no full name is listed as Anonymous and the search still works', async ({ page, api }) => {
+    const errors = pageErrors(page);
+    api.members.push({
+      id: '44444444-4444-4444-4444-444444444444', email: 'noname@example.com', fullName: null, phone: '',
+      dob: '1990-01-01', tier: 'MEMBER', currentPoints: 0, lifetimePoints: 0,
+    });
+    await page.goto('/admin/members');
+
+    const rows = page.locator('tbody tr');
+    await expect(rows).toHaveCount(3);
+    await page.getByPlaceholder('Search by name or email...').fill('aiman');
+    await expect(rows).toHaveCount(1);
+    await page.getByPlaceholder('Search by name or email...').fill('noname');
+    await expect(rows).toHaveCount(1);
+    await expect(rows.first()).toContainText('Anonymous');
+
+    await rows.first().getByRole('button').click();
+    await expect(page.getByRole('heading', { name: 'Anonymous' })).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+
   test('finds a member and adjusts their points', async ({ page, api }) => {
     await page.goto('/admin/members');
     await page.getByPlaceholder('Search by name or email...').fill('aiman');

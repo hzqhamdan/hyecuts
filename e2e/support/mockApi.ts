@@ -27,7 +27,8 @@ export interface ServiceRow { id: number; name: string; priceMyr: number; durati
 export interface MemberRow {
   id: string;
   email: string;
-  fullName: string;
+  // users.full_name allows NULL, e.g. for an account created without a name.
+  fullName: string | null;
   phone: string;
   dob: string;
   tier: string;

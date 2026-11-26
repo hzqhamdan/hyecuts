@@ -17,6 +17,19 @@ export interface User {
   tier: string;
 }
 
+// A row of GET /admin/users: the backend's AdminUserSummary record.
+export interface AdminMember {
+  id: string;
+  email: string;
+  username: string | null;
+  // users.full_name allows NULL, e.g. for an account created without a name.
+  fullName: string | null;
+  role: string;
+  tier: string;
+  currentPoints: number;
+  lifetimePoints: number;
+}
+
 export interface LoyaltyProfile {
   userId: string;
   email: string;
