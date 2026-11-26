@@ -33,7 +33,6 @@ export default function BookingFlow() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { token, user } = useAuth();
-  const [bookedTimes, setBookedTimes] = useState<string[]>([]);
 
   // BK-019/020: the picker renders hardcoded ALL_SERVICES, but a booking needs the
   // database's id. Those two drift apart the moment an admin renames or deactivates
@@ -68,11 +67,10 @@ export default function BookingFlow() {
     && guestPhone.trim() !== ''
     && GUEST_EMAIL_PATTERN.test(guestEmail.trim());
 
-  useEffect(() => {
-    if (selectedDate) {
-      setBookedTimes(['02:00 PM', '04:00 PM']);
-    }
-  }, [selectedDate]);
+  // E2E-003: made up rather than fetched, so every day shows 2 PM and 4 PM as taken.
+  // Worked out during render, not in an effect, so a slot never shows as free for a
+  // frame before its booked mark appears.
+  const bookedTimes = selectedDate ? ['02:00 PM', '04:00 PM'] : [];
 
   useEffect(() => {
     // Automatically skip step 0 if the user is already logged in and we haven't advanced yet
