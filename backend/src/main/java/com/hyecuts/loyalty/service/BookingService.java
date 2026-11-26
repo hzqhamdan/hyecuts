@@ -103,6 +103,21 @@ public class BookingService {
         return bookingRepository.findByAppointmentTimeBetween(start, end);
     }
 
+    /**
+     * The appointment times on {@code date} that a booking holds, earliest first.
+     * Every status but CANCELLED holds its slot: the same rule as the
+     * uq_bookings_active_appointment_time index (V5), which is what actually
+     * refuses a second booking.
+     */
+    public List<LocalDateTime> getTakenTimes(java.time.LocalDate date) {
+        return bookingRepository.findByAppointmentTimeBetween(date.atStartOfDay(), date.atTime(java.time.LocalTime.MAX))
+                .stream()
+                .filter(booking -> booking.getStatus() != Booking.BookingStatus.CANCELLED)
+                .map(Booking::getAppointmentTime)
+                .sorted()
+                .toList();
+    }
+
     public Optional<Booking> getBookingById(UUID bookingId) {
         return bookingRepository.findById(bookingId);
     }

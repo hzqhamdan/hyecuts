@@ -624,4 +624,23 @@ class BookingServiceTest {
     private static java.time.LocalDate nextFriday() {
         return java.time.LocalDate.now().with(java.time.temporal.TemporalAdjusters.next(java.time.DayOfWeek.FRIDAY));
     }
+
+    @Test
+    void getTakenTimes_listsEveryBookingButCancelledOnes_earliestFirst() {
+        java.time.LocalDate day = java.time.LocalDate.of(2026, 11, 2);
+        Booking late = new Booking();
+        late.setAppointmentTime(day.atTime(16, 0));
+        late.setStatus(Booking.BookingStatus.PENDING);
+        Booking early = new Booking();
+        early.setAppointmentTime(day.atTime(11, 0));
+        early.setStatus(Booking.BookingStatus.COMPLETED);
+        Booking cancelled = new Booking();
+        cancelled.setAppointmentTime(day.atTime(15, 0));
+        cancelled.setStatus(Booking.BookingStatus.CANCELLED);
+        when(bookingRepository.findByAppointmentTimeBetween(day.atStartOfDay(), day.atTime(java.time.LocalTime.MAX)))
+                .thenReturn(List.of(late, cancelled, early));
+
+        // Matches uq_bookings_active_appointment_time (V5): only CANCELLED frees a slot.
+        assertEquals(List.of(day.atTime(11, 0), day.atTime(16, 0)), bookingService.getTakenTimes(day));
+    }
 }

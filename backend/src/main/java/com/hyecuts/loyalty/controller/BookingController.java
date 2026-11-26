@@ -135,18 +135,34 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.getAllBookings(pageable));
     }
 
-    // Admin/User endpoint
+    // Admin endpoint (SecurityConfig). Whole bookings, including the customer's
+    // name, email and phone. It used to be open to any signed-in member, who
+    // could list every other customer's details for any day.
     @GetMapping("/date/{date}")
     public ResponseEntity<?> getBookingsByDate(@PathVariable String date) {
         java.time.LocalDate localDate;
         try {
             localDate = java.time.LocalDate.parse(date);
         } catch (java.time.format.DateTimeParseException e) {
-            return ResponseEntity.badRequest().body("Malformed date, expected YYYY-MM-DD");
+            return ResponseEntity.badRequest().body(MALFORMED_DATE);
         }
         java.time.LocalDateTime start = localDate.atStartOfDay();
         java.time.LocalDateTime end = localDate.atTime(java.time.LocalTime.MAX);
         return ResponseEntity.ok(bookingService.getBookingsByDateRange(start, end));
+    }
+
+    // Public endpoint (SecurityConfig): guests pick a slot before signing in, if
+    // they sign in at all. Only the taken times, never who holds them (E2E-003:
+    // the booking screen used to make availability up).
+    @GetMapping("/availability/{date}")
+    public ResponseEntity<?> getTakenTimes(@PathVariable String date) {
+        java.time.LocalDate localDate;
+        try {
+            localDate = java.time.LocalDate.parse(date);
+        } catch (java.time.format.DateTimeParseException e) {
+            return ResponseEntity.badRequest().body(MALFORMED_DATE);
+        }
+        return ResponseEntity.ok(bookingService.getTakenTimes(localDate));
     }
 
     // Admin endpoint
@@ -225,6 +241,7 @@ public class BookingController {
     }
 
     private static final String MALFORMED_TIME = "Appointment time is missing or malformed; expected YYYY-MM-DDTHH:mm:ss.";
+    private static final String MALFORMED_DATE = "Malformed date, expected YYYY-MM-DD";
 
     // The unique index on active appointment times (V5) fires at commit when
     // two requests race for one slot, after BookingService's own check passed.
