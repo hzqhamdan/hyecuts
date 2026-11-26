@@ -101,3 +101,33 @@ describe('ProtectedRoute', () => {
     expect(screen.getByTestId('protected-content')).toBeDefined();
   });
 });
+
+describe('ProtectedRoute after signing out', () => {
+  const signedIn: AuthContextType = {
+    user: { id: '1', role: 'ROLE_USER', username: 'testuser' },
+    token: 'valid-token',
+    login: mockLoginFn,
+    logout: mockLogoutFn,
+  };
+  const signedOut: AuthContextType = { ...signedIn, user: null, token: null };
+
+  const app = (value: AuthContextType) => (
+    <AuthContext.Provider value={value}>
+      <MemoryRouter initialEntries={['/protected']}>
+        <Routes>
+          <Route path="/" element={<div data-testid="home-page">Home</div>} />
+          <Route path="/login" element={<div data-testid="login-page">Login Page</div>} />
+          <Route path="/protected" element={<ProtectedRoute><div data-testid="protected-content">Protected Content</div></ProtectedRoute>} />
+        </Routes>
+      </MemoryRouter>
+    </AuthContext.Provider>
+  );
+
+  it('sends someone who signs out on the page home, not to sign in', () => {
+    const { rerender } = render(app(signedIn));
+    rerender(app(signedOut));
+
+    expect(screen.getByTestId('home-page')).toBeDefined();
+    expect(screen.queryByTestId('login-page')).toBeNull();
+  });
+});

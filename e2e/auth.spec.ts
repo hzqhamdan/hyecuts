@@ -88,16 +88,25 @@ test.describe('Sign out', () => {
     await expect(page).toHaveURL('/login');
   });
 
-  // E2E-001: the lounge's guard sees the cleared token and redirects to
-  // /login before the handler's navigate('/') lands, so a member who signs
-  // out is shown the sign-in form instead of the home page.
+  // E2E-001 (fixed): the lounge's guard saw the cleared token and redirected
+  // to /login over the sign-out's navigation to /, so a member who signed out
+  // was shown the sign-in form instead of the home page.
   test('returns to the home page', async ({ page }) => {
-    test.fail();
     await signInAs(page, MEMBER);
     await page.goto('/lounge');
     await page.getByRole('button', { name: 'Logout' }).first().click();
 
     await expect(page).toHaveURL('/');
+  });
+
+  test('opening the lounge again from the home page asks to sign in', async ({ page }) => {
+    await signInAs(page, MEMBER);
+    await page.goto('/lounge');
+    await page.getByRole('button', { name: 'Logout' }).first().click();
+    await expect(page).toHaveURL('/');
+
+    await page.getByRole('navigation').getByRole('button', { name: 'Login' }).click();
+    await expect(page).toHaveURL('/login');
   });
 });
 

@@ -56,9 +56,8 @@ test.describe('Atelier', () => {
     await expect(page).toHaveURL('/login');
   });
 
-  // E2E-001, as for members: the guard redirects to /login first.
+  // E2E-001 (fixed), as for members: the guard used to redirect to /login first.
   test('signing out returns to the home page', async ({ page }) => {
-    test.fail();
     await page.goto('/admin/bookings');
     await page.getByRole('button', { name: 'Sign Out & Exit' }).click();
 

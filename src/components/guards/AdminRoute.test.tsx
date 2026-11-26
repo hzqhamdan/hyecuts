@@ -140,3 +140,33 @@ describe('AdminRoute', () => {
     expect(screen.getByTestId('lounge-page')).toBeDefined();
   });
 });
+
+describe('AdminRoute after signing out', () => {
+  const signedIn: AuthContextType = {
+    user: { id: '1', role: 'ROLE_ADMIN', username: 'admin' },
+    token: 'admin-token',
+    login: mockLoginFn,
+    logout: mockLogoutFn,
+  };
+  const signedOut: AuthContextType = { ...signedIn, user: null, token: null };
+
+  const app = (value: AuthContextType) => (
+    <AuthContext.Provider value={value}>
+      <MemoryRouter initialEntries={['/admin-dashboard']}>
+        <Routes>
+          <Route path="/" element={<div data-testid="home-page">Home</div>} />
+          <Route path="/login" element={<div data-testid="login-page">Login Page</div>} />
+          <Route path="/admin-dashboard" element={<AdminRoute><div data-testid="admin-content">Admin</div></AdminRoute>} />
+        </Routes>
+      </MemoryRouter>
+    </AuthContext.Provider>
+  );
+
+  it('sends an admin who signs out on the page home, not to sign in', () => {
+    const { rerender } = render(app(signedIn));
+    rerender(app(signedOut));
+
+    expect(screen.getByTestId('home-page')).toBeDefined();
+    expect(screen.queryByTestId('login-page')).toBeNull();
+  });
+});
