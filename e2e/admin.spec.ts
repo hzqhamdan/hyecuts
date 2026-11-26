@@ -144,11 +144,10 @@ test.describe('Member manager', () => {
     await expect(rows.first()).toContainText('390');
   });
 
-  // E2E-005: after an adjustment the drawer copies the member from the list
-  // as it was before the refetch, so the balance it shows stays at the old
-  // figure until the drawer is closed and reopened.
+  // E2E-005 (fixed): after an adjustment the drawer copied the member from
+  // the list as it was before the refetch, so the balance it showed stayed at
+  // the old figure until the drawer was closed and reopened.
   test('the open drawer shows the new balance after an adjustment', async ({ page }) => {
-    test.fail();
     await page.goto('/admin/members');
     await page.locator('tbody tr', { hasText: 'Aiman Rahman' }).getByRole('button').click();
     await page.getByRole('slider').fill('150');

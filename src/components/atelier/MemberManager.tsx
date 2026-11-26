@@ -13,7 +13,9 @@ export function MemberManager() {
   const { token } = useAuth();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedMember, setSelectedMember] = useState<AdminMember | null>(null);
+  // The drawer keeps the member's id and reads the member from the list, so it
+  // shows the new balance and tier as soon as the list refetches after a change.
+  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const [adjustAmount, setAdjustAmount] = useState(0);
 
   const { data: members = [], isLoading } = useQuery<AdminMember[]>({
@@ -21,17 +23,13 @@ export function MemberManager() {
     queryFn: () =>
       api.get<AdminMember[]>('/admin/users', { token: token ?? undefined })
   });
+  const selectedMember = members.find(m => m.id === selectedMemberId) ?? null;
 
   const adjustMutation = useMutation({
     mutationFn: ({ userId, amount }: { userId: string, amount: number }) =>
       api.post(`/admin/points/adjust/${userId}?points=${String(amount)}`, { token: token ?? undefined }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['members', token] });
-      // Update selected member if open
-      if (selectedMember) {
-        const updated = members.find(m => m.id === selectedMember.id);
-        if (updated) setSelectedMember(updated);
-      }
     }
   });
 
@@ -43,11 +41,6 @@ export function MemberManager() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['members', token] });
       setIsOverridingTier(false);
-      // Update selected member if open
-      if (selectedMember) {
-        const updated = members.find(m => m.id === selectedMember.id);
-        if (updated) setSelectedMember(updated);
-      }
     }
   });
 
@@ -119,7 +112,7 @@ export function MemberManager() {
                 </td>
                 <td className="p-6 text-right">
                   <button 
-                    onClick={() => { setSelectedMember(member); }}
+                    onClick={() => { setSelectedMemberId(member.id); }}
                     className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-ink-faint hover:text-black dark:hover:text-white transition-all"
                   >
                     <MoreHorizontal size={18} />
@@ -136,7 +129,7 @@ export function MemberManager() {
         <div className="fixed inset-0 z-[100] flex justify-end">
           <motion.div 
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            onClick={() => { setSelectedMember(null); }}
+            onClick={() => { setSelectedMemberId(null); }}
             className="absolute inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm"
           />
           <motion.div 
@@ -145,7 +138,7 @@ export function MemberManager() {
             className="relative w-full max-w-lg bg-surface-card h-screen shadow-overlay p-12 overflow-y-auto"
           >
             <button 
-              onClick={() => { setSelectedMember(null); }}
+              onClick={() => { setSelectedMemberId(null); }}
               className="absolute top-12 left-12 p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-all text-black dark:text-white"
             >
               <ArrowUpDown className="rotate-90" size={20} />
